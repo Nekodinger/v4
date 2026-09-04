@@ -1,0 +1,664 @@
+:root {
+  --bg: #0a0f1d;
+  --panel: #121a2e;
+  --panel-light: #1a2440;
+  --panel-hover: #202c4d;
+  --border: #263257;
+  --text: #e8ecf6;
+  --muted: #8a94b3;
+  --accent: #5b8def;
+  --accent-soft: rgba(91,141,239,0.14);
+  --accent-dark: #3f6fd1;
+  --accent-2: #22d3ee;
+  --good: #34d399;
+  --good-soft: rgba(52,211,153,0.14);
+  --warn: #fbbf24;
+  --warn-soft: rgba(251,191,36,0.12);
+  --danger: #f87171;
+  --as-color: #5b8def;
+  --a2-color: #c084fc;
+  --radius-lg: 16px;
+  --radius-md: 10px;
+  --radius-sm: 7px;
+  --shadow-lg: 0 20px 44px -18px rgba(0,0,0,0.55);
+  --shadow-md: 0 10px 26px -12px rgba(0,0,0,0.5);
+  --header-h: 68px;
+  font-family: "Inter", "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+/* Perbaikan penting: elemen dengan class yang men-set `display` (flex/grid/dst)
+   akan mengabaikan atribut `hidden` bawaan HTML kecuali dipaksa di sini.
+   Tanpa baris ini, elemen seperti .key-banner atau .welcome-panel bisa tetap
+   terlihat walau `element.hidden = true` sudah di-set lewat JS. */
+[hidden] { display: none !important; }
+
+body {
+  margin: 0;
+  background:
+    radial-gradient(1100px 520px at 12% -10%, rgba(91,141,239,0.10), transparent 60%),
+    radial-gradient(900px 480px at 100% 0%, rgba(34,211,238,0.06), transparent 55%),
+    var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4 { font-family: "Sora", "Inter", system-ui, sans-serif; letter-spacing: -0.01em; }
+
+/* ---------------- Header ---------------- */
+.site-header {
+  background: rgba(10,15,29,0.85);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 40;
+}
+.header-inner {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 12px 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  text-align: left;
+  border-radius: var(--radius-sm);
+}
+.brand:hover { background: var(--panel-light); }
+.brand-icon {
+  width: 38px; height: 38px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--accent);
+  background: var(--accent-soft);
+  border-radius: 10px;
+  flex: none;
+}
+.brand-icon svg { width: 22px; height: 22px; }
+.brand-text { display: flex; flex-direction: column; }
+.brand-title { font-family: "Sora", sans-serif; font-weight: 700; font-size: 1.08rem; color: var(--text); }
+.brand-sub { margin-top: 1px; color: var(--muted); font-size: 0.78rem; }
+
+.header-actions { display: flex; align-items: center; gap: 10px; }
+
+.key-status-pill {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--panel-light);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  padding: 7px 13px;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+.key-status-pill:hover { border-color: var(--accent); color: var(--text); }
+.key-status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--danger); flex: none; }
+.key-status-dot.key-status-on { background: var(--good); }
+
+.settings-btn {
+  display: flex; align-items: center; gap: 7px;
+  background: var(--panel-light);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 8px 15px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+.settings-btn svg { width: 17px; height: 17px; }
+.settings-btn:hover { border-color: var(--accent); background: var(--panel-hover); }
+
+@media (max-width: 640px) {
+  .brand-sub { display: none; }
+  .settings-btn span:last-child { display: none; }
+}
+
+/* ---------------- Layout & sidebar ---------------- */
+.layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  max-width: 1440px;
+  margin: 0 auto;
+  gap: 22px;
+  padding: 22px;
+  align-items: start;
+  transition: grid-template-columns 0.28s cubic-bezier(.4,0,.2,1);
+}
+/* Begitu sebuah topik aktif, kolom sidebar dilepas sepenuhnya (lebar 0) -
+   #topic-nav pindah jadi position:fixed (lihat di bawah) sehingga TIDAK
+   memakan ruang sama sekali dan konten mendapat lebar penuh. */
+body.nav-collapsed .layout { grid-template-columns: 0px 1fr; }
+
+#nav-toggle {
+  position: fixed;
+  top: calc(var(--header-h) + 14px);
+  left: 14px;
+  z-index: 46;
+  width: 34px; height: 34px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--panel-light);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: var(--shadow-md);
+  transition: transform 0.25s ease, color 0.2s ease, opacity 0.2s ease;
+}
+#nav-toggle svg { width: 15px; height: 15px; }
+#nav-toggle:hover { color: var(--accent); border-color: var(--accent); }
+body.nav-pinned #nav-toggle { transform: rotate(180deg); color: var(--accent); }
+/* Saat belum ada topik dipilih (sidebar sudah tampil penuh secara normal di
+   grid), tombol pin ini tidak diperlukan. */
+body:not(.nav-collapsed) #nav-toggle { opacity: 0; pointer-events: none; }
+@media (max-width: 900px) { #nav-toggle { display: none; } }
+
+.topic-nav {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 14px 10px;
+  max-height: calc(100vh - var(--header-h) - 40px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: sticky;
+  top: calc(var(--header-h) + 18px);
+  width: 100%;
+  scrollbar-width: thin;
+}
+
+/* Mode "auto-hide": begitu topik aktif, nav sepenuhnya disembunyikan
+   (tidak memakan ruang, tidak bisa diklik) dan cuma tombol bulat #nav-toggle
+   yang terlihat. Meng-hover tombol itu (atau nav itu sendiri, lewat class
+   "nav-peek" yang diatur app.js) menampilkannya lagi sebagai panel melayang
+   di atas konten - konten sendiri tidak pernah bergeser/terganggu. */
+body.nav-collapsed .topic-nav {
+  position: fixed;
+  left: 14px;
+  top: calc(var(--header-h) + 14px);
+  width: 280px;
+  max-height: calc(100vh - var(--header-h) - 28px);
+  opacity: 0;
+  transform: translateX(-14px) scale(0.98);
+  pointer-events: none;
+  box-shadow: var(--shadow-lg);
+  transition: opacity 0.18s ease, transform 0.18s ease;
+  z-index: 44;
+}
+body.nav-collapsed.nav-peek .topic-nav,
+body.nav-pinned .topic-nav {
+  opacity: 1;
+  transform: translateX(0) scale(1);
+  pointer-events: auto;
+}
+
+.nav-group-title {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  margin: 14px 10px 7px;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.nav-group-title:first-child { margin-top: 4px; }
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: none;
+  color: var(--text);
+  padding: 9px 10px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 0.87rem;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.nav-item:hover { background: var(--panel-light); }
+.nav-item.active { background: var(--accent); color: #051022; font-weight: 600; }
+.nav-item .num { color: var(--muted); font-variant-numeric: tabular-nums; width: 1.5em; flex: none; font-size: 0.82rem; }
+.nav-item.active .num { color: rgba(5,16,34,0.65); }
+.nav-item .dot { width: 6px; height: 6px; border-radius: 50%; flex: none; }
+.nav-item .label { overflow: hidden; text-overflow: ellipsis; }
+.dot-ready { background: var(--good); }
+.dot-soon { background: var(--border); }
+
+/* grid-column eksplisit ini WAJIB ada: begitu #topic-nav berpindah jadi
+   position:fixed (mode auto-hide, lihat body.nav-collapsed .topic-nav di
+   bawah), elemen itu keluar dari alur grid sepenuhnya. Tanpa baris ini,
+   grid auto-placement akan menaruh .content-area ke kolom pertama yang
+   kosong (lebar 0px) alih-alih kolom kedua, membuat seluruh konten
+   terjepit jadi kolom sempit. */
+.content-area { min-width: 0; grid-column: 2; }
+.topic-nav { grid-column: 1; }
+@media (max-width: 900px) {
+  .content-area, .topic-nav { grid-column: 1; }
+}
+
+/* ---------------- Welcome / onboarding ---------------- */
+.welcome-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.welcome-intro, .topic-header {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px 26px;
+}
+.welcome-intro h2 { margin-top: 0; font-size: 1.4rem; }
+.muted { color: var(--muted); }
+.muted.small { font-size: 0.8rem; margin-top: 8px; }
+
+.badge {
+  display: inline-block;
+  font-size: 0.7rem;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+.badge-ready { background: var(--good-soft); color: var(--good); }
+.badge-soon { background: rgba(148,163,184,0.15); color: var(--muted); }
+.badge-as { background: var(--accent-soft); color: var(--as-color); }
+.badge-a2 { background: rgba(192,132,252,0.15); color: var(--a2-color); }
+
+.onboarding-card {
+  background: linear-gradient(160deg, var(--panel-light), var(--panel));
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 26px 28px;
+  box-shadow: var(--shadow-md);
+}
+.onboarding-head h3 { margin: 0 0 8px; font-size: 1.15rem; color: var(--text); }
+.onboarding-head p { margin: 0 0 18px; }
+
+.onboarding-steps {
+  list-style: none;
+  counter-reset: step;
+  margin: 0 0 16px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.onboarding-steps li {
+  counter-increment: step;
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+.onboarding-steps li::before {
+  content: counter(step);
+  flex: none;
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #051022;
+  font-weight: 700;
+  font-size: 0.85rem;
+  display: flex; align-items: center; justify-content: center;
+  margin-top: 1px;
+}
+.step-body { flex: 1; min-width: 0; }
+.step-body p { margin: 0 0 8px; }
+
+.key-input-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.key-input-row input {
+  flex: 1;
+  min-width: 220px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: var(--radius-sm);
+  padding: 9px 12px;
+  font-size: 0.88rem;
+}
+.onboarding-status { font-size: 0.82rem; margin: 8px 0 0; min-height: 1.2em; color: var(--muted); }
+.onboarding-status.ok { color: var(--good); }
+.onboarding-footnote { margin-top: 4px; font-size: 0.8rem; }
+.onboarding-footnote a { color: var(--accent); }
+
+.onboarding-done-row { display: flex; align-items: flex-start; gap: 14px; }
+.onboarding-done-icon {
+  width: 40px; height: 40px; flex: none;
+  border-radius: 50%;
+  background: var(--good-soft);
+  color: var(--good);
+  display: flex; align-items: center; justify-content: center;
+}
+.onboarding-done-icon svg { width: 22px; height: 22px; }
+.onboarding-done-row h3 { margin: 0 0 4px; font-size: 1.05rem; }
+.onboarding-done-row .link-btn { color: var(--accent); }
+
+/* ---------------- Topic header / tabs ---------------- */
+.topic-header { border-radius: var(--radius-lg) var(--radius-lg) 0 0; border-bottom: none; margin-bottom: 0; }
+.topic-header h2 { margin: 8px 0 4px; font-size: 1.3rem; }
+.topic-header p { margin: 0; color: var(--muted); }
+
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  background: rgba(18,26,46,0.92);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--border);
+  border-top: none;
+  position: sticky;
+  top: var(--header-h);
+  z-index: 20;
+}
+.tab-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  padding: 13px 18px;
+  cursor: pointer;
+  font-size: 0.87rem;
+  font-weight: 500;
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
+}
+.tab-btn svg { width: 17px; height: 17px; flex: none; }
+.tab-btn:hover { color: var(--text); }
+.tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+@media (max-width: 640px) {
+  .tab-btn span { display: none; }
+  .tab-btn { padding: 12px 14px; }
+}
+
+.tab-panels {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-top: none;
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+  padding: 24px 26px;
+}
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+.tab-panel h3 { color: var(--text); font-size: 1.1rem; border-left: 3px solid var(--accent); padding-left: 10px; margin: 26px 0 12px; }
+.tab-panel h3:first-child { margin-top: 0; }
+.tab-panel h4 { color: var(--accent); font-size: 0.98rem; margin: 20px 0 8px; }
+.tab-panel table { border-collapse: collapse; width: 100%; margin: 14px 0; font-size: 0.9rem; }
+.tab-panel th, .tab-panel td {
+  border: 1px solid var(--border);
+  padding: 7px 10px;
+  text-align: center;
+}
+.tab-panel th { background: var(--panel-light); font-weight: 600; }
+.formula-box {
+  background: var(--panel-light);
+  border-left: 3px solid var(--accent);
+  padding: 12px 18px;
+  border-radius: var(--radius-sm);
+  margin: 14px 0;
+  overflow-x: auto;
+}
+
+/* ---------------- Media kontekstual (foto & video) ---------------- */
+.media-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin: 16px 0 22px;
+}
+@media (max-width: 760px) { .media-row { grid-template-columns: 1fr; } }
+.media-card {
+  background: var(--panel-light);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+.media-card img { display: block; width: 100%; height: 190px; object-fit: contain; background: #0b1120; }
+.media-card .media-video-wrap { position: relative; width: 100%; padding-top: 56.25%; background: #000; }
+.media-card .media-video-wrap iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: none; }
+.media-caption { padding: 10px 14px; font-size: 0.78rem; color: var(--muted); line-height: 1.5; }
+.media-caption strong { color: var(--text); }
+.media-caption a { color: var(--accent); }
+
+.question-card {
+  background: var(--panel-light);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 15px 18px;
+  margin-bottom: 14px;
+}
+.question-card .q-title { font-weight: 600; margin-bottom: 6px; color: var(--text); }
+.question-card .options { list-style: none; padding: 0; margin: 8px 0; }
+.question-card .options li { padding: 4px 0; }
+.reveal-btn {
+  background: none;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  padding: 5px 13px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 0.8rem;
+  margin-top: 6px;
+}
+.reveal-btn:hover { background: var(--accent-soft); }
+.solution {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--border);
+  display: none;
+}
+.solution.show { display: block; }
+
+.sim-embed {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  margin: 14px 0;
+  background: #060a14;
+}
+.sim-embed iframe { width: 100%; height: 420px; border: none; display: block; }
+
+/* ---------------- Lab tab ---------------- */
+.key-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  background: var(--warn-soft);
+  border: 1px solid rgba(251,191,36,0.35);
+  color: #fcd34d;
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  margin-bottom: 18px;
+  font-size: 0.88rem;
+}
+
+.lab-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+.lab-preview-card { grid-column: 1 / -1; }
+.lab-card {
+  background: var(--panel-light);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 18px 20px;
+}
+.lab-card h3 {
+  margin-top: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-left: none;
+  padding-left: 0;
+  font-size: 1rem;
+}
+.step-num {
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 0.75rem;
+  font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  flex: none;
+}
+@media (max-width: 800px) {
+  .lab-grid { grid-template-columns: 1fr; }
+}
+
+.prompt-form label {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+.prompt-form select, .prompt-form input[type=text], .prompt-form textarea,
+#final-prompt, #backend-url-input, #settings-key-input, .code-editor {
+  width: 100%;
+  margin-top: 5px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: var(--radius-sm);
+  padding: 9px 11px;
+  font-size: 0.88rem;
+  font-family: inherit;
+}
+.prompt-form select:focus, .prompt-form input:focus, .prompt-form textarea:focus,
+#final-prompt:focus, #backend-url-input:focus, #settings-key-input:focus, .code-editor:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+#final-prompt { font-family: inherit; }
+.code-editor { font-family: "Fira Code", Consolas, monospace; font-size: 0.8rem; height: 320px; margin-top: 10px; }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 10px 17px;
+  cursor: pointer;
+  font-size: 0.87rem;
+  font-weight: 600;
+  font-family: inherit;
+}
+.btn svg { width: 16px; height: 16px; flex: none; }
+.btn-primary { background: var(--accent); color: #051022; }
+.btn-primary:hover { background: #74a3f5; }
+.btn-secondary { background: var(--panel); border: 1px solid var(--border); color: var(--text); }
+.btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+.btn-small { padding: 7px 12px; font-size: 0.8rem; }
+.btn-icon { padding: 9px; }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+.link-btn {
+  background: none; border: none; padding: 0;
+  color: inherit; text-decoration: underline;
+  font: inherit; cursor: pointer;
+}
+
+.lab-actions { display: flex; align-items: center; gap: 12px; margin-top: 12px; flex-wrap: wrap; }
+.preview-toolbar { display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
+.preview-frame {
+  width: 100%;
+  height: 480px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: white;
+}
+.mode-banner {
+  margin-top: 12px;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  background: var(--warn-soft);
+  color: var(--warn);
+  border: 1px solid rgba(251,191,36,0.3);
+}
+.mode-banner .link-btn { color: var(--warn); }
+
+/* ---------------- Modal ---------------- */
+.modal {
+  position: fixed; inset: 0;
+  background: rgba(4,7,15,0.7);
+  backdrop-filter: blur(3px);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 60;
+  padding: 20px;
+}
+.modal[hidden] { display: none; }
+.modal-box {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px 28px;
+  max-width: 480px;
+  width: 100%;
+  box-shadow: var(--shadow-lg);
+}
+.modal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+.modal-head h3 { margin: 0; font-size: 1.1rem; }
+.icon-btn {
+  background: none; border: none; color: var(--muted); cursor: pointer;
+  padding: 4px; border-radius: 6px; display: flex;
+}
+.icon-btn:hover { color: var(--text); background: var(--panel-light); }
+.icon-btn svg { width: 18px; height: 18px; }
+.modal-box label { display: block; font-size: 0.85rem; color: var(--muted); margin: 14px 0 6px; }
+.modal-actions { display: flex; gap: 10px; margin-top: 18px; justify-content: flex-end; }
+
+.advanced-settings { margin-top: 16px; }
+.advanced-settings summary {
+  cursor: pointer;
+  font-size: 0.82rem;
+  color: var(--muted);
+  padding: 6px 0;
+}
+.advanced-settings summary:hover { color: var(--text); }
+
+code {
+  background: rgba(255,255,255,0.08);
+  padding: 1px 6px;
+  border-radius: 5px;
+  font-size: 0.85em;
+  font-family: "Fira Code", Consolas, monospace;
+}
+
+@media (max-width: 900px) {
+  /* Auto-hide lewat hover tidak relevan di layar sentuh, jadi di mobile
+     sidebar selalu tampil normal, mengalir di atas konten (bukan overlay). */
+  .layout { grid-template-columns: 1fr; }
+  body.nav-collapsed .layout { grid-template-columns: 1fr; }
+  body.nav-collapsed .topic-nav,
+  body.nav-pinned .topic-nav {
+    position: static;
+    width: 100%;
+    max-height: none;
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+    box-shadow: none;
+  }
+}
