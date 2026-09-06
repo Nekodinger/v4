@@ -19,6 +19,111 @@
 </head>
 <body>
 
+<div id="onboarding-gate" class="onboarding-gate">
+  <div class="gate-card">
+    <div class="gate-brand">
+      <span class="brand-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="2.3" fill="currentColor"/><ellipse cx="12" cy="12" rx="9.5" ry="3.8" fill="none" stroke="currentColor" stroke-width="1.4"/><ellipse cx="12" cy="12" rx="9.5" ry="3.8" fill="none" stroke="currentColor" stroke-width="1.4" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="9.5" ry="3.8" fill="none" stroke="currentColor" stroke-width="1.4" transform="rotate(120 12 12)"/></svg>
+      </span>
+      <span class="brand-title">Physics Sandbox</span>
+    </div>
+
+    <!-- Langkah 1: API key Gemini (wajib untuk semua orang) -->
+    <div id="gate-step-apikey" class="gate-step">
+      <h2>Langkah 1: Siapkan API key Gemini gratismu</h2>
+      <p class="muted">Situs ini memakai AI (Google Gemini) untuk Lab Simulasi Virtual dan Tutor Fisika. Masukkan API key Gemini <strong>milikmu sendiri</strong> dulu, gratis, tersimpan hanya di browser ini, dan tidak pernah dikirim ke siapa pun selain langsung ke Google.</p>
+
+      <ol class="onboarding-steps">
+        <li>
+          <div class="step-body">
+            <p><strong>Buka Google AI Studio</strong> dan masuk dengan akun Google-mu.</p>
+            <a class="btn btn-secondary btn-small" href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">
+              Buka aistudio.google.com/apikey
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 5h5v5"/><path d="M19 5 10 14"/><path d="M12 5H7a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-5"/></svg>
+            </a>
+          </div>
+        </li>
+        <li>
+          <div class="step-body">
+            <p>Klik <strong>Create API key</strong>, lalu salin key yang muncul (diawali huruf <code>AIza...</code>).</p>
+          </div>
+        </li>
+        <li>
+          <div class="step-body">
+            <p>Tempel API key itu di kolom ini, lalu simpan.</p>
+            <div class="key-input-row">
+              <input type="password" id="gate-key-input" placeholder="Tempel API key Gemini di sini" autocomplete="off">
+              <button type="button" id="gate-key-toggle-visibility" class="btn btn-secondary btn-icon" title="Tampilkan/sembunyikan">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+              <button type="button" id="gate-key-save-btn" class="btn btn-primary">Simpan &amp; Lanjut</button>
+            </div>
+            <p class="onboarding-status" id="gate-key-status"></p>
+          </div>
+        </li>
+      </ol>
+
+      <p class="muted onboarding-footnote">Free tier Gemini punya batas kuota harian yang wajar untuk satu kelas, cek angka terbaru di <a href="https://ai.google.dev/gemini-api/docs/rate-limits" target="_blank" rel="noopener">ai.google.dev/gemini-api/docs/rate-limits</a>. Jangan masukkan data pribadi ke dalam prompt simulasi.</p>
+    </div>
+
+    <!-- Langkah 2: peran pengguna -->
+    <div id="gate-step-role" class="gate-step" hidden>
+      <h2>Langkah 2: Kamu siapa?</h2>
+      <p class="muted">Pilih salah satu supaya situs menuntunmu lewat alur yang tepat.</p>
+      <div class="gate-role-options">
+        <button type="button" id="gate-role-student-btn" class="gate-role-btn">
+          <strong>Saya siswa</strong>
+          <span class="muted small">Isi nama &amp; kelas, lalu masukkan kode dari guru untuk belajar bersama sesuai sesi kelas.</span>
+        </button>
+        <button type="button" id="gate-role-guest-btn" class="gate-role-btn">
+          <strong>Bukan siswa (guru/pengelola/lainnya)</strong>
+          <span class="muted small">Masukkan Kode Eksplorasi Bebas untuk langsung membuka semua topik.</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Langkah 3 (siswa): nama & kelas -->
+    <div id="gate-step-student-info" class="gate-step" hidden>
+      <h2>Langkah 3: Data diri singkat</h2>
+      <p class="muted">Supaya gurumu bisa mengenali progresmu di Panel Guru.</p>
+      <label>Nama lengkap
+        <input type="text" id="gate-student-name-input" placeholder="Nama kamu" autocomplete="off">
+      </label>
+      <label>Kelas
+        <input type="text" id="gate-student-class-input" placeholder="misal: XI IPA 2" autocomplete="off">
+      </label>
+      <button type="button" id="gate-student-info-btn" class="btn btn-primary">Lanjut</button>
+      <p class="onboarding-status" id="gate-student-info-status"></p>
+      <p class="gate-back-row"><button type="button" id="gate-student-info-back-btn" class="link-btn">Kembali</button></p>
+    </div>
+
+    <!-- Langkah 4 (siswa): kode dari guru -->
+    <div id="gate-step-student-code" class="gate-step" hidden>
+      <h2>Langkah 4: Masukkan kode dari guru</h2>
+      <p class="muted">Tanyakan ke gurumu kode sesi kelas yang sedang berjalan sekarang.</p>
+      <div class="key-input-row">
+        <input type="text" id="gate-student-code-input" placeholder="Kode dari guru" autocomplete="off">
+        <button type="button" id="gate-student-code-btn" class="btn btn-primary">Gabung</button>
+      </div>
+      <p class="onboarding-status" id="gate-student-code-status"></p>
+      <p class="gate-back-row"><button type="button" id="gate-student-code-back-btn" class="link-btn">Ubah nama/kelas</button></p>
+    </div>
+
+    <!-- Langkah 3 (bukan siswa): kode eksplorasi -->
+    <div id="gate-step-guest-code" class="gate-step" hidden>
+      <h2>Langkah 3: Kode Eksplorasi Bebas</h2>
+      <p class="muted">Masukkan kode dari guru/pengelola situs untuk membuka akses penuh ke semua topik.</p>
+      <div class="key-input-row">
+        <input type="text" id="gate-guest-code-input" placeholder="Kode eksplorasi" autocomplete="off">
+        <button type="button" id="gate-guest-code-btn" class="btn btn-primary">Buka Akses</button>
+      </div>
+      <p class="onboarding-status" id="gate-guest-code-status"></p>
+      <p class="gate-back-row"><button type="button" id="gate-guest-code-back-btn" class="link-btn">Kembali</button></p>
+    </div>
+  </div>
+</div>
+
+<div id="site-shell" hidden>
 <header class="site-header">
   <div class="header-inner">
     <button type="button" id="brand-home" class="brand" title="Kembali ke Beranda">
@@ -63,59 +168,6 @@
         <h2>Selamat datang di Physics Sandbox</h2>
         <p>Pilih topik di sebelah kiri untuk mulai belajar. Setiap topik punya empat bagian: <strong>Materi Belajar</strong>, <strong>Eksperimen</strong>, <strong>Latihan Soal</strong>, dan <strong>Lab Simulasi Virtual</strong> tempat kamu bisa membuat simulasi fisikamu sendiri dengan bantuan AI.</p>
         <p class="muted">Topik yang sudah lengkap ditandai <span class="badge badge-ready">Siap</span>, topik lain masih <span class="badge badge-soon">Segera</span> - struktur sudah disiapkan, tinggal diisi kontennya.</p>
-      </div>
-
-      <div class="onboarding-card" id="onboarding-card">
-        <div id="onboarding-setup">
-          <div class="onboarding-head">
-            <h3>Siapkan API key Gemini gratismu</h3>
-            <p class="muted">Lab Simulasi Virtual dibuat dengan bantuan AI (Google Gemini). Supaya generate-nya jalan, masukkan API key Gemini <strong>milikmu sendiri</strong>, gratis, tersimpan hanya di browser ini, dan tidak pernah dikirim ke siapa pun selain langsung ke Google saat kamu menekan Generate.</p>
-          </div>
-
-          <ol class="onboarding-steps">
-            <li>
-              <div class="step-body">
-                <p><strong>Buka Google AI Studio</strong> dan masuk dengan akun Google-mu.</p>
-                <a class="btn btn-secondary btn-small" href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">
-                  Buka aistudio.google.com/apikey
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 5h5v5"/><path d="M19 5 10 14"/><path d="M12 5H7a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-5"/></svg>
-                </a>
-              </div>
-            </li>
-            <li>
-              <div class="step-body">
-                <p>Klik <strong>Create API key</strong>, lalu salin key yang muncul (diawali huruf <code>AIza...</code>).</p>
-              </div>
-            </li>
-            <li>
-              <div class="step-body">
-                <p>Tempel API key itu di kolom ini, lalu simpan.</p>
-                <div class="key-input-row">
-                  <input type="password" id="onboarding-key-input" placeholder="Tempel API key Gemini di sini" autocomplete="off">
-                  <button type="button" id="onboarding-toggle-visibility" class="btn btn-secondary btn-icon" title="Tampilkan/sembunyikan">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
-                  </button>
-                  <button type="button" id="onboarding-save-btn" class="btn btn-primary">Simpan</button>
-                </div>
-                <p class="onboarding-status" id="onboarding-status"></p>
-              </div>
-            </li>
-          </ol>
-
-          <p class="muted onboarding-footnote">Free tier Gemini punya batas kuota harian yang wajar untuk satu kelas, cek angka terbaru di <a href="https://ai.google.dev/gemini-api/docs/rate-limits" target="_blank" rel="noopener">ai.google.dev/gemini-api/docs/rate-limits</a>. Jangan masukkan data pribadi ke dalam prompt simulasi.</p>
-        </div>
-
-        <div id="onboarding-done" hidden>
-          <div class="onboarding-done-row">
-            <span class="onboarding-done-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m8 12.5 2.5 2.5L16 9.5"/></svg>
-            </span>
-            <div>
-              <h3>API key sudah aktif</h3>
-              <p class="muted">Kamu siap memakai Lab Simulasi Virtual. Mau ganti ke API key lain? <button type="button" id="onboarding-change-key-btn" class="link-btn">Ubah API key</button></p>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
 
@@ -289,6 +341,8 @@
   </form>
 </div>
 
+</div><!-- /site-shell -->
+
 <div id="settings-modal" class="modal" hidden>
   <div class="modal-box">
     <div class="modal-head">
@@ -324,13 +378,18 @@
       <button type="button" id="class-session-leave-btn" class="btn btn-secondary btn-small" hidden>Keluar dari Sesi</button>
     </details>
 
-    <details class="advanced-settings">
-      <summary>Pengaturan lanjutan (untuk guru/pengelola situs)</summary>
-      <label>URL Backend (Apps Script Web App)
-        <input type="text" id="backend-url-input" placeholder="https://script.google.com/macros/s/XXXX/exec">
+    <details class="advanced-settings" id="settings-student-info-details" hidden>
+      <summary>Data Diri (Siswa)</summary>
+      <label>Nama lengkap
+        <input type="text" id="settings-student-name-input" placeholder="Nama kamu">
       </label>
-      <p class="muted small">URL relay ini bukan rahasia (tidak berisi API key siapa pun). Isi <code>js/config.js</code> lalu commit ke repo supaya semua pengguna otomatis terhubung, lihat README.</p>
+      <label>Kelas
+        <input type="text" id="settings-student-class-input" placeholder="misal: XI IPA 2">
+      </label>
+      <button type="button" id="settings-student-info-save-btn" class="btn btn-secondary btn-small">Simpan Data Diri</button>
     </details>
+
+    <p class="muted small"><button type="button" id="settings-reset-onboarding-btn" class="link-btn">Ulangi proses awal (ganti peran siswa/bukan siswa)</button></p>
 
     <div class="modal-actions">
       <button type="button" id="settings-save-btn" class="btn btn-primary">Simpan</button>
