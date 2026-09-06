@@ -257,6 +257,60 @@ body.nav-pinned .topic-nav {
   .content-area, .topic-nav { grid-column: 1; }
 }
 
+/* ============================================================
+   Onboarding gate (wajib sebelum situs bisa diakses)
+   ------------------------------------------------------------
+   Overlay layar penuh: API key -> pilih peran (siswa/bukan siswa)
+   -> (siswa) nama+kelas -> kode dari guru, ATAU (bukan siswa)
+   kode eksplorasi. #site-shell (header, nav, konten) baru
+   ditampilkan setelah semua langkah yang relevan selesai.
+   ============================================================ */
+.onboarding-gate {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  overflow-y: auto;
+  background:
+    radial-gradient(1100px 520px at 12% -10%, rgba(91,141,239,0.10), transparent 60%),
+    radial-gradient(900px 480px at 100% 0%, rgba(34,211,238,0.06), transparent 55%),
+    var(--bg);
+}
+.gate-card {
+  width: 100%;
+  max-width: 560px;
+  margin: auto;
+  background: linear-gradient(160deg, var(--panel-light), var(--panel));
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 30px 32px;
+  box-shadow: var(--shadow-lg);
+}
+.gate-brand { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+.gate-brand .brand-icon { width: 36px; height: 36px; }
+.gate-brand .brand-title { font-family: "Sora", sans-serif; font-weight: 700; font-size: 1.05rem; }
+.gate-step h2 { margin: 0 0 8px; font-size: 1.2rem; }
+.gate-step > p.muted { margin: 0 0 18px; }
+.gate-step label { display: block; font-size: 0.85rem; color: var(--muted); margin: 0 0 14px; }
+.gate-step label input {
+  width: 100%; margin-top: 6px;
+  background: var(--bg); border: 1px solid var(--border); color: var(--text);
+  border-radius: var(--radius-sm); padding: 10px 12px; font-size: 0.9rem;
+}
+.gate-step label input:focus { outline: none; border-color: var(--accent); }
+.gate-role-options { display: flex; flex-direction: column; gap: 12px; margin-top: 4px; }
+.gate-role-btn {
+  display: flex; flex-direction: column; gap: 4px; text-align: left;
+  background: var(--panel); border: 1px solid var(--border); color: var(--text);
+  padding: 16px 18px; border-radius: var(--radius-md); cursor: pointer; font-family: inherit;
+}
+.gate-role-btn:hover { border-color: var(--accent); background: var(--panel-hover); }
+.gate-role-btn strong { font-size: 0.98rem; }
+.gate-back-row { margin-top: 14px; margin-bottom: 0; }
+
 /* ---------------- Welcome / onboarding ---------------- */
 .welcome-panel {
   display: flex;
@@ -711,7 +765,7 @@ code {
   box-shadow: var(--shadow-lg);
   font-size: 0.85rem;
   max-width: min(90vw, 420px);
-  z-index: 200;
+  z-index: 600;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.2s ease, transform 0.2s ease;
