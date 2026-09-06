@@ -91,6 +91,69 @@ const TEACHER_CONTROL_CODE = "ganti-kode-guru-ini";
 // membuang entri roster yang sudah sangat basi).
 const ROSTER_STALE_MS = 5 * 60 * 1000;
 
+// ============================================================
+// Penanganan error Gemini API (ditambahkan 2026-09-07 setelah laporan
+// "Gagal generate: ... currently experiencing high demand"):
+//
+// CATATAN PENTING soal "sisa kuota API key": Gemini API TIDAK menyediakan
+// endpoint publik untuk mengecek sisa kuota/token suatu API key dari
+// panggilan biasa (beda dengan beberapa provider lain yang menaruh info
+// itu di response header). Satu-satunya cara resmi melihat kuota adalah
+// login manual ke https://aistudio.google.com/apikey dengan akun Google
+// yang sama. Jadi situs ini TIDAK BISA menampilkan angka "sisa token"
+// secara real-time - yang BISA kita lakukan adalah membedakan dengan
+// jelas jenis errornya (lihat describeGeminiError di bawah) supaya siswa
+// tahu apakah ini soal kuota key mereka sendiri atau server Gemini yang
+// sedang sibuk (dan bukan hal yang bisa mereka perbaiki sendiri).
+//
+// Error "high demand"/503 UNAVAILABLE itu SEMENTARA (bukan soal kuota
+// key habis) - Google sendiri bilang "usually temporary" - jadi kita
+// retry otomatis beberapa kali dengan jeda sebelum menyerah.
+// ============================================================
+
+// Memanggil Gemini API, otomatis mencoba ulang kalau errornya BERSIFAT
+// SEMENTARA (503/"overloaded"/"high demand" karena server Gemini lagi
+// sibuk, atau 429 rate limit sesaat) - TIDAK mencoba ulang untuk error
+// permanen (400/403 API key salah, SAFETY block, dll, karena percuma).
+function fetchGeminiWithRetry(url, payload, maxAttempts, baseDelayMs) {
+  const options = {
+    method: "post",
+    contentType: "application/json",
+    payload: JSON.stringify(payload),
+    muteHttpExceptions: true
+  };
+  let status, data;
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    const response = UrlFetchApp.fetch(url, options);
+    status = response.getResponseCode();
+    data = JSON.parse(response.getContentText());
+    if (status === 200) return { status: status, data: data };
+
+    const msg = (data.error && data.error.message) || "";
+    const isRetryable = status === 503 || status === 429 || /overloaded|high demand|unavailable/i.test(msg);
+    if (!isRetryable || attempt === maxAttempts) break;
+    Utilities.sleep(attempt * baseDelayMs);
+  }
+  return { status: status, data: data };
+}
+
+// Menerjemahkan error Gemini API jadi pesan Bahasa Indonesia yang jelas,
+// membedakan 3 penyebab paling umum supaya siswa/guru tahu ini masalah
+// apa dan harus ngapain (lihat catatan "sisa kuota" di atas).
+function describeGeminiError(status, data) {
+  const raw = (data.error && data.error.message) ? data.error.message : ("HTTP " + status);
+  if (status === 400 || status === 403) {
+    return "API key ditolak Google (" + raw + "). Periksa kembali apakah API key yang kamu masukkan benar dan masih aktif di Google AI Studio.";
+  }
+  if (status === 429) {
+    return "Kuota/rate limit API key kamu untuk saat ini sudah tercapai (" + raw + "). Ini BUKAN error dari situs, tapi batas pemakaian gratis dari Google untuk API key kamu sendiri, biasanya reset dalam waktu singkat (per menit) atau paling lambat besok (kuota harian). Cek detail kuota di aistudio.google.com/apikey, atau tunggu sebentar lalu coba lagi.";
+  }
+  if (status === 503 || /overloaded|high demand|unavailable/i.test(raw)) {
+    return "Server Gemini sedang sibuk/kebanjiran permintaan dari SEMUA pengguna di seluruh dunia (" + raw + "), BUKAN soal kuota API key kamu habis. Sudah dicoba ulang otomatis beberapa kali; kalau masih gagal, tunggu sekitar 30-60 detik lalu coba lagi.";
+  }
+  return raw;
+}
+
 const SYSTEM_PROMPT = [
   "Kamu adalah asisten pembuat simulasi fisika interaktif untuk siswa AS & A Level Cambridge Physics (9702). Kamu menguasai fisika secara akurat, coding HTML/CSS/JS yang bersih, DAN prinsip desain visual untuk media pembelajaran.",
   "",
@@ -180,23 +243,15 @@ function handleSimulate(body, apiKey, model) {
 
   const url = "https://generativelanguage.googleapis.com/v1beta/models/" + model + ":generateContent?key=" + encodeURIComponent(apiKey);
 
-  const options = {
-    method: "post",
-    contentType: "application/json",
-    payload: JSON.stringify(payload),
-    muteHttpExceptions: true
-  };
-
-  const response = UrlFetchApp.fetch(url, options);
-  const status = response.getResponseCode();
-  const data = JSON.parse(response.getContentText());
+  // 3 percobaan, jeda 2 detik lalu 4 detik - generate simulasi memang aksi
+  // "klik lalu tunggu", jadi wajar dikasih waktu lebih untuk retry server
+  // Gemini yang lagi sibuk (lihat fetchGeminiWithRetry di atas).
+  const result = fetchGeminiWithRetry(url, payload, 3, 2000);
+  const status = result.status;
+  const data = result.data;
 
   if (status !== 200) {
-    let msg = (data.error && data.error.message) ? data.error.message : ("HTTP " + status);
-    if (status === 400 || status === 403) {
-      msg = "API key ditolak Google (" + msg + "). Periksa kembali apakah API key yang kamu masukkan benar dan masih aktif di Google AI Studio.";
-    }
-    return jsonResponse({ error: "Gemini API error: " + msg });
+    return jsonResponse({ error: "Gagal generate: " + describeGeminiError(status, data) });
   }
 
   const candidate = data.candidates && data.candidates[0];
@@ -248,34 +303,34 @@ function handleChat(body, apiKey, model) {
     system_instruction: { parts: [{ text: buildChatSystemPrompt(topic, kbContext) }] },
     contents: contents,
     generationConfig: {
-      maxOutputTokens: 800,
-      temperature: 0.7
+      // Sebelumnya 800 tanpa thinkingConfig sama sekali - dilaporkan siswa
+      // jawaban chat kepotong di tengah kalimat. Model Gemini yang lebih
+      // baru (3.x) ternyata tetap memakai sebagian token untuk "thinking"
+      // internal walau tidak diminta, memakan jatah maxOutputTokens diam-
+      // diam (persis gejala truncation yang sama seperti kasus generate
+      // simulasi dulu). Fix: batasi thinking ke jatah kecil (obrolan tidak
+      // butuh reasoning berat seperti generate kode) SEKALIGUS naikkan
+      // total token supaya teks balasan tidak pernah mepet batas.
+      maxOutputTokens: 2048,
+      temperature: 0.7,
+      thinkingConfig: { thinkingBudget: 300 }
     }
   };
 
   const url = "https://generativelanguage.googleapis.com/v1beta/models/" + model + ":generateContent?key=" + encodeURIComponent(apiKey);
-  const options = {
-    method: "post",
-    contentType: "application/json",
-    payload: JSON.stringify(payload),
-    muteHttpExceptions: true
-  };
-
-  const response = UrlFetchApp.fetch(url, options);
-  const status = response.getResponseCode();
-  const data = JSON.parse(response.getContentText());
+  // 2 percobaan, jeda pendek (1.2 detik) - chat harus tetap terasa cepat,
+  // tapi tetap dikasih satu kesempatan retry untuk error 503 sesaat.
+  const result = fetchGeminiWithRetry(url, payload, 2, 1200);
+  const status = result.status;
+  const data = result.data;
 
   if (status !== 200) {
-    let msg = (data.error && data.error.message) ? data.error.message : ("HTTP " + status);
-    if (status === 400 || status === 403) {
-      msg = "API key ditolak Google (" + msg + "). Periksa kembali apakah API key yang kamu masukkan benar dan masih aktif di Google AI Studio.";
-    }
-    return jsonResponse({ error: "Gemini API error: " + msg });
+    return jsonResponse({ error: "Gagal chat: " + describeGeminiError(status, data) });
   }
 
   const candidate = data.candidates && data.candidates[0];
   const finishReason = candidate && candidate.finishReason;
-  const reply = (candidate && candidate.content && candidate.content.parts && candidate.content.parts[0] && candidate.content.parts[0].text) || "";
+  let reply = (candidate && candidate.content && candidate.content.parts && candidate.content.parts[0] && candidate.content.parts[0].text) || "";
 
   if (!reply) {
     if (finishReason === "SAFETY") {
@@ -283,8 +338,16 @@ function handleChat(body, apiKey, model) {
     }
     return jsonResponse({ error: "Respons tutor kosong, coba kirim lagi." });
   }
+  reply = reply.trim();
+  if (finishReason === "MAX_TOKENS") {
+    // Frontend chatbot.js cuma menampilkan field `reply` apa adanya (tidak
+    // ada penanganan `warning` terpisah seperti di handleSimulate), jadi
+    // catatan potongannya disisipkan langsung ke teks balasan supaya siswa
+    // tetap tahu jawabannya belum selesai.
+    reply += "\n\n(Jawaban kepanjangan jadi terpotong di sini - ketik \"lanjutkan\" untuk sambungannya.)";
+  }
 
-  return jsonResponse({ reply: reply.trim() });
+  return jsonResponse({ reply: reply });
 }
 
 function buildChatSystemPrompt(topic, kbContext) {
