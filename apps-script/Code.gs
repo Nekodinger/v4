@@ -56,11 +56,15 @@
  * ============================================================
  */
 
-const DEFAULT_MODEL = "gemini-2.5-flash";
-// 8192 sering kena potong (finishReason MAX_TOKENS) karena model 2.5 Flash
+// gemini-2.5-flash dihentikan Google untuk API key baru per 2026-09
+// ("no longer available to new users"), diganti ke gemini-3.6-flash
+// (masih ada free tier, format request/response generateContent SAMA
+// persis, tidak perlu ubah kode lain selain nama model ini).
+const DEFAULT_MODEL = "gemini-3.6-flash";
+// 8192 sering kena potong (finishReason MAX_TOKENS) karena model Flash
 // memakai sebagian token output untuk "thinking" internal sebelum menulis
-// HTML-nya. gemini-2.5-flash mendukung sampai 65535 token output; kita pakai
-// 48000 supaya longgar untuk thinking + HTML sekaligus tanpa mepet batas atas.
+// HTML-nya. Kita pakai 48000 supaya longgar untuk thinking + HTML sekaligus
+// tanpa mepet batas atas model.
 const MAX_OUTPUT_TOKENS = 48000;
 // Sempat dicoba mematikan thinking sepenuhnya (thinkingBudget: 0) untuk
 // menghindari truncation, TAPI ternyata menurunkan keandalan kode yang
