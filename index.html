@@ -44,6 +44,11 @@
   </div>
 </header>
 
+<div id="class-session-banner" class="class-session-banner" hidden>
+  <span id="class-session-text"></span>
+  <button type="button" id="class-session-go-btn" class="btn btn-primary btn-small">Ke sana sekarang</button>
+</div>
+
 <div class="layout">
   <button type="button" id="nav-toggle" class="nav-toggle" title="Pin/lepas menu topik" aria-label="Pin menu topik">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>
@@ -269,16 +274,15 @@
 <div id="chatbot-panel" class="chatbot-panel" hidden>
   <div class="chatbot-head">
     <div>
-      <h3>Tutor Fisika (offline)</h3>
+      <h3>Tutor Fisika</h3>
       <p class="muted small" id="chatbot-topic-label">Pilih topik dulu supaya tutor tahu konteksnya.</p>
     </div>
     <button type="button" id="chatbot-close-btn" class="icon-btn" aria-label="Tutup">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
     </button>
   </div>
-  <p class="muted small chatbot-disclaimer">Tutor ini berjalan sepenuhnya di perangkatmu (tanpa memanggil AI/internet), berdasarkan istilah kunci - bukan chatbot AI sungguhan. Ia akan lebih sering balik bertanya daripada langsung menjawab, supaya kamu yang berpikir duluan.</p>
+  <p class="muted small chatbot-disclaimer">Ceritakan pemahamanmu, tutor akan lebih sering balik bertanya dan menanggapi jawabanmu daripada langsung memberi jawaban jadi, supaya kamu yang berpikir duluan.</p>
   <div id="chatbot-messages" class="chatbot-messages"></div>
-  <div class="chatbot-chips" id="chatbot-chips"></div>
   <form id="chatbot-form" class="chatbot-form">
     <input type="text" id="chatbot-input" placeholder="Tulis pertanyaan atau istilah fisika..." autocomplete="off">
     <button type="submit" class="btn btn-primary btn-small">Kirim</button>
@@ -301,12 +305,23 @@
 
     <details class="advanced-settings">
       <summary>Kode Eksplorasi Bebas (dari guru)</summary>
-      <p class="muted small">Situs ini membuka topik & tab secara bertahap mengikuti urutan belajar. Punya kode khusus dari guru untuk menjelajah bebas (mis. eksplorasi mandiri di rumah)? Masukkan di sini.</p>
+      <p class="muted small">Kamu boleh mulai dari topik mana saja, tapi di dalam tiap topik, tab (Materi -> Eksperimen -> Latihan Soal -> Lab Simulasi) tetap dibuka bertahap mengikuti urutan belajar. Punya kode khusus dari guru untuk menjelajah bebas tanpa urutan (mis. eksplorasi mandiri di rumah)? Masukkan di sini.</p>
       <p class="muted small" id="unlock-status-text"></p>
       <div class="key-input-row">
         <input type="text" id="unlock-code-input" placeholder="Masukkan kode dari guru" autocomplete="off">
         <button type="button" id="unlock-code-btn" class="btn btn-primary btn-small">Buka Kunci</button>
       </div>
+    </details>
+
+    <details class="advanced-settings">
+      <summary>Sesi Kelas (dari guru)</summary>
+      <p class="muted small">Kalau gurumu sedang menjalankan sesi kelas langsung, semua siswa yang gabung akan mengerjakan aktivitas yang sama secara bersamaan. Masukkan kode yang dibagikan guru untuk gabung.</p>
+      <p class="muted small" id="class-session-status-text"></p>
+      <div class="key-input-row" id="class-session-join-row">
+        <input type="text" id="class-session-code-input" placeholder="Kode sesi dari guru" autocomplete="off">
+        <button type="button" id="class-session-join-btn" class="btn btn-primary btn-small">Gabung</button>
+      </div>
+      <button type="button" id="class-session-leave-btn" class="btn btn-secondary btn-small" hidden>Keluar dari Sesi</button>
     </details>
 
     <details class="advanced-settings">

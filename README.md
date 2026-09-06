@@ -16,12 +16,16 @@ Semua konten disusun mengikuti **25 topik silabus Cambridge International AS & A
 ```
 physics-sandbox/
 ├── index.html              -> halaman utama (satu halaman, semua topik)
+├── teacher.html            -> Panel Guru (kontrol sesi kelas + monitoring roster real-time)
 ├── css/style.css            -> tampilan
-├── js/config.js             -> URL backend AI (isi setelah deploy Apps Script)
+├── js/config.js             -> URL backend AI + Kode Eksplorasi Bebas (publik, isi setelah deploy Apps Script)
 ├── js/content.js            -> SEMUA konten topik (materi, eksperimen, latihan soal)
 ├── js/demo-simulations.js   -> simulasi jadi (eksperimen Kinematics + mode demo lab)
-├── js/app.js                -> logika situs (navigasi, tab, generator prompt, API key, dsb.)
-├── apps-script/Code.gs      -> backend relay ke Gemini API (dipasang terpisah di Google Apps Script)
+├── js/chatbot-data.js       -> bahan Tutor Fisika per topik (acuan AI + skrip cadangan offline)
+├── js/chatbot.js            -> logika Tutor Fisika (chat AI + fallback lokal)
+├── js/app.js                -> logika situs utama (navigasi bertahap, tab, generator prompt, sesi kelas, dsb.)
+├── js/teacher.js            -> logika Panel Guru
+├── apps-script/Code.gs      -> backend relay ke Gemini API + koordinasi sesi kelas (dipasang terpisah di Google Apps Script)
 ├── README.md                -> file ini
 └── CURRICULUM.md            -> peta 25 topik + status pengisian konten
 ```
@@ -88,7 +92,28 @@ Situs GitHub Pages bersifat statis (tidak bisa menyimpan API key dengan aman sen
 
 ---
 
-## 4. Menambah topik baru
+## 4. Navigasi bertahap, Tutor Fisika (chatbot), dan Panel Guru
+
+Tiga fitur ini butuh **satu langkah redeploy Apps Script** (lihat Bagian 3) supaya aktif, karena `apps-script/Code.gs` menambahkan mode `chat`, `session_sync`, `teacher_session`, dan `teacher_roster` di server. Kalau kamu sudah pernah deploy sebelumnya: buka https://script.google.com, buka project-nya, klik **Deploy -> Manage deployments -> Edit (ikon pensil) -> Version: New version -> Deploy**. URL `/exec` tetap sama, tidak perlu ganti `js/config.js` lagi.
+
+**Navigasi bertahap per topik.** Siswa boleh mulai dari topik mana saja (tidak perlu urut dari topik 1), tapi di dalam satu topik, empat tab (Materi -> Eksperimen -> Latihan Soal -> Lab Simulasi) tetap harus dibuka berurutan mengikuti sintaks Inquiry Learning. Guru bisa membagikan **Kode Eksplorasi Bebas** (`TEACHER_UNLOCK_CODE` di `js/config.js`, publik/tidak rahasia) ke siswa yang perlu menjelajah tanpa urutan, misalnya untuk eksplorasi mandiri di rumah.
+
+**Prompt lanjutan di Lab Simulasi.** Setelah simulasi pertama jadi, siswa bisa menulis instruksi edit tambahan (mis. "tambahkan grafik kecepatan") yang diterapkan ke kode yang sudah ada, dibatasi maksimal 5 kali edit per simulasi (`MAX_FOLLOWUP_EDITS` di `js/app.js`) - pakai endpoint backend yang sama seperti Generate.
+
+**Tutor Fisika (chatbot diskusi konsep).** Tombol bulat di kanan bawah setiap halaman topik. Kalau siswa sudah mengisi API key Gemini pribadinya (sama seperti Lab Simulasi), setiap pesan dikirim ke Gemini lewat mode `chat` di `Code.gs`, lengkap dengan riwayat obrolan dan bahan topik dari `js/chatbot-data.js` sebagai acuan, supaya tutor benar-benar menanggapi & mengevaluasi jawaban siswa (gaya Socratic) alih-alih cuma melanjutkan skrip tetap. Kalau API key belum diisi, tutor otomatis jatuh ke skrip tanya-jawab lokal berbasis kata kunci dari `js/chatbot-data.js` sebagai cadangan (tetap bisa dipakai, tapi kurang adaptif). Menambah/mengedit bahan topik: edit `CHATBOT_KB` di `js/chatbot-data.js`, ikuti pola topik yang sudah ada.
+
+**Panel Guru (`teacher.html`) - sesi kelas real-time.** Buka `teacher.html` di situs kamu (mis. `https://<username>.github.io/v4/teacher.html`). Login pakai `TEACHER_CONTROL_CODE` yang didefinisikan di `apps-script/Code.gs` (**wajib diganti dari nilai default**, lalu redeploy) - kode ini tersimpan di server, tidak pernah terlihat siswa lewat "View Source" situs, beda dari `TEACHER_UNLOCK_CODE` yang memang publik. Dari panel ini guru bisa:
+- Memulai sesi kelas: pilih topik + tab yang wajib dikerjakan semua siswa sekarang, dapat kode sesi acak untuk dibagikan (tulis di papan tulis).
+- Siswa gabung lewat tombol Pengaturan di situs utama (bagian "Sesi Kelas"), masukkan kode itu. Begitu gabung, mereka otomatis diarahkan ke aktivitas yang ditentukan, dan **tidak bisa membuka topik/tab lain** selama sesi aktif (mengalahkan Kode Eksplorasi Bebas juga) - supaya satu kelas benar-benar mengerjakan hal yang sama secara bersamaan.
+- Mengganti aktivitas kapan saja (mis. pindah dari Materi ke Eksperimen) - semua siswa yang gabung otomatis ikut pindah dalam ~12 detik (polling, bukan push notification sungguhan) tanpa perlu join ulang.
+- Memantau roster siswa (ID anonim, bukan nama - mis. "Siswa-A3F9", digenerate otomatis per perangkat) beserta aktivitas & waktu lapor terakhirnya, diperbarui otomatis tiap ~8 detik.
+- Mengakhiri sesi - semua siswa otomatis kembali ke mode belajar mandiri (navigasi bertahap per topik seperti biasa).
+
+Catatan: fitur ini pakai `PropertiesService` bawaan Apps Script sebagai penyimpanan (gratis, tanpa setup tambahan), jadi paling cocok untuk **satu kelas/rombel aktif dalam satu waktu**, bukan banyak kelas paralel dalam skala besar.
+
+---
+
+## 5. Menambah topik baru
 
 Semua 25 topik silabus sudah terdaftar di `js/content.js` (array `TOPICS`) dengan status `"soon"`. Untuk mengisi salah satu topik:
 
@@ -102,7 +127,7 @@ Tidak perlu mengubah `app.js` atau `index.html` sama sekali.
 
 ---
 
-## 5. Ide pengembangan lanjutan
+## 6. Ide pengembangan lanjutan
 
 - Menambahkan sistem akun siswa & pelacakan progres (misalnya via Google Sheets + Apps Script sebagai database ringan, atau Firebase untuk skala lebih besar).
 - Menyimpan simulasi hasil karya siswa (galeri kelas), bisa memakai Google Drive API dari Apps Script.

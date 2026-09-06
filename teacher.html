@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel Guru - Physics Sandbox</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22><circle cx=%2212%22 cy=%2212%22 r=%2210%22 fill=%22%230f172a%22/><circle cx=%2212%22 cy=%2212%22 r=%222.3%22 fill=%22%2338bdf8%22/><ellipse cx=%2212%22 cy=%2212%22 rx=%229%22 ry=%223.6%22 fill=%22none%22 stroke=%22%2338bdf8%22 stroke-width=%221.4%22/></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<style>
+  .teacher-wrap { max-width: 880px; margin: 0 auto; padding: 28px 20px 60px; }
+  .teacher-card { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 22px; margin-bottom: 20px; }
+  .teacher-card h2 { margin: 0 0 4px; font-size: 1.1rem; }
+  .teacher-card .muted { margin: 0 0 16px; }
+  .code-display { font-family: monospace; font-size: 2.2rem; letter-spacing: 0.12em; font-weight: 700; color: var(--accent); background: var(--panel-light); border: 1px dashed var(--border); border-radius: var(--radius-md); padding: 14px 20px; text-align: center; margin: 10px 0 16px; }
+  .field-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
+  .field-row > div { flex: 1; min-width: 200px; }
+  .field-row label { display: block; font-size: 0.82rem; color: var(--muted); margin-bottom: 5px; }
+  .field-row select, .field-row input { width: 100%; background: var(--panel-light); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text); padding: 9px 12px; font-size: 0.88rem; }
+  .teacher-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+  table.roster-table { width: 100%; border-collapse: collapse; font-size: 0.86rem; }
+  table.roster-table th, table.roster-table td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); }
+  table.roster-table th { color: var(--muted); font-weight: 600; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.03em; }
+  .status-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
+  .status-dot.online { background: var(--good); }
+  .status-dot.away { background: #f4b740; }
+  .status-dot.stale { background: var(--muted); }
+  .teacher-note { font-size: 0.8rem; color: var(--muted); margin-top: 6px; }
+  #teacher-login-card { max-width: 420px; margin: 60px auto; }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a href="index.html" class="brand" style="text-decoration:none;">
+      <span class="brand-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="2.3" fill="currentColor"/><ellipse cx="12" cy="12" rx="9.5" ry="3.8" fill="none" stroke="currentColor" stroke-width="1.4"/><ellipse cx="12" cy="12" rx="9.5" ry="3.8" fill="none" stroke="currentColor" stroke-width="1.4" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="9.5" ry="3.8" fill="none" stroke="currentColor" stroke-width="1.4" transform="rotate(120 12 12)"/></svg>
+      </span>
+      <span class="brand-text">
+        <span class="brand-title">Physics Sandbox</span>
+        <span class="brand-sub">Panel Guru - Sesi Kelas &amp; Monitoring</span>
+      </span>
+    </a>
+  </div>
+</header>
+
+<div class="teacher-wrap">
+
+  <div class="teacher-card" id="teacher-login-card">
+    <h2>Masuk Panel Guru</h2>
+    <p class="muted small">Masukkan Kode Kontrol Guru (diatur di <code>apps-script/Code.gs</code>, <code>TEACHER_CONTROL_CODE</code>).</p>
+    <div class="field-row">
+      <div>
+        <label>URL Backend (Apps Script Web App)</label>
+        <input type="text" id="teacher-backend-input" placeholder="https://script.google.com/macros/s/XXXX/exec">
+      </div>
+    </div>
+    <div class="field-row">
+      <div>
+        <label>Kode Kontrol Guru</label>
+        <input type="password" id="teacher-control-input" placeholder="Kode kontrol guru">
+      </div>
+    </div>
+    <div class="teacher-actions">
+      <button type="button" id="teacher-login-btn" class="btn btn-primary">Masuk</button>
+    </div>
+    <p class="teacher-note" id="teacher-login-status"></p>
+  </div>
+
+  <div id="teacher-panel" hidden>
+    <div class="teacher-card">
+      <h2>Sesi Kelas</h2>
+      <p class="muted small">Tentukan satu aktivitas yang wajib dikerjakan bareng semua siswa yang gabung. Siswa gabung lewat tombol Pengaturan di situs utama, masukkan kode di bawah.</p>
+
+      <div id="teacher-no-session">
+        <div class="field-row">
+          <div>
+            <label>Topik</label>
+            <select id="teacher-topic-select"></select>
+          </div>
+          <div>
+            <label>Tab</label>
+            <select id="teacher-tab-select">
+              <option value="0">Materi Belajar</option>
+              <option value="1">Eksperimen</option>
+              <option value="2">Latihan Soal</option>
+              <option value="3">Lab Simulasi Virtual</option>
+            </select>
+          </div>
+        </div>
+        <div class="teacher-actions">
+          <button type="button" id="teacher-start-btn" class="btn btn-primary">Mulai Sesi Baru</button>
+        </div>
+      </div>
+
+      <div id="teacher-has-session" hidden>
+        <p class="muted small">Kode untuk dibagikan ke siswa (tulis di papan tulis / sebutkan):</p>
+        <div class="code-display" id="teacher-code-display">------</div>
+        <div class="field-row">
+          <div>
+            <label>Topik aktif sekarang</label>
+            <select id="teacher-topic-select-2"></select>
+          </div>
+          <div>
+            <label>Tab aktif sekarang</label>
+            <select id="teacher-tab-select-2">
+              <option value="0">Materi Belajar</option>
+              <option value="1">Eksperimen</option>
+              <option value="2">Latihan Soal</option>
+              <option value="3">Lab Simulasi Virtual</option>
+            </select>
+          </div>
+        </div>
+        <div class="teacher-actions">
+          <button type="button" id="teacher-update-btn" class="btn btn-primary">Terapkan Perubahan</button>
+          <button type="button" id="teacher-end-btn" class="btn btn-secondary">Akhiri Sesi</button>
+        </div>
+      </div>
+      <p class="teacher-note" id="teacher-session-status"></p>
+    </div>
+
+    <div class="teacher-card">
+      <h2>Progres Siswa (real-time)</h2>
+      <p class="muted small">Diperbarui otomatis tiap ~8 detik. ID siswa bersifat anonim (tanpa nama), digenerate otomatis per perangkat.</p>
+      <div style="overflow-x:auto;">
+        <table class="roster-table">
+          <thead>
+            <tr><th>ID Siswa</th><th>Aktivitas sekarang</th><th>Terakhir lapor</th></tr>
+          </thead>
+          <tbody id="roster-body">
+            <tr><td colspan="3" class="muted small">Belum ada siswa yang gabung.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="teacher-note" id="roster-count"></p>
+    </div>
+  </div>
+
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/content.js"></script>
+<script src="js/teacher.js"></script>
+</body>
+</html>
