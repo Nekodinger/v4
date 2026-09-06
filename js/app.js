@@ -14,12 +14,14 @@ const MAX_FOLLOWUP_EDITS = 5;
 /* ============================================================
    Navigasi bertahap (sesuai sintaks pembelajaran)
    ------------------------------------------------------------
-   Topik dan tab di dalamnya (Materi -> Eksperimen -> Latihan
-   Soal -> Lab Simulasi Virtual) dibuka BERURUTAN, HANYA untuk
-   topik yang sudah berstatus "ready" (topik "soon" belum punya
-   konten jadi tidak digembok - tidak ada gunanya). Guru bisa
-   membagikan TEACHER_UNLOCK_CODE (di js/config.js) untuk siswa
-   yang perlu menjelajah bebas.
+   Kuncinya PER TOPIK, bukan antar-topik: siswa boleh mulai dari
+   topik mana saja (mis. langsung ke Magnetic Fields tanpa perlu
+   menyelesaikan Kinematics dulu), tapi begitu masuk ke sebuah
+   topik "ready", tab di dalamnya (Materi -> Eksperimen -> Latihan
+   Soal -> Lab Simulasi Virtual) tetap harus dibuka BERURUTAN
+   supaya sesuai sintaks inkuiri. Guru bisa membagikan
+   TEACHER_UNLOCK_CODE (di js/config.js) untuk siswa yang perlu
+   menjelajah bebas tanpa urutan sama sekali.
    ============================================================ */
 const TAB_ORDER = ["materi", "eksperimen", "latihan", "lab"];
 const TAB_LABELS = { materi: "Materi Belajar", eksperimen: "Eksperimen", latihan: "Latihan Soal", lab: "Lab Simulasi Virtual" };
@@ -38,28 +40,24 @@ function getReadyTopicsOrder() {
   return TOPICS.filter(t => t.status === "ready").sort((a, b) => a.number - b.number).map(t => t.id);
 }
 // Mengembalikan index tab tertinggi (di TAB_ORDER) yang boleh dibuka untuk
-// sebuah topik "ready", atau -1 kalau topiknya sendiri masih terkunci total
-// (karena topik "ready" sebelumnya di urutan belum selesai dijelajahi).
+// sebuah topik. Setiap topik "ready" SELALU boleh dimulai (index 0 = tab
+// Materi), tidak bergantung pada progres topik lain sama sekali.
 function getUnlockedTabIndex(topicId) {
   if (isUnlockAll()) return TAB_ORDER.length - 1;
   const progress = getProgress();
-  if (progress[topicId] !== undefined) return progress[topicId];
-  const order = getReadyTopicsOrder();
-  const idx = order.indexOf(topicId);
-  if (idx <= 0) return 0; // topik "ready" pertama, atau bukan bagian urutan ready -> tidak digembok
-  const prevProgress = progress[order[idx - 1]];
-  return (prevProgress !== undefined && prevProgress >= TAB_ORDER.length - 1) ? 0 : -1;
-}
-function isTopicLocked(topicId) {
-  const topic = TOPICS.find(t => t.id === topicId);
-  if (!topic || topic.status !== "ready") return false;
-  return getUnlockedTabIndex(topicId) < 0;
+  return progress[topicId] !== undefined ? progress[topicId] : 0;
 }
 function isTabLocked(topicId, tabName) {
   const topic = TOPICS.find(t => t.id === topicId);
   if (!topic || topic.status !== "ready") return false;
+  // Sesi kelas aktif (dari guru) mengalahkan semua gembok lain (termasuk
+  // Kode Eksplorasi Bebas) - selama tergabung, HANYA tab yang sedang
+  // ditentukan guru untuk topik ini yang boleh dibuka.
+  if (isInClassSession()) {
+    if (topicId !== classSession.topicId) return true;
+    return TAB_ORDER.indexOf(tabName) !== classSession.tabIndex;
+  }
   const unlocked = getUnlockedTabIndex(topicId);
-  if (unlocked < 0) return true;
   return TAB_ORDER.indexOf(tabName) > unlocked;
 }
 function advanceProgress(topicId, tabIndexReached) {
@@ -74,6 +72,164 @@ function nextReadyTopicId(topicId) {
   if (idx < 0 || idx >= order.length - 1) return null;
   return order[idx + 1];
 }
+
+/* ============================================================
+   Sesi Kelas (real-time, dari Panel Guru)
+   ------------------------------------------------------------
+   Kalau guru sedang menjalankan sesi kelas dan siswa sudah gabung
+   (memasukkan kode lewat Pengaturan), browser siswa polling
+   backend tiap ~12 detik: melaporkan aktivitas mereka saat ini
+   (buat panel guru) DAN mengambil aktivitas yang sedang WAJIB
+   dikerjakan bareng. Selama tergabung & sesi aktif, ini
+   MENGALAHKAN semua gembok lain (isTabLocked di atas sudah
+   menangani ini) - topik lain juga disembunyikan/dikunci di
+   renderNav supaya siswa benar-benar fokus ke satu aktivitas.
+   ============================================================ */
+const STORAGE_KEY_STUDENT_ID = "physicsSandbox.studentId";
+const STORAGE_KEY_CLASS_CODE = "physicsSandbox.classSessionCode";
+const CLASS_SYNC_INTERVAL_MS = 12000;
+
+let classSession = null; // {active, code, topicId, tabIndex, updatedAt} dari server terakhir
+let classSyncTimer = null;
+let lastClassActivityKey = null; // untuk deteksi kapan guru GANTI aktivitas
+
+function getStudentId() {
+  let id = localStorage.getItem(STORAGE_KEY_STUDENT_ID);
+  if (!id) {
+    const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+    let suffix = "";
+    for (let i = 0; i < 4; i++) suffix += chars.charAt(Math.floor(Math.random() * chars.length));
+    id = "Siswa-" + suffix;
+    localStorage.setItem(STORAGE_KEY_STUDENT_ID, id);
+  }
+  return id;
+}
+function getJoinedSessionCode() {
+  return (localStorage.getItem(STORAGE_KEY_CLASS_CODE) || "").trim();
+}
+function isInClassSession() {
+  return !!(classSession && classSession.active && getJoinedSessionCode() &&
+    classSession.code && classSession.code.toUpperCase() === getJoinedSessionCode().toUpperCase());
+}
+function leaveClassSession(message) {
+  localStorage.removeItem(STORAGE_KEY_CLASS_CODE);
+  classSession = null;
+  lastClassActivityKey = null;
+  stopClassSync();
+  renderNav();
+  if (currentTopic) {
+    const activeTab = document.querySelector(".tab-btn.active")?.dataset.tab;
+    if (activeTab) updateTopicProgressUI(activeTab);
+  }
+  refreshClassSessionUI();
+  updateClassSessionBanner();
+  if (message) showToast(message);
+}
+function stopClassSync() {
+  if (classSyncTimer) { clearInterval(classSyncTimer); classSyncTimer = null; }
+}
+function startClassSync() {
+  stopClassSync();
+  syncClassSession();
+  classSyncTimer = setInterval(syncClassSession, CLASS_SYNC_INTERVAL_MS);
+}
+async function syncClassSession() {
+  const backendUrl = getBackendUrl();
+  const code = getJoinedSessionCode();
+  if (!backendUrl || !code) return;
+  try {
+    const activeTabName = document.querySelector(".tab-btn.active")?.dataset.tab;
+    const resp = await fetch(backendUrl, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain" },
+      body: JSON.stringify({
+        mode: "session_sync",
+        code: code,
+        studentId: getStudentId(),
+        topicId: currentTopic ? currentTopic.id : null,
+        tabIndex: activeTabName ? TAB_ORDER.indexOf(activeTabName) : null
+      })
+    });
+    const data = await resp.json();
+    if (!data.active || !data.code || data.code.toUpperCase() !== code.toUpperCase()) {
+      leaveClassSession("Sesi kelas sudah berakhir - kamu kembali ke mode belajar mandiri.");
+      return;
+    }
+    classSession = data;
+    const activityKey = data.topicId + "|" + data.tabIndex;
+    const changed = activityKey !== lastClassActivityKey;
+    lastClassActivityKey = activityKey;
+    renderNav();
+    updateClassSessionBanner();
+    if (currentTopic) {
+      const tabName = document.querySelector(".tab-btn.active")?.dataset.tab;
+      if (tabName) updateTopicProgressUI(tabName);
+    }
+    // Baru gabung, atau guru baru saja ganti aktivitas -> langsung antar
+    // siswa ke sana supaya semua benar-benar mulai bersamaan.
+    if (changed) goToClassSessionActivity();
+  } catch (err) {
+    // Gagal konek sesekali (jaringan) bukan hal fatal - coba lagi di
+    // polling berikutnya, jangan spam toast tiap 12 detik.
+  }
+}
+function goToClassSessionActivity() {
+  if (!isInClassSession() || !classSession.topicId) return;
+  const tabName = TAB_ORDER[classSession.tabIndex] || "materi";
+  if (!currentTopic || currentTopic.id !== classSession.topicId) {
+    selectTopic(classSession.topicId); // aman: id di sini SAMA dengan tujuan yang diizinkan sesi
+  }
+  if (document.querySelector(".tab-btn.active")?.dataset.tab !== tabName) {
+    switchTab(tabName);
+  }
+  updateClassSessionBanner();
+}
+function updateClassSessionBanner() {
+  const banner = document.getElementById("class-session-banner");
+  const textEl = document.getElementById("class-session-text");
+  if (!isInClassSession() || !classSession.topicId) { banner.hidden = true; return; }
+  const topic = TOPICS.find(t => t.id === classSession.topicId);
+  const tabLabel = TAB_LABELS[TAB_ORDER[classSession.tabIndex]] || "";
+  const onTarget = currentTopic && currentTopic.id === classSession.topicId &&
+    document.querySelector(".tab-btn.active")?.dataset.tab === TAB_ORDER[classSession.tabIndex];
+  if (onTarget) { banner.hidden = true; return; }
+  textEl.textContent = `Sesi kelas aktif - guru meminta semua mengerjakan: ${topic ? topic.title : ""} - ${tabLabel} sekarang.`;
+  banner.hidden = false;
+}
+document.getElementById("class-session-go-btn").addEventListener("click", goToClassSessionActivity);
+
+function refreshClassSessionUI() {
+  const statusText = document.getElementById("class-session-status-text");
+  const joinRow = document.getElementById("class-session-join-row");
+  const leaveBtn = document.getElementById("class-session-leave-btn");
+  if (!statusText) return;
+  if (isInClassSession()) {
+    statusText.textContent = "Tergabung dalam sesi kelas - navigasi mengikuti aktivitas yang ditentukan guru.";
+    statusText.classList.add("ok");
+    joinRow.hidden = true;
+    leaveBtn.hidden = false;
+  } else {
+    statusText.textContent = "Belum gabung sesi kelas manapun.";
+    statusText.classList.remove("ok");
+    joinRow.hidden = false;
+    leaveBtn.hidden = true;
+  }
+}
+document.getElementById("class-session-join-btn").addEventListener("click", () => {
+  const input = document.getElementById("class-session-code-input");
+  const val = input.value.trim();
+  if (!val) return;
+  localStorage.setItem(STORAGE_KEY_CLASS_CODE, val);
+  input.value = "";
+  startClassSync();
+  refreshClassSessionUI();
+});
+document.getElementById("class-session-leave-btn").addEventListener("click", () => {
+  leaveClassSession(null);
+});
+// Kalau perangkat ini sebelumnya sudah gabung sesi (kode tersimpan), lanjutkan
+// polling begitu halaman dimuat lagi tanpa perlu memasukkan kode ulang.
+if (getJoinedSessionCode()) startClassSync();
 
 let toastTimer = null;
 function showToast(message) {
@@ -155,20 +311,16 @@ function renderNav() {
 
     TOPICS.filter(t => t.level === level).forEach(topic => {
       const btn = document.createElement("button");
-      const locked = isTopicLocked(topic.id);
-      btn.className = "nav-item" + (locked ? " locked" : "");
+      const blocked = isInClassSession() && topic.id !== classSession.topicId;
+      const isSessionFocus = isInClassSession() && topic.id === classSession.topicId;
+      btn.className = "nav-item" + (blocked ? " session-locked" : "") + (isSessionFocus ? " session-active" : "");
       btn.dataset.id = topic.id;
       btn.innerHTML =
         `<span class="dot ${topic.status === 'ready' ? 'dot-ready' : 'dot-soon'}"></span>` +
         `<span class="num">${topic.number}.</span>` +
         `<span class="label">${topic.title}</span>` +
-        (locked ? `<svg class="lock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10.5" width="15" height="9.5" rx="1.6"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg>` : "");
+        (isSessionFocus ? `<span class="session-dot" title="Aktivitas kelas sekarang"></span>` : "");
       btn.addEventListener("click", () => {
-        if (isTopicLocked(topic.id)) {
-          showToast("Selesaikan topik sebelumnya dulu, atau masukkan Kode Eksplorasi Bebas dari guru lewat tombol Pengaturan.");
-          btn.blur();
-          return;
-        }
         selectTopic(topic.id);
         btn.blur();
       });
@@ -178,8 +330,8 @@ function renderNav() {
 }
 
 function selectTopic(id) {
-  if (isTopicLocked(id)) {
-    showToast("Selesaikan topik sebelumnya dulu, atau masukkan Kode Eksplorasi Bebas dari guru lewat tombol Pengaturan.");
+  if (isInClassSession() && id !== classSession.topicId) {
+    showToast("Ada sesi kelas aktif - ikuti aktivitas yang sedang ditentukan guru dulu.");
     return;
   }
   currentTopic = TOPICS.find(t => t.id === id);
@@ -309,10 +461,10 @@ function updateTopicProgressUI(activeTab) {
   }).join(`<span class="progress-step-line"></span>`);
 
   const isLastTab = activeIdx === TAB_ORDER.length - 1;
-  const nextLockedTopic = nextReadyTopicId(currentTopic.id);
+  const nextTopicId = nextReadyTopicId(currentTopic.id);
   if (isLastTab) {
     nextBtn.hidden = true;
-    finishBtn.hidden = !nextLockedTopic || isUnlockAll();
+    finishBtn.hidden = !nextTopicId || isUnlockAll();
   } else if (activeIdx === unlocked) {
     finishBtn.hidden = true;
     nextBtn.hidden = false;
@@ -728,6 +880,7 @@ function openSettingsModal() {
   document.getElementById("backend-url-input").value = getBackendUrl();
   document.getElementById("settings-key-input").value = getGeminiApiKey();
   refreshUnlockStatusUI();
+  refreshClassSessionUI();
   settingsModal.hidden = false;
 }
 document.getElementById("settings-btn").addEventListener("click", openSettingsModal);

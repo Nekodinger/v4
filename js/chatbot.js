@@ -1,20 +1,42 @@
 /* ============================================================
    chatbot.js
-   Tutor Fisika offline: pencocokan kata kunci sederhana di
-   browser (TANPA memanggil AI/internet apa pun), memakai bahan
-   dari js/chatbot-data.js. Gaya balasannya sengaja Socratic:
-   saat sebuah konsep pertama kali terdeteksi, tutor BERTANYA
-   BALIK dulu; baru saat siswa membalas lagi, tutor mengungkap
-   penjelasan singkat + pertanyaan lanjutan.
+   Tutor Fisika: diskusi konsep gaya Socratic.
+   ------------------------------------------------------------
+   Kalau siswa sudah memasukkan API key Gemini pribadinya (sama
+   seperti yang dipakai tab Lab Simulasi Virtual) DAN backend
+   sudah dikonfigurasi: setiap pesan dikirim ke tutor AI lewat
+   backend yang sama (mode "chat"), lengkap dengan riwayat obrolan
+   supaya tutor benar-benar menanggapi & mengevaluasi jawaban
+   siswa, bukan cuma melanjutkan skrip tetap. Bahan dari
+   js/chatbot-data.js dikirim sebagai acuan supaya jawaban AI
+   tetap konsisten dengan materi yang sudah ada di situs.
+
+   Kalau API key/backend belum ada: dipakai skrip tanya-jawab
+   lokal berbasis pencocokan kata kunci sederhana (dari
+   js/chatbot-data.js) sebagai cadangan, supaya tutor tetap bisa
+   dipakai.
    ============================================================ */
 
 window.Chatbot = (function () {
   let topicId = null;
-  let pendingConcept = null; // concept yang sedang menunggu balasan siswa
+  let pendingConcept = null; // dipakai skrip lokal (fallback)
+  let history = []; // riwayat obrolan giliran-AI: [{role:"user"|"model", text}]
   let initialized = false;
+  let nudgedForKey = false; // supaya ajakan isi API key cuma muncul sekali
+  let sending = false;
 
   function currentKB() {
     return (topicId && CHATBOT_KB[topicId]) ? CHATBOT_KB[topicId] : CHATBOT_KB.general;
+  }
+
+  function currentTopicTitle() {
+    const topic = (typeof TOPICS !== "undefined" ? TOPICS : []).find(t => t.id === topicId);
+    return topic ? topic.title : "Fisika Umum";
+  }
+
+  function buildKbContext(kb) {
+    if (!kb || !Array.isArray(kb.concepts)) return "";
+    return kb.concepts.map(c => "- " + c.explain).join("\n");
   }
 
   function normalize(text) {
@@ -23,6 +45,7 @@ window.Chatbot = (function () {
 
   // Cocokkan pesan siswa ke concept dengan skor keyword terbanyak yang cocok
   // (substring sederhana, bukan NLP). Mengembalikan concept terbaik atau null.
+  // Dipakai HANYA di jalur fallback lokal (tanpa API key).
   function matchConcept(message) {
     const text = normalize(message);
     const kb = currentKB();
@@ -48,27 +71,77 @@ window.Chatbot = (function () {
     if (role === "bot" && window.MathJax && window.MathJax.typesetPromise) {
       window.MathJax.typesetPromise([msg]);
     }
+    return msg;
   }
 
-  function renderChips() {
-    const chipsEl = document.getElementById("chatbot-chips");
-    const kb = currentKB();
-    chipsEl.innerHTML = "";
-    (kb.chips || []).forEach(text => {
-      const chip = document.createElement("button");
-      chip.type = "button";
-      chip.className = "chatbot-chip";
-      chip.textContent = text;
-      chip.addEventListener("click", () => handleUserMessage(text));
-      chipsEl.appendChild(chip);
-    });
+  function setSending(state) {
+    sending = state;
+    const input = document.getElementById("chatbot-input");
+    const btn = document.querySelector("#chatbot-form button[type=submit]");
+    if (input) input.disabled = state;
+    if (btn) btn.disabled = state;
   }
 
-  function handleUserMessage(text) {
+  async function handleUserMessage(text) {
     text = (text || "").trim();
-    if (!text) return;
+    if (!text || sending) return;
     appendMessage("user", escapeHTML(text));
 
+    const apiKey = (typeof getGeminiApiKey === "function") ? getGeminiApiKey() : "";
+    const backendUrl = (typeof getBackendUrl === "function") ? getBackendUrl() : "";
+
+    if (apiKey && backendUrl) {
+      await askTutor(text, backendUrl, apiKey);
+    } else {
+      if (!nudgedForKey) {
+        nudgedForKey = true;
+        appendMessage("bot", "Supaya aku bisa menanggapi jawabanmu secara lebih natural dan spesifik, masukkan API key Gemini gratis milikmu lewat tombol Pengaturan di header. Untuk sekarang aku bantu pakai catatan topik ini dulu.");
+      }
+      handleLocalFallback(text);
+    }
+  }
+
+  async function askTutor(message, backendUrl, apiKey) {
+    setSending(true);
+    const typingEl = appendMessage("bot", "<em>mengetik…</em>");
+    try {
+      const resp = await fetch(backendUrl, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain" },
+        body: JSON.stringify({
+          mode: "chat",
+          apiKey: apiKey,
+          topic: currentTopicTitle(),
+          kbContext: buildKbContext(currentKB()),
+          history: history,
+          message: message
+        })
+      });
+      const data = await resp.json();
+      typingEl.remove();
+      if (data.error) {
+        appendMessage("bot", escapeHTML(data.error));
+        return;
+      }
+      const reply = (data.reply || "").trim();
+      if (!reply) {
+        appendMessage("bot", "Maaf, aku tidak bisa merespons barusan. Coba kirim lagi.");
+        return;
+      }
+      appendMessage("bot", escapeHTML(reply).replace(/\n/g, "<br>"));
+      history.push({ role: "user", text: message });
+      history.push({ role: "model", text: reply });
+      if (history.length > 24) history = history.slice(-24);
+    } catch (err) {
+      typingEl.remove();
+      appendMessage("bot", "Gagal terhubung ke tutor barusan (" + escapeHTML(err.message) + "). Coba kirim lagi.");
+    } finally {
+      setSending(false);
+    }
+  }
+
+  // ---- Jalur cadangan (tanpa API key): skrip Socratic 2-giliran lokal ----
+  function handleLocalFallback(text) {
     const matched = matchConcept(text);
 
     if (matched && (!pendingConcept || pendingConcept.id !== matched.id)) {
@@ -86,8 +159,7 @@ window.Chatbot = (function () {
     }
 
     // Tidak ada konsep yang cocok sama sekali.
-    appendMessage("bot", "Aku belum kenali istilah fisika spesifik di pesanmu (tutor ini cuma mencocokkan kata kunci, bukan AI beneran). Coba sebutkan istilahnya langsung, misalnya salah satu dari contoh pertanyaan di bawah ini.");
-    renderChips();
+    appendMessage("bot", "Coba ceritakan lebih spesifik, atau sebutkan istilah fisikanya langsung supaya aku bisa bantu.");
   }
 
   function escapeHTML(str) {
@@ -112,13 +184,13 @@ window.Chatbot = (function () {
     setTopic(id) {
       topicId = id;
       pendingConcept = null;
+      history = [];
       const label = document.getElementById("chatbot-topic-label");
       const kb = currentKB();
       const topic = (typeof TOPICS !== "undefined" ? TOPICS : []).find(t => t.id === id);
       label.textContent = (topic && CHATBOT_KB[id])
         ? `Konteks: ${topic.title}`
         : "Belum ada bahan khusus untuk topik ini - tutor menjawab secara umum.";
-      renderChips();
       // Kalau panel sedang terbuka, mulai percakapan baru untuk topik ini.
       if (!document.getElementById("chatbot-panel").hidden) {
         document.getElementById("chatbot-messages").innerHTML = "";
@@ -130,7 +202,6 @@ window.Chatbot = (function () {
       const wrap = document.getElementById("chatbot-messages");
       if (wrap.children.length === 0) {
         appendMessage("bot", escapeHTML(currentKB().greeting));
-        renderChips();
       }
     }
   };

@@ -1,12 +1,15 @@
 /* ============================================================
    chatbot-data.js
-   Bahan (knowledge base) untuk Tutor Fisika offline.
+   Bahan (knowledge base) untuk Tutor Fisika.
    ------------------------------------------------------------
-   PENTING: Ini BUKAN chatbot AI. Semua teks di bawah ditulis
-   manual (bukan hasil salin-tempel dari buku manapun) dan
-   dicocokkan ke pertanyaan siswa lewat kata kunci sederhana di
-   js/chatbot.js - jalan 100% di browser, tanpa memanggil API/AI
-   apa pun, supaya tidak makan kuota/token AI sama sekali.
+   Semua teks di bawah ditulis manual (bukan hasil salin-tempel
+   dari buku manapun). Dipakai dengan dua cara oleh js/chatbot.js:
+   1. Kalau API key Gemini tersedia: dikirim sebagai "kbContext"
+      (bahan acuan) ke tutor AI lewat backend, supaya jawaban AI
+      tetap konsisten dengan materi yang sudah diajarkan di situs.
+   2. Kalau API key belum diisi: dipakai langsung sebagai skrip
+      tanya-jawab lokal (fallback) lewat pencocokan kata kunci
+      sederhana, supaya tutor tetap bisa dipakai walau tanpa key.
 
    Cara menambah topik baru: tambahkan entri baru dengan key =
    id topik (harus sama dengan id di TOPICS pada content.js),
@@ -24,7 +27,7 @@
 const CHATBOT_KB = {
 
   kinematics: {
-    greeting: "Halo! Aku tutor offline untuk topik Kinematics. Ceritakan dulu apa yang membingungkan, atau ketik istilah fisikanya (mis. \"perpindahan\" atau \"GLBB\").",
+    greeting: "Halo! Aku tutor fisikamu untuk topik Kinematics. Ceritakan dulu apa yang membingungkan, atau ketik istilah fisikanya (mis. \"perpindahan\" atau \"GLBB\").",
     chips: [
       "Apa bedanya jarak dan perpindahan?",
       "Kenapa luas di bawah grafik v-t itu perpindahan?",
@@ -85,7 +88,7 @@ const CHATBOT_KB = {
   },
 
   "magnetic-fields": {
-    greeting: "Halo! Aku tutor offline untuk topik Magnetic Fields. Coba ketik istilah fisikanya (mis. \"gaya lorentz\", \"fluks\", \"hukum lenz\") atau ceritakan dulu apa yang bikin bingung.",
+    greeting: "Halo! Aku tutor fisikamu untuk topik Magnetic Fields. Coba ketik istilah fisikanya (mis. \"gaya lorentz\", \"fluks\", \"hukum lenz\") atau ceritakan dulu apa yang bikin bingung.",
     chips: [
       "Kenapa pakai kaidah tangan kanan vs tangan kiri, apa bedanya?",
       "Kenapa muatan bergerak dalam medan magnet lintasannya melingkar?",
@@ -146,7 +149,7 @@ const CHATBOT_KB = {
   },
 
   general: {
-    greeting: "Halo! Aku tutor fisika offline (berjalan tanpa AI/internet, murni berbasis kata kunci). Pilih topik dulu di sidebar supaya aku tahu konteksnya, atau langsung ketik istilah fisika yang ingin kamu diskusikan.",
+    greeting: "Halo! Aku tutor fisikamu. Pilih topik dulu di sidebar supaya aku tahu konteksnya, atau langsung ketik istilah fisika yang ingin kamu diskusikan.",
     chips: ["Apa itu besaran vektor?", "Bagaimana cara belajar fisika yang efektif?"],
     concepts: [
       {
