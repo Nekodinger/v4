@@ -4,8 +4,91 @@
 
 const STORAGE_KEY_BACKEND = "physicsSandbox.backendUrl";
 const STORAGE_KEY_GEMINI = "physicsSandbox.geminiApiKey";
+const STORAGE_KEY_PROGRESS = "physicsSandbox.progress";
+const STORAGE_KEY_UNLOCK_ALL = "physicsSandbox.unlockAll";
 let currentTopic = null;
 let lastGeneratedHTML = "";
+let editCount = 0;
+const MAX_FOLLOWUP_EDITS = 5;
+
+/* ============================================================
+   Navigasi bertahap (sesuai sintaks pembelajaran)
+   ------------------------------------------------------------
+   Topik dan tab di dalamnya (Materi -> Eksperimen -> Latihan
+   Soal -> Lab Simulasi Virtual) dibuka BERURUTAN, HANYA untuk
+   topik yang sudah berstatus "ready" (topik "soon" belum punya
+   konten jadi tidak digembok - tidak ada gunanya). Guru bisa
+   membagikan TEACHER_UNLOCK_CODE (di js/config.js) untuk siswa
+   yang perlu menjelajah bebas.
+   ============================================================ */
+const TAB_ORDER = ["materi", "eksperimen", "latihan", "lab"];
+const TAB_LABELS = { materi: "Materi Belajar", eksperimen: "Eksperimen", latihan: "Latihan Soal", lab: "Lab Simulasi Virtual" };
+
+function isUnlockAll() {
+  return localStorage.getItem(STORAGE_KEY_UNLOCK_ALL) === "true";
+}
+function getProgress() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY_PROGRESS) || "{}"); }
+  catch (e) { return {}; }
+}
+function saveProgress(p) {
+  localStorage.setItem(STORAGE_KEY_PROGRESS, JSON.stringify(p));
+}
+function getReadyTopicsOrder() {
+  return TOPICS.filter(t => t.status === "ready").sort((a, b) => a.number - b.number).map(t => t.id);
+}
+// Mengembalikan index tab tertinggi (di TAB_ORDER) yang boleh dibuka untuk
+// sebuah topik "ready", atau -1 kalau topiknya sendiri masih terkunci total
+// (karena topik "ready" sebelumnya di urutan belum selesai dijelajahi).
+function getUnlockedTabIndex(topicId) {
+  if (isUnlockAll()) return TAB_ORDER.length - 1;
+  const progress = getProgress();
+  if (progress[topicId] !== undefined) return progress[topicId];
+  const order = getReadyTopicsOrder();
+  const idx = order.indexOf(topicId);
+  if (idx <= 0) return 0; // topik "ready" pertama, atau bukan bagian urutan ready -> tidak digembok
+  const prevProgress = progress[order[idx - 1]];
+  return (prevProgress !== undefined && prevProgress >= TAB_ORDER.length - 1) ? 0 : -1;
+}
+function isTopicLocked(topicId) {
+  const topic = TOPICS.find(t => t.id === topicId);
+  if (!topic || topic.status !== "ready") return false;
+  return getUnlockedTabIndex(topicId) < 0;
+}
+function isTabLocked(topicId, tabName) {
+  const topic = TOPICS.find(t => t.id === topicId);
+  if (!topic || topic.status !== "ready") return false;
+  const unlocked = getUnlockedTabIndex(topicId);
+  if (unlocked < 0) return true;
+  return TAB_ORDER.indexOf(tabName) > unlocked;
+}
+function advanceProgress(topicId, tabIndexReached) {
+  const progress = getProgress();
+  const current = progress[topicId] !== undefined ? progress[topicId] : -1;
+  progress[topicId] = Math.max(current, Math.min(tabIndexReached, TAB_ORDER.length - 1));
+  saveProgress(progress);
+}
+function nextReadyTopicId(topicId) {
+  const order = getReadyTopicsOrder();
+  const idx = order.indexOf(topicId);
+  if (idx < 0 || idx >= order.length - 1) return null;
+  return order[idx + 1];
+}
+
+let toastTimer = null;
+function showToast(message) {
+  let toast = document.getElementById("app-toast");
+  if (!toast) {
+    toast = document.createElement("div");
+    toast.id = "app-toast";
+    toast.className = "app-toast";
+    document.body.appendChild(toast);
+  }
+  toast.textContent = message;
+  toast.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.remove("show"), 3200);
+}
 
 function getBackendUrl() {
   return localStorage.getItem(STORAGE_KEY_BACKEND) || DEFAULT_BACKEND_URL || "";
@@ -72,19 +155,33 @@ function renderNav() {
 
     TOPICS.filter(t => t.level === level).forEach(topic => {
       const btn = document.createElement("button");
-      btn.className = "nav-item";
+      const locked = isTopicLocked(topic.id);
+      btn.className = "nav-item" + (locked ? " locked" : "");
       btn.dataset.id = topic.id;
       btn.innerHTML =
         `<span class="dot ${topic.status === 'ready' ? 'dot-ready' : 'dot-soon'}"></span>` +
         `<span class="num">${topic.number}.</span>` +
-        `<span class="label">${topic.title}</span>`;
-      btn.addEventListener("click", () => { selectTopic(topic.id); btn.blur(); });
+        `<span class="label">${topic.title}</span>` +
+        (locked ? `<svg class="lock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10.5" width="15" height="9.5" rx="1.6"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg>` : "");
+      btn.addEventListener("click", () => {
+        if (isTopicLocked(topic.id)) {
+          showToast("Selesaikan topik sebelumnya dulu, atau masukkan Kode Eksplorasi Bebas dari guru lewat tombol Pengaturan.");
+          btn.blur();
+          return;
+        }
+        selectTopic(topic.id);
+        btn.blur();
+      });
       nav.appendChild(btn);
     });
   });
 }
 
 function selectTopic(id) {
+  if (isTopicLocked(id)) {
+    showToast("Selesaikan topik sebelumnya dulu, atau masukkan Kode Eksplorasi Bebas dari guru lewat tombol Pengaturan.");
+    return;
+  }
   currentTopic = TOPICS.find(t => t.id === id);
   if (!currentTopic) return;
 
@@ -108,6 +205,8 @@ function selectTopic(id) {
   renderEksperimen();
   renderLatihan();
   setupLabForTopic();
+
+  if (window.Chatbot) Chatbot.setTopic(currentTopic.id);
 
   // selalu kembali ke tab pertama saat pindah topik
   switchTab("materi");
@@ -161,11 +260,76 @@ function scheduleHideSidebarPeek() {
 
 /* ---------------- Tabs ---------------- */
 function switchTab(tabName) {
+  if (currentTopic && isTabLocked(currentTopic.id, tabName)) {
+    showToast("Selesaikan tab sebelumnya dulu supaya sesuai urutan belajar, atau masukkan Kode Eksplorasi Bebas dari guru.");
+    return;
+  }
   document.querySelectorAll(".tab-btn").forEach(b => b.classList.toggle("active", b.dataset.tab === tabName));
   document.querySelectorAll(".tab-panel").forEach(p => p.classList.toggle("active", p.id === "panel-" + tabName));
+  if (currentTopic) {
+    updateTopicProgressUI(tabName);
+    renderNav(); // status gembok topik lain di sidebar bisa berubah (mis. topik ini baru selesai)
+    document.querySelectorAll(".nav-item").forEach(el => el.classList.toggle("active", currentTopic && el.dataset.id === currentTopic.id));
+  }
 }
 document.querySelectorAll(".tab-btn").forEach(btn => {
-  btn.addEventListener("click", () => switchTab(btn.dataset.tab));
+  btn.addEventListener("click", () => {
+    if (currentTopic && isTabLocked(currentTopic.id, btn.dataset.tab)) {
+      showToast("Selesaikan tab sebelumnya dulu supaya sesuai urutan belajar, atau masukkan Kode Eksplorasi Bebas dari guru.");
+      return;
+    }
+    switchTab(btn.dataset.tab);
+  });
+});
+
+/* ---------------- Progress bar bertahap ---------------- */
+function updateTopicProgressUI(activeTab) {
+  const bar = document.getElementById("topic-progress");
+  const stepsEl = document.getElementById("progress-steps");
+  const nextBtn = document.getElementById("progress-next-btn");
+  const finishBtn = document.getElementById("progress-finish-btn");
+  if (!currentTopic || currentTopic.status !== "ready") {
+    bar.hidden = true;
+    document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("locked"));
+    return;
+  }
+
+  const unlocked = isUnlockAll() ? TAB_ORDER.length - 1 : getUnlockedTabIndex(currentTopic.id);
+  const activeIdx = TAB_ORDER.indexOf(activeTab);
+  document.querySelectorAll(".tab-btn").forEach(b => {
+    b.classList.toggle("locked", isTabLocked(currentTopic.id, b.dataset.tab));
+  });
+  bar.hidden = false;
+  stepsEl.innerHTML = TAB_ORDER.map((tab, i) => {
+    let state;
+    if (i === activeIdx) state = "current";
+    else if (i < activeIdx) state = "done";
+    else state = (i <= unlocked) ? "unlocked" : "locked";
+    return `<span class="progress-step ${state}"><span class="progress-step-dot"></span>${TAB_LABELS[tab]}</span>`;
+  }).join(`<span class="progress-step-line"></span>`);
+
+  const isLastTab = activeIdx === TAB_ORDER.length - 1;
+  const nextLockedTopic = nextReadyTopicId(currentTopic.id);
+  if (isLastTab) {
+    nextBtn.hidden = true;
+    finishBtn.hidden = !nextLockedTopic || isUnlockAll();
+  } else if (activeIdx === unlocked) {
+    finishBtn.hidden = true;
+    nextBtn.hidden = false;
+    document.getElementById("progress-next-label").textContent = TAB_LABELS[TAB_ORDER[activeIdx + 1]];
+  } else {
+    nextBtn.hidden = true;
+    finishBtn.hidden = true;
+  }
+}
+document.getElementById("progress-next-btn").addEventListener("click", () => {
+  const activeIdx = TAB_ORDER.indexOf(document.querySelector(".tab-btn.active").dataset.tab);
+  if (currentTopic) advanceProgress(currentTopic.id, activeIdx + 1);
+  switchTab(TAB_ORDER[activeIdx + 1]);
+});
+document.getElementById("progress-finish-btn").addEventListener("click", () => {
+  const nextId = currentTopic ? nextReadyTopicId(currentTopic.id) : null;
+  if (nextId) selectTopic(nextId);
 });
 
 /* ---------------- Panel: Materi ---------------- */
@@ -259,7 +423,28 @@ function setupLabForTopic() {
   document.getElementById("generate-status").textContent = "";
   document.getElementById("mode-banner").hidden = true;
   ["rerun-btn", "toggle-code-btn", "download-btn"].forEach(id => document.getElementById(id).disabled = true);
+  document.getElementById("lab-edit-followup").hidden = true;
+  document.getElementById("edit-followup-input").value = "";
+  resetEditCount();
   refreshKeyStatusUI();
+}
+
+function resetEditCount() {
+  editCount = 0;
+  updateEditCounterUI();
+}
+function updateEditCounterUI() {
+  const counter = document.getElementById("edit-followup-counter");
+  const btn = document.getElementById("edit-followup-btn");
+  const input = document.getElementById("edit-followup-input");
+  const remaining = MAX_FOLLOWUP_EDITS - editCount;
+  if (remaining > 0) {
+    counter.textContent = `Sisa edit lanjutan: ${remaining}/${MAX_FOLLOWUP_EDITS}`;
+  } else {
+    counter.textContent = `Batas ${MAX_FOLLOWUP_EDITS}x edit lanjutan untuk simulasi ini sudah tercapai - tekan Generate untuk membuat versi baru.`;
+  }
+  btn.disabled = remaining <= 0;
+  input.disabled = remaining <= 0;
 }
 
 // Ganti konsep fisika spesifik juga membersihkan variabel/tujuan/instruksi
@@ -355,6 +540,7 @@ document.getElementById("generate-btn").addEventListener("click", async () => {
     // "Lihat Kode" cuma potongan tidak lengkap tanpa penjelasan kenapa).
     const problem = checkGeneratedHtml(html);
     setPreview(html);
+    resetEditCount();
     if (problem) {
       status.textContent = problem + " Coba klik Generate lagi (hasil AI bisa berbeda tiap percobaan), atau sederhanakan promptnya.";
     } else {
@@ -376,6 +562,68 @@ document.getElementById("demo-btn").addEventListener("click", () => {
   banner.textContent = "Mode Demo aktif: menampilkan simulasi contoh yang sudah disiapkan (bukan hasil AI sesungguhnya), sekadar untuk melihat alur Lab Simulasi Virtual.";
   const html = getDemoSimHTML(promptText);
   setPreview(html);
+  resetEditCount();
+});
+
+document.getElementById("edit-followup-btn").addEventListener("click", async () => {
+  const instruction = document.getElementById("edit-followup-input").value.trim();
+  const status = document.getElementById("generate-status");
+  const banner = document.getElementById("mode-banner");
+  const backendUrl = getBackendUrl();
+  const apiKey = getGeminiApiKey();
+
+  if (editCount >= MAX_FOLLOWUP_EDITS) return;
+  if (!lastGeneratedHTML) {
+    status.textContent = "Belum ada simulasi untuk diedit - tekan Generate atau Coba Mode Demo dulu.";
+    return;
+  }
+  if (!instruction) {
+    status.textContent = "Tulis dulu instruksi editnya, misalnya bagian apa yang ingin diubah/ditambah.";
+    return;
+  }
+  if (!apiKey) {
+    status.textContent = "";
+    banner.hidden = false;
+    banner.innerHTML = `Edit lanjutan butuh AI sungguhan, jadi perlu API key Gemini pribadi. <button type="button" class="link-btn" id="mode-banner-key-btn-edit">Atur API key sekarang</button>.`;
+    document.getElementById("mode-banner-key-btn-edit").addEventListener("click", openSettingsModal);
+    return;
+  }
+  if (!backendUrl) {
+    status.textContent = "";
+    banner.hidden = false;
+    banner.textContent = "Backend belum dikonfigurasi (lihat README.md bagian setup). Hubungi pengelola situs.";
+    return;
+  }
+
+  const editPrompt = `Berikut kode HTML simulasi fisika yang SUDAH ADA (satu file lengkap, mandiri):\n\n${lastGeneratedHTML}\n\n---\nTolong EDIT/REVISI kode di atas sesuai instruksi berikut. Pertahankan bagian yang tidak diminta berubah dan tetap tentang konsep fisika yang sama. Kembalikan HANYA satu file HTML LENGKAP hasil revisi (bukan potongan - sertakan seluruh <!DOCTYPE html> sampai </html>), tanpa penjelasan tambahan di luar kode, tanpa code fence markdown.\n\nInstruksi edit dari siswa: ${instruction}`;
+
+  status.textContent = `Menerapkan edit ke-${editCount + 1} dari ${MAX_FOLLOWUP_EDITS}, mohon tunggu (bisa 10-30 detik)...`;
+  banner.hidden = true;
+  document.getElementById("edit-followup-btn").disabled = true;
+
+  try {
+    const resp = await fetch(backendUrl, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify({ prompt: editPrompt, apiKey: apiKey })
+    });
+    const data = await resp.json();
+    if (data.error) throw new Error(data.error);
+    let html = (data.html || "").trim();
+    html = stripCodeFence(html);
+    const problem = checkGeneratedHtml(html);
+    setPreview(html);
+    editCount += 1;
+    updateEditCounterUI();
+    document.getElementById("edit-followup-input").value = "";
+    status.textContent = problem
+      ? problem + " Coba edit lagi dengan instruksi yang lebih sederhana."
+      : "Edit berhasil diterapkan pada simulasi.";
+  } catch (err) {
+    status.textContent = "Gagal menerapkan edit: " + err.message + " - coba lagi.";
+  } finally {
+    updateEditCounterUI();
+  }
 });
 
 function stripCodeFence(html) {
@@ -417,6 +665,7 @@ function setPreview(html) {
   document.getElementById("code-editor").hidden = true;
   document.getElementById("toggle-code-label").textContent = "Lihat Kode";
   ["rerun-btn", "toggle-code-btn", "download-btn"].forEach(id => document.getElementById(id).disabled = false);
+  document.getElementById("lab-edit-followup").hidden = false;
 }
 
 document.getElementById("rerun-btn").addEventListener("click", () => {
@@ -452,9 +701,33 @@ document.getElementById("download-btn").addEventListener("click", () => {
 
 /* ---------------- Pengaturan (modal) ---------------- */
 const settingsModal = document.getElementById("settings-modal");
+function refreshUnlockStatusUI() {
+  const text = document.getElementById("unlock-status-text");
+  if (!text) return;
+  text.textContent = isUnlockAll()
+    ? "Aktif - semua topik & tab sudah terbuka bebas di perangkat ini."
+    : "Belum aktif - topik & tab masih terbuka bertahap.";
+  text.classList.toggle("ok", isUnlockAll());
+}
+document.getElementById("unlock-code-btn").addEventListener("click", () => {
+  const input = document.getElementById("unlock-code-input");
+  const val = input.value.trim();
+  if (!val) return;
+  if (TEACHER_UNLOCK_CODE && val.toLowerCase() === TEACHER_UNLOCK_CODE.toLowerCase()) {
+    localStorage.setItem(STORAGE_KEY_UNLOCK_ALL, "true");
+    input.value = "";
+    refreshUnlockStatusUI();
+    renderNav();
+    if (currentTopic) updateTopicProgressUI(document.querySelector(".tab-btn.active").dataset.tab);
+    showToast("Semua topik dan tab sudah terbuka!");
+  } else {
+    showToast("Kode salah. Tanyakan kode Eksplorasi Bebas ke gurumu.");
+  }
+});
 function openSettingsModal() {
   document.getElementById("backend-url-input").value = getBackendUrl();
   document.getElementById("settings-key-input").value = getGeminiApiKey();
+  refreshUnlockStatusUI();
   settingsModal.hidden = false;
 }
 document.getElementById("settings-btn").addEventListener("click", openSettingsModal);
@@ -498,7 +771,17 @@ document.getElementById("onboarding-key-input").addEventListener("keydown", (e) 
   if (e.key === "Enter") document.getElementById("onboarding-save-btn").click();
 });
 
+/* ---------------- Chatbot toggle ---------------- */
+const chatbotPanel = document.getElementById("chatbot-panel");
+document.getElementById("chatbot-toggle-btn").addEventListener("click", () => {
+  chatbotPanel.hidden = !chatbotPanel.hidden;
+  if (!chatbotPanel.hidden && window.Chatbot) Chatbot.onOpen();
+});
+document.getElementById("chatbot-close-btn").addEventListener("click", () => { chatbotPanel.hidden = true; });
+
 /* ---------------- Init ---------------- */
 renderNav();
 refreshKeyStatusUI();
+refreshUnlockStatusUI();
 syncHeaderHeight();
+if (window.Chatbot) Chatbot.init();
