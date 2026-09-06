@@ -373,7 +373,7 @@ function publicSessionState(state) {
 function handleSessionSync(body) {
   const state = readSessionState();
   const code = (body.code || "").toString().trim();
-  const studentId = (body.studentId || "").toString().trim().slice(0, 40);
+  const studentId = (body.studentId || "").toString().trim().slice(0, 60);
 
   // Cuma catat ke roster kalau kode yang dikirim siswa cocok dengan sesi
   // yang sedang aktif SEKARANG (kalau tidak cocok - sesi sudah berakhir/
