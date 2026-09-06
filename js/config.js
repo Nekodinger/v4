@@ -17,7 +17,7 @@
    berguna untuk testing tanpa perlu commit ke repo).
    ============================================================ */
 
-const DEFAULT_BACKEND_URL = ""; // <-- isi URL Apps Script Web App kamu di sini
+const DEFAULT_BACKEND_URL = "https://script.google.com/macros/s/AKfycbwKGNJtlhm8onSos1cNUWfQtJD2XPBoNaycxDUc9Fi3bNBfQXfKv0Der-nu5fxWLpV-KQ/exec"; // <-- isi URL Apps Script Web App kamu di sini
 
 /* ============================================================
    KODE EKSPLORASI BEBAS (untuk guru)
