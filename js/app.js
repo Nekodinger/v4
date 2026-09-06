@@ -6,6 +6,9 @@ const STORAGE_KEY_BACKEND = "physicsSandbox.backendUrl";
 const STORAGE_KEY_GEMINI = "physicsSandbox.geminiApiKey";
 const STORAGE_KEY_PROGRESS = "physicsSandbox.progress";
 const STORAGE_KEY_UNLOCK_ALL = "physicsSandbox.unlockAll";
+const STORAGE_KEY_ROLE = "physicsSandbox.userRole"; // "student" | "guest"
+const STORAGE_KEY_STUDENT_NAME = "physicsSandbox.studentName";
+const STORAGE_KEY_STUDENT_CLASS = "physicsSandbox.studentClass";
 let currentTopic = null;
 let lastGeneratedHTML = "";
 let editCount = 0;
@@ -93,7 +96,25 @@ let classSession = null; // {active, code, topicId, tabIndex, updatedAt} dari se
 let classSyncTimer = null;
 let lastClassActivityKey = null; // untuk deteksi kapan guru GANTI aktivitas
 
+function getUserRole() {
+  return localStorage.getItem(STORAGE_KEY_ROLE) || "";
+}
+function getStudentName() {
+  return (localStorage.getItem(STORAGE_KEY_STUDENT_NAME) || "").trim();
+}
+function getStudentClass() {
+  return (localStorage.getItem(STORAGE_KEY_STUDENT_CLASS) || "").trim();
+}
+// Kalau siswa sudah isi nama+kelas manual (langkah wajib di gate), pakai itu
+// sebagai identitas di roster Panel Guru (bukan ID anonim lagi) - supaya guru
+// benar-benar tahu itu progres siapa. Fallback ID anonim tetap ada untuk
+// kasus lain (mis. peran "bukan siswa" yang kebetulan ikut sebuah sesi kelas).
 function getStudentId() {
+  const name = getStudentName();
+  if (name) {
+    const cls = getStudentClass();
+    return cls ? `${name} (${cls})` : name;
+  }
   let id = localStorage.getItem(STORAGE_KEY_STUDENT_ID);
   if (!id) {
     const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -124,6 +145,40 @@ function leaveClassSession(message) {
   refreshClassSessionUI();
   updateClassSessionBanner();
   if (message) showToast(message);
+  // Kalau perannya siswa, situs WAJIB kembali terkunci di gate (minta kode
+  // baru) begitu sesi berakhir/tidak valid lagi - bukan cuma kembali ke mode
+  // belajar mandiri seperti sebelumnya. Peran "bukan siswa" tidak terpengaruh
+  // (aksesnya tetap lewat Kode Eksplorasi Bebas, tidak terkait sesi kelas).
+  if (typeof applyGate === "function") applyGate();
+}
+// Mencoba gabung/menyambung ulang ke sebuah kode sesi kelas lewat backend.
+// Dipakai baik oleh langkah wajib di gate maupun tombol "Gabung" di
+// Pengaturan. Mengembalikan {ok:true} atau {ok:false, error}.
+async function attemptJoinClassSession(code) {
+  const trimmed = (code || "").trim();
+  if (!trimmed) return { ok: false, error: "Masukkan kode dari guru dulu." };
+  const backendUrl = getBackendUrl();
+  if (!backendUrl) return { ok: false, error: "Backend belum dikonfigurasi. Hubungi pengelola situs." };
+  try {
+    const resp = await fetch(backendUrl, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain" },
+      body: JSON.stringify({ mode: "session_sync", code: trimmed, studentId: getStudentId(), topicId: null, tabIndex: null })
+    });
+    const data = await resp.json();
+    if (data.error) return { ok: false, error: data.error };
+    if (!data.active || !data.code || data.code.toUpperCase() !== trimmed.toUpperCase()) {
+      localStorage.removeItem(STORAGE_KEY_CLASS_CODE);
+      return { ok: false, error: "Kode salah, atau sesi belum/sudah tidak aktif. Tanyakan gurumu." };
+    }
+    localStorage.setItem(STORAGE_KEY_CLASS_CODE, trimmed);
+    classSession = data;
+    lastClassActivityKey = data.topicId + "|" + data.tabIndex;
+    startClassSync();
+    return { ok: true };
+  } catch (err) {
+    return { ok: false, error: "Gagal terhubung ke server: " + err.message };
+  }
 }
 function stopClassSync() {
   if (classSyncTimer) { clearInterval(classSyncTimer); classSyncTimer = null; }
@@ -215,21 +270,24 @@ function refreshClassSessionUI() {
     leaveBtn.hidden = true;
   }
 }
-document.getElementById("class-session-join-btn").addEventListener("click", () => {
+document.getElementById("class-session-join-btn").addEventListener("click", async () => {
   const input = document.getElementById("class-session-code-input");
+  const statusText = document.getElementById("class-session-status-text");
   const val = input.value.trim();
   if (!val) return;
-  localStorage.setItem(STORAGE_KEY_CLASS_CODE, val);
-  input.value = "";
-  startClassSync();
+  statusText.textContent = "Menghubungkan...";
+  statusText.classList.remove("ok");
+  const result = await attemptJoinClassSession(val);
+  if (result.ok) {
+    input.value = "";
+  } else {
+    showToast(result.error);
+  }
   refreshClassSessionUI();
 });
 document.getElementById("class-session-leave-btn").addEventListener("click", () => {
   leaveClassSession(null);
 });
-// Kalau perangkat ini sebelumnya sudah gabung sesi (kode tersimpan), lanjutkan
-// polling begitu halaman dimuat lagi tanpa perlu memasukkan kode ulang.
-if (getJoinedSessionCode()) startClassSync();
 
 let toastTimer = null;
 function showToast(message) {
@@ -269,34 +327,17 @@ function syncHeaderHeight() {
 window.addEventListener("resize", syncHeaderHeight);
 
 /* ---------------- Status API key (pill di header + banner lab) ---------------- */
-let onboardingForcedOpen = false;
 function refreshKeyStatusUI() {
   const hasKey = !!getGeminiApiKey();
   const dot = document.getElementById("key-status-dot");
   const text = document.getElementById("key-status-text");
   const banner = document.getElementById("lab-key-banner");
-  const onboardingStatus = document.getElementById("onboarding-status");
-  const onboardingInput = document.getElementById("onboarding-key-input");
   const settingsInput = document.getElementById("settings-key-input");
-  const onboardingSetup = document.getElementById("onboarding-setup");
-  const onboardingDone = document.getElementById("onboarding-done");
 
   if (dot) dot.classList.toggle("key-status-on", hasKey);
   if (text) text.textContent = hasKey ? "API key tersambung" : "API key belum diatur";
   if (banner) banner.hidden = hasKey;
-  if (onboardingStatus) {
-    onboardingStatus.textContent = hasKey ? "API key tersimpan di browser ini." : "";
-    onboardingStatus.classList.toggle("ok", hasKey);
-  }
-  if (onboardingInput && !onboardingInput.matches(":focus")) onboardingInput.value = hasKey ? getGeminiApiKey() : "";
   if (settingsInput) settingsInput.value = getGeminiApiKey();
-  // Kartu setup di halaman Beranda: begitu key sudah aktif, sembunyikan
-  // langkah-langkah setup dan tampilkan konfirmasi ringkas saja (kecuali
-  // pengguna sedang sengaja membuka form lewat "Ubah API key").
-  if (onboardingSetup && onboardingDone && !onboardingForcedOpen) {
-    onboardingSetup.hidden = hasKey;
-    onboardingDone.hidden = !hasKey;
-  }
 }
 
 /* ---------------- Navigasi Topik ---------------- */
@@ -877,10 +918,18 @@ document.getElementById("unlock-code-btn").addEventListener("click", () => {
   }
 });
 function openSettingsModal() {
-  document.getElementById("backend-url-input").value = getBackendUrl();
   document.getElementById("settings-key-input").value = getGeminiApiKey();
   refreshUnlockStatusUI();
   refreshClassSessionUI();
+  const studentDetails = document.getElementById("settings-student-info-details");
+  if (studentDetails) {
+    const isStudent = getUserRole() === "student";
+    studentDetails.hidden = !isStudent;
+    if (isStudent) {
+      document.getElementById("settings-student-name-input").value = getStudentName();
+      document.getElementById("settings-student-class-input").value = getStudentClass();
+    }
+  }
   settingsModal.hidden = false;
 }
 document.getElementById("settings-btn").addEventListener("click", openSettingsModal);
@@ -889,39 +938,180 @@ document.getElementById("lab-key-banner-btn").addEventListener("click", openSett
 document.getElementById("settings-close-btn").addEventListener("click", () => settingsModal.hidden = true);
 document.getElementById("settings-close-x").addEventListener("click", () => settingsModal.hidden = true);
 document.getElementById("settings-save-btn").addEventListener("click", () => {
-  const backendVal = document.getElementById("backend-url-input").value.trim();
-  if (backendVal) localStorage.setItem(STORAGE_KEY_BACKEND, backendVal);
-  else localStorage.removeItem(STORAGE_KEY_BACKEND);
-
   saveGeminiApiKey(document.getElementById("settings-key-input").value);
   settingsModal.hidden = true;
+  // Kalau API key sengaja dikosongkan lagi lewat Pengaturan, gate wajib
+  // tampil lagi (situs terkunci sampai diisi ulang) - konsisten dengan
+  // aturan "wajib setup API key dulu" di awal.
+  applyGate();
+});
+document.getElementById("settings-student-info-save-btn").addEventListener("click", () => {
+  const name = document.getElementById("settings-student-name-input").value.trim();
+  const cls = document.getElementById("settings-student-class-input").value.trim();
+  if (!name || !cls) { showToast("Isi nama dan kelas dulu."); return; }
+  localStorage.setItem(STORAGE_KEY_STUDENT_NAME, name);
+  localStorage.setItem(STORAGE_KEY_STUDENT_CLASS, cls);
+  showToast("Data diri tersimpan.");
+});
+document.getElementById("settings-reset-onboarding-btn").addEventListener("click", () => {
+  localStorage.removeItem(STORAGE_KEY_ROLE);
+  localStorage.removeItem(STORAGE_KEY_STUDENT_NAME);
+  localStorage.removeItem(STORAGE_KEY_STUDENT_CLASS);
+  localStorage.removeItem(STORAGE_KEY_UNLOCK_ALL);
+  leaveClassSession(null);
+  settingsModal.hidden = true;
+  applyGate();
 });
 
-/* ---------------- Onboarding (halaman Beranda) ---------------- */
-document.getElementById("onboarding-save-btn").addEventListener("click", () => {
-  const val = document.getElementById("onboarding-key-input").value.trim();
-  onboardingForcedOpen = false;
-  saveGeminiApiKey(val);
-  if (val) {
-    // Setup selesai: tutup kartu setup, langsung bawa pengguna ke konten
-    // (Materi topik pertama yang sudah "Siap") alih-alih tetap di halaman
-    // setup yang sudah tidak relevan lagi.
-    const firstReady = TOPICS.find(t => t.status === "ready");
-    if (firstReady) selectTopic(firstReady.id);
+/* ============================================================
+   Onboarding gate (wajib, layar penuh, sebelum situs bisa diakses)
+   ------------------------------------------------------------
+   Urutan: API key -> pilih peran -> (siswa) nama+kelas -> kode dari
+   guru, ATAU (bukan siswa) Kode Eksplorasi Bebas. #site-shell baru
+   ditampilkan setelah computeGateStep() mengembalikan null.
+   ============================================================ */
+const GATE_STEPS = ["apikey", "role", "student-info", "student-code", "guest-code"];
+
+function computeGateStep() {
+  if (!getGeminiApiKey()) return "apikey";
+  const role = getUserRole();
+  if (role === "student") {
+    if (!getStudentName() || !getStudentClass()) return "student-info";
+    if (!isInClassSession()) return "student-code";
+    return null;
   }
-});
-document.getElementById("onboarding-change-key-btn").addEventListener("click", () => {
-  onboardingForcedOpen = true;
-  document.getElementById("onboarding-setup").hidden = false;
-  document.getElementById("onboarding-done").hidden = true;
-  document.getElementById("onboarding-key-input").focus();
-});
-document.getElementById("onboarding-toggle-visibility").addEventListener("click", () => {
-  const input = document.getElementById("onboarding-key-input");
+  if (role === "guest") {
+    if (!isUnlockAll()) return "guest-code";
+    return null;
+  }
+  return "role";
+}
+function showGateStep(step) {
+  GATE_STEPS.forEach(s => {
+    const el = document.getElementById("gate-step-" + s);
+    if (el) el.hidden = (s !== step);
+  });
+  if (step === "student-info") {
+    document.getElementById("gate-student-name-input").value = getStudentName();
+    document.getElementById("gate-student-class-input").value = getStudentClass();
+  }
+}
+function applyGate() {
+  const step = computeGateStep();
+  const gate = document.getElementById("onboarding-gate");
+  const shell = document.getElementById("site-shell");
+  if (step) {
+    gate.hidden = false;
+    shell.hidden = true;
+    showGateStep(step);
+  } else {
+    gate.hidden = true;
+    shell.hidden = false;
+    // Begitu gate baru saja terlewati (atau memang sudah lengkap sejak
+    // awal) dan siswa ternyata sedang dalam sesi kelas aktif, langsung
+    // antarkan ke aktivitas yang ditentukan guru alih-alih diam di Beranda.
+    if (isInClassSession()) goToClassSessionActivity();
+  }
+}
+async function initGate() {
+  // Kalau perangkat ini sebelumnya sudah pernah gabung sebuah kode sesi,
+  // coba sambungkan ulang dulu secara diam-diam sebelum memutuskan langkah
+  // gate mana yang ditampilkan - supaya me-reload halaman di tengah sesi
+  // yang masih berjalan tidak tiba-tiba meminta kode dari awal lagi.
+  if (getJoinedSessionCode() && !classSession) {
+    await attemptJoinClassSession(getJoinedSessionCode());
+  }
+  applyGate();
+}
+
+document.getElementById("gate-key-toggle-visibility").addEventListener("click", () => {
+  const input = document.getElementById("gate-key-input");
   input.type = input.type === "password" ? "text" : "password";
 });
-document.getElementById("onboarding-key-input").addEventListener("keydown", (e) => {
-  if (e.key === "Enter") document.getElementById("onboarding-save-btn").click();
+document.getElementById("gate-key-input").addEventListener("keydown", (e) => {
+  if (e.key === "Enter") document.getElementById("gate-key-save-btn").click();
+});
+document.getElementById("gate-key-save-btn").addEventListener("click", () => {
+  const val = document.getElementById("gate-key-input").value.trim();
+  const status = document.getElementById("gate-key-status");
+  if (!val) { status.textContent = "Tempel API key Gemini dulu."; status.classList.remove("ok"); return; }
+  saveGeminiApiKey(val);
+  status.textContent = "";
+  applyGate();
+});
+
+document.getElementById("gate-role-student-btn").addEventListener("click", () => {
+  localStorage.setItem(STORAGE_KEY_ROLE, "student");
+  applyGate();
+});
+document.getElementById("gate-role-guest-btn").addEventListener("click", () => {
+  localStorage.setItem(STORAGE_KEY_ROLE, "guest");
+  applyGate();
+});
+
+document.getElementById("gate-student-info-btn").addEventListener("click", () => {
+  const name = document.getElementById("gate-student-name-input").value.trim();
+  const cls = document.getElementById("gate-student-class-input").value.trim();
+  const status = document.getElementById("gate-student-info-status");
+  if (!name || !cls) { status.textContent = "Isi nama dan kelas dulu."; return; }
+  localStorage.setItem(STORAGE_KEY_STUDENT_NAME, name);
+  localStorage.setItem(STORAGE_KEY_STUDENT_CLASS, cls);
+  status.textContent = "";
+  applyGate();
+});
+document.getElementById("gate-student-info-back-btn").addEventListener("click", () => {
+  localStorage.removeItem(STORAGE_KEY_ROLE);
+  applyGate();
+});
+
+document.getElementById("gate-student-code-btn").addEventListener("click", async () => {
+  const input = document.getElementById("gate-student-code-input");
+  const status = document.getElementById("gate-student-code-status");
+  const btn = document.getElementById("gate-student-code-btn");
+  const code = input.value.trim();
+  if (!code) { status.textContent = "Masukkan kode dari guru dulu."; status.classList.remove("ok"); return; }
+  status.textContent = "Menghubungkan...";
+  status.classList.remove("ok");
+  btn.disabled = true;
+  const result = await attemptJoinClassSession(code);
+  btn.disabled = false;
+  if (result.ok) {
+    input.value = "";
+    status.textContent = "";
+    applyGate();
+  } else {
+    status.textContent = result.error;
+    status.classList.remove("ok");
+  }
+});
+document.getElementById("gate-student-code-input").addEventListener("keydown", (e) => {
+  if (e.key === "Enter") document.getElementById("gate-student-code-btn").click();
+});
+document.getElementById("gate-student-code-back-btn").addEventListener("click", () => {
+  showGateStep("student-info");
+});
+
+document.getElementById("gate-guest-code-btn").addEventListener("click", () => {
+  const input = document.getElementById("gate-guest-code-input");
+  const status = document.getElementById("gate-guest-code-status");
+  const code = input.value.trim();
+  if (!code) { status.textContent = "Masukkan kode eksplorasi dulu."; status.classList.remove("ok"); return; }
+  if (TEACHER_UNLOCK_CODE && code.toLowerCase() === TEACHER_UNLOCK_CODE.toLowerCase()) {
+    localStorage.setItem(STORAGE_KEY_UNLOCK_ALL, "true");
+    input.value = "";
+    status.textContent = "";
+    applyGate();
+  } else {
+    status.textContent = "Kode salah. Tanyakan Kode Eksplorasi Bebas ke guru/pengelola situs.";
+    status.classList.remove("ok");
+  }
+});
+document.getElementById("gate-guest-code-input").addEventListener("keydown", (e) => {
+  if (e.key === "Enter") document.getElementById("gate-guest-code-btn").click();
+});
+document.getElementById("gate-guest-code-back-btn").addEventListener("click", () => {
+  localStorage.removeItem(STORAGE_KEY_ROLE);
+  applyGate();
 });
 
 /* ---------------- Chatbot toggle ---------------- */
@@ -938,3 +1128,4 @@ refreshKeyStatusUI();
 refreshUnlockStatusUI();
 syncHeaderHeight();
 if (window.Chatbot) Chatbot.init();
+initGate();
