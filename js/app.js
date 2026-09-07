@@ -618,6 +618,7 @@ function setupLabForTopic() {
   ["rerun-btn", "toggle-code-btn", "download-btn"].forEach(id => document.getElementById(id).disabled = true);
   document.getElementById("lab-edit-followup").hidden = true;
   document.getElementById("edit-followup-input").value = "";
+  document.getElementById("edit-followup-status").textContent = "";
   resetEditCount();
   refreshKeyStatusUI();
 }
@@ -758,14 +759,29 @@ document.getElementById("demo-btn").addEventListener("click", () => {
   resetEditCount();
 });
 
+// PENTING: pesan status untuk aksi ini SENGAJA ditampilkan di elemen lokal
+// #edit-followup-status (tepat di bawah tombol ini), BUKAN di #generate-status
+// / #mode-banner yang letaknya jauh di atas (dekat tombol Generate Simulasi).
+// Panel "Prompt Lanjutan" ini muncul di BAWAH preview simulasi yang bisa
+// cukup tinggi, jadi kalau pesan hasil klik ditulis ke elemen yang jauh di
+// atas, siswa yang sedang melihat tombol ini di layar tidak akan pernah
+// melihat pesannya tanpa scroll manual ke atas - dari sudut pandang siswa
+// ini terlihat PERSIS seperti "tombol tidak melakukan apa-apa" walau
+// sebenarnya requestnya berjalan (berhasil ATAU gagal) di baliknya. Dulu
+// pernah dilaporkan bug "klik Edit Simulasi Ini, tidak terjadi apa-apa,
+// sisa edit tetap 5/5" - root cause-nya persis ini (dikombinasikan dengan
+// kemungkinan request yang gagal di background karena Gemini overload,
+// yang pesan error-nya juga tidak pernah terlihat karena masalah yang sama).
 document.getElementById("edit-followup-btn").addEventListener("click", async () => {
   const instruction = document.getElementById("edit-followup-input").value.trim();
-  const status = document.getElementById("generate-status");
-  const banner = document.getElementById("mode-banner");
+  const status = document.getElementById("edit-followup-status");
   const backendUrl = getBackendUrl();
   const apiKey = getGeminiApiKey();
 
-  if (editCount >= MAX_FOLLOWUP_EDITS) return;
+  if (editCount >= MAX_FOLLOWUP_EDITS) {
+    status.textContent = `Batas ${MAX_FOLLOWUP_EDITS}x edit lanjutan untuk simulasi ini sudah tercapai - tekan Generate untuk membuat versi baru.`;
+    return;
+  }
   if (!lastGeneratedHTML) {
     status.textContent = "Belum ada simulasi untuk diedit - tekan Generate atau Coba Mode Demo dulu.";
     return;
@@ -775,23 +791,18 @@ document.getElementById("edit-followup-btn").addEventListener("click", async () 
     return;
   }
   if (!apiKey) {
-    status.textContent = "";
-    banner.hidden = false;
-    banner.innerHTML = `Edit lanjutan butuh AI sungguhan, jadi perlu API key Gemini pribadi. <button type="button" class="link-btn" id="mode-banner-key-btn-edit">Atur API key sekarang</button>.`;
-    document.getElementById("mode-banner-key-btn-edit").addEventListener("click", openSettingsModal);
+    status.innerHTML = `Edit lanjutan butuh AI sungguhan, jadi perlu API key Gemini pribadi. <button type="button" class="link-btn" id="edit-followup-key-btn">Atur API key sekarang</button>.`;
+    document.getElementById("edit-followup-key-btn").addEventListener("click", openSettingsModal);
     return;
   }
   if (!backendUrl) {
-    status.textContent = "";
-    banner.hidden = false;
-    banner.textContent = "Backend belum dikonfigurasi (lihat README.md bagian setup). Hubungi pengelola situs.";
+    status.textContent = "Backend belum dikonfigurasi (lihat README.md bagian setup). Hubungi pengelola situs.";
     return;
   }
 
   const editPrompt = `Berikut kode HTML simulasi fisika yang SUDAH ADA (satu file lengkap, mandiri):\n\n${lastGeneratedHTML}\n\n---\nTolong EDIT/REVISI kode di atas sesuai instruksi berikut. Pertahankan bagian yang tidak diminta berubah dan tetap tentang konsep fisika yang sama. Kembalikan HANYA satu file HTML LENGKAP hasil revisi (bukan potongan - sertakan seluruh <!DOCTYPE html> sampai </html>), tanpa penjelasan tambahan di luar kode, tanpa code fence markdown.\n\nInstruksi edit dari siswa: ${instruction}`;
 
-  status.textContent = `Menerapkan edit ke-${editCount + 1} dari ${MAX_FOLLOWUP_EDITS}, mohon tunggu (bisa 10-30 detik)...`;
-  banner.hidden = true;
+  status.textContent = `Menerapkan edit ke-${editCount + 1} dari ${MAX_FOLLOWUP_EDITS}, mohon tunggu (biasanya 10-30 detik, kadang lebih lama kalau server Gemini sedang sibuk)...`;
   document.getElementById("edit-followup-btn").disabled = true;
 
   try {
@@ -859,6 +870,9 @@ function setPreview(html) {
   document.getElementById("toggle-code-label").textContent = "Lihat Kode";
   ["rerun-btn", "toggle-code-btn", "download-btn"].forEach(id => document.getElementById(id).disabled = false);
   document.getElementById("lab-edit-followup").hidden = false;
+  // Bersihkan pesan status edit-lanjutan lama (kalau ada dari simulasi
+  // sebelumnya) supaya tidak nyangkut/membingungkan di simulasi baru ini.
+  document.getElementById("edit-followup-status").textContent = "";
 }
 
 document.getElementById("rerun-btn").addEventListener("click", () => {
