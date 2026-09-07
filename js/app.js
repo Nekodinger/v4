@@ -809,7 +809,7 @@ document.getElementById("edit-followup-btn").addEventListener("click", async () 
     const resp = await fetch(backendUrl, {
       method: "POST",
       headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify({ prompt: editPrompt, apiKey: apiKey })
+      body: JSON.stringify({ mode: "edit", prompt: editPrompt, apiKey: apiKey })
     });
     const data = await resp.json();
     if (data.error) throw new Error(data.error);
