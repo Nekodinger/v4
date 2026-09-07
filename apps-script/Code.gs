@@ -85,7 +85,7 @@ const THINKING_BUDGET = -1;
 // js/config.js (yang memang publik untuk dibagi ke siswa): kode ini
 // TERSIMPAN DI SERVER, tidak terlihat siapa pun lewat "View Source" situs,
 // jadi aman dipakai sebagai kunci kontrol yang lebih sensitif.
-const TEACHER_CONTROL_CODE = "ganti-kode-guru-ini";
+const TEACHER_CONTROL_CODE = "koderahasia";
 // Siswa dianggap "offline"/berhenti mengirim update kalau lastSeen sudah
 // lebih lama dari ini (dipakai panel guru untuk menandai status, dan untuk
 // membuang entri roster yang sudah sangat basi).
