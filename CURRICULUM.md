@@ -27,13 +27,13 @@ Status `[Segera]` = struktur sudah terdaftar, konten belum diisi, tab **Lab Simu
 |---|-------|--------|
 | 12 | Motion in a Circle | [Segera] |
 | 13 | Gravitational Fields | [Segera] |
-| 14 | Temperature | [Segera] |
-| 15 | Ideal Gases | [Segera] |
-| 16 | Thermodynamics | [Segera] |
+| 14 | Temperature | [Siap] |
+| 15 | Ideal Gases | [Siap] |
+| 16 | Thermodynamics | [Siap] |
 | 17 | Oscillations | [Segera] |
 | 18 | Electric Fields | [Segera] |
 | 19 | Capacitance | [Segera] |
-| 20 | Magnetic Fields | [Segera] |
+| 20 | Magnetic Fields | [Siap] |
 | 21 | Alternating Currents | [Segera] |
 | 22 | Quantum Physics | [Segera] |
 | 23 | Nuclear Physics | [Segera] |
@@ -42,14 +42,17 @@ Status `[Segera]` = struktur sudah terdaftar, konten belum diisi, tab **Lab Simu
 
 ## Rekomendasi urutan pengisian berikutnya
 
-Disusun mengikuti urutan silabus (paling mudah untuk diajarkan berurutan di kelas AS dulu):
+Disusun mengikuti urutan silabus (paling mudah untuk diajarkan berurutan di kelas AS dulu). Topik yang
+sudah [Siap] (Kinematics, Magnetic Fields, Temperature, Ideal Gases, Thermodynamics) dilewati dari daftar ini:
 
 1. Dynamics (langsung lanjutan natural dari Kinematics, Hukum Newton)
 2. Forces, Density and Pressure
 3. Work, Energy and Power
 4. Waves & Superposition (sering diajarkan berpasangan)
 5. Electricity & D.C. Circuits (sering diajarkan berpasangan)
-6. Sisanya topik AS, baru lanjut ke 14 topik A2 sesuai urutan kelas.
+6. Sisanya topik AS, baru lanjut ke topik A2 yang tersisa (Motion in a Circle, Gravitational Fields,
+   Oscillations, Electric Fields, Capacitance, Alternating Currents, Quantum Physics, Nuclear Physics,
+   Medical Physics, Astronomy and Cosmology) sesuai urutan kelas.
 
 ## Cara mengisi topik berikutnya
 
