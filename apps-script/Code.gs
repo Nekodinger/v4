@@ -85,7 +85,7 @@ const THINKING_BUDGET = -1;
 // js/config.js (yang memang publik untuk dibagi ke siswa): kode ini
 // TERSIMPAN DI SERVER, tidak terlihat siapa pun lewat "View Source" situs,
 // jadi aman dipakai sebagai kunci kontrol yang lebih sensitif.
-const TEACHER_CONTROL_CODE = "koderahasia";
+const TEACHER_CONTROL_CODE = "ganti-kode-guru-ini";
 // Siswa dianggap "offline"/berhenti mengirim update kalau lastSeen sudah
 // lebih lama dari ini (dipakai panel guru untuk menandai status, dan untuk
 // membuang entri roster yang sudah sangat basi).
@@ -227,8 +227,24 @@ function handleSimulate(body, apiKey, model) {
   if (!userPrompt) {
     return jsonResponse({ error: "Prompt kosong." });
   }
-  if (userPrompt.length > 6000) {
-    return jsonResponse({ error: "Prompt terlalu panjang (maks ~6000 karakter)." });
+  // Mode "edit" (fitur "Edit Simulasi Ini") menyisipkan SELURUH kode HTML
+  // simulasi yang sudah ada ke dalam prompt (supaya AI tahu persis kode apa
+  // yang harus direvisi), jadi bisa jauh lebih panjang daripada prompt
+  // generate awal dari form terstruktur (yang cuma berisi deskripsi singkat).
+  // Batas 6000 karakter di bawah dirancang untuk prompt generate awal itu -
+  // kalau dipakai juga untuk mode edit, HAMPIR SEMUA edit akan ditolak
+  // (bug yang dilaporkan user: instruksi editnya pendek, tapi kode simulasi
+  // yang ikut disisipkan biasanya sudah lebih dari 6000 karakter sendiri).
+  // Mode edit diberi batas jauh lebih longgar (bukan tak terbatas, supaya
+  // tetap ada jaring pengaman terhadap payload yang tidak wajar).
+  const isEditMode = body.mode === "edit";
+  const maxPromptLen = isEditMode ? 120000 : 6000;
+  if (userPrompt.length > maxPromptLen) {
+    return jsonResponse({
+      error: isEditMode
+        ? "Simulasi yang sedang diedit + instruksinya terlalu panjang (maks ~120000 karakter gabungan). Coba mulai dari simulasi yang lebih sederhana (tekan Generate ulang), atau persingkat instruksi editnya."
+        : "Prompt terlalu panjang (maks ~6000 karakter)."
+    });
   }
 
   const payload = {
