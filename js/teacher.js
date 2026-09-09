@@ -370,6 +370,26 @@ document.addEventListener("click", (e) => {
   if (e.target && e.target.id === "qz-ed-cancel") closeQuizEditor();
 });
 
+// MathJax dimuat async lewat <script async> - kalau editor dibuka/diketik
+// SEBELUM script itu selesai load, window.MathJax.typesetPromise belum ada
+// sama sekali, jadi preview akan diam-diam gagal ter-render (tetap teks
+// mentah "$...$") dan TIDAK PERNAH dicoba ulang otomatis. mathJaxReady()
+// menunggu (poll ringan, maks ~10 detik) sampai typesetPromise tersedia,
+// supaya preview LaTeX selalu akhirnya jadi gambar rapi begitu MathJax siap.
+let _mathJaxReadyPromise = null;
+function mathJaxReady() {
+  if (_mathJaxReadyPromise) return _mathJaxReadyPromise;
+  _mathJaxReadyPromise = new Promise((resolve) => {
+    let tries = 0;
+    (function check() {
+      if (window.MathJax && window.MathJax.typesetPromise) { resolve(); return; }
+      if (++tries > 100) { resolve(); return; } // ~10 detik, lalu menyerah diam-diam
+      setTimeout(check, 100);
+    })();
+  });
+  return _mathJaxReadyPromise;
+}
+
 let quizPreviewTimer = null;
 function updateQuizPreview() {
   clearTimeout(quizPreviewTimer);
@@ -377,8 +397,16 @@ function updateQuizPreview() {
     const ta = document.getElementById("qz-ed-question");
     const preview = document.getElementById("qz-ed-question-preview");
     if (!ta || !preview) return;
-    preview.textContent = ta.value;
-    if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise([preview]).catch(() => {});
+    const text = ta.value;
+    preview.textContent = text;
+    mathJaxReady().then(() => {
+      // Cek ulang elemen+isi masih sama (editor bisa saja sudah ditutup/ganti
+      // soal lain selagi menunggu MathJax siap) sebelum benar-benar typeset.
+      const p = document.getElementById("qz-ed-question-preview");
+      if (p && p.textContent === text && window.MathJax && window.MathJax.typesetPromise) {
+        window.MathJax.typesetPromise([p]).catch(() => {});
+      }
+    });
   }, 250);
 }
 
