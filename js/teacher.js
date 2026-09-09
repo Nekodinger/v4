@@ -21,16 +21,18 @@ function getControlCode() {
 }
 
 function readyTopics() {
-  return TOPICS.filter(t => t.status === "ready").sort((a, b) => a.number - b.number);
+  return TOPICS.filter(tp => tp.status === "ready").sort((a, b) => a.number - b.number);
 }
 function topicTitle(id) {
-  const t = TOPICS.find(x => x.id === id);
-  return t ? `${t.number}. ${t.title}` : (id || "-");
+  const tp = TOPICS.find(x => x.id === id);
+  return tp ? `${tp.number}. ${trContent(tp.title)}` : (id || "-");
 }
-const TAB_LABELS_T = ["Materi Belajar", "Eksperimen", "Latihan Soal", "Lab Simulasi Virtual"];
+function tabLabelsT() {
+  return [t("tab.materi"), t("tab.eksperimen"), t("tab.latihan"), t("tab.lab")];
+}
 
 function populateTopicSelects() {
-  const opts = readyTopics().map(t => `<option value="${t.id}">${t.number}. ${t.title}</option>`).join("");
+  const opts = readyTopics().map(tp => `<option value="${tp.id}">${tp.number}. ${trContent(tp.title)}</option>`).join("");
   document.getElementById("teacher-topic-select").innerHTML = opts;
   document.getElementById("teacher-topic-select-2").innerHTML = opts;
 }
@@ -38,7 +40,7 @@ function populateTopicSelects() {
 async function callBackend(body) {
   const backendUrl = getBackendUrlT();
   if (!backendUrl) {
-    return { error: "URL Backend belum diisi. Isi dulu di form login di atas (URL Apps Script Web App yang sama dengan situs utama)." };
+    return { error: t("teacher.backend.missing") };
   }
   try {
     const resp = await fetch(backendUrl, {
@@ -48,7 +50,7 @@ async function callBackend(body) {
     });
     return await resp.json();
   } catch (err) {
-    return { error: "Gagal terhubung ke backend: " + err.message };
+    return { error: t("teacher.backend.connectfailed", { err: err.message }) };
   }
 }
 
@@ -56,12 +58,12 @@ function relativeTime(ms) {
   if (!ms) return "-";
   const diff = Math.max(0, Date.now() - ms);
   const s = Math.round(diff / 1000);
-  if (s < 5) return "baru saja";
-  if (s < 60) return s + " detik lalu";
+  if (s < 5) return t("time.justnow");
+  if (s < 60) return t("time.secondsago", { n: s });
   const m = Math.round(s / 60);
-  if (m < 60) return m + " menit lalu";
+  if (m < 60) return t("time.minutesago", { n: m });
   const h = Math.round(m / 60);
-  return h + " jam lalu";
+  return t("time.hoursago", { n: h });
 }
 function statusClass(ms) {
   if (!ms) return "stale";
@@ -83,11 +85,11 @@ function renderSessionUI(state) {
     codeDisplay.textContent = state.code || "------";
     if (state.topicId) document.getElementById("teacher-topic-select-2").value = state.topicId;
     if (typeof state.tabIndex === "number") document.getElementById("teacher-tab-select-2").value = String(state.tabIndex);
-    statusEl.textContent = `Sesi aktif - aktivitas sekarang: ${topicTitle(state.topicId)} - ${TAB_LABELS_T[state.tabIndex] || ""}.`;
+    statusEl.textContent = t("teacher.session.active", { topic: topicTitle(state.topicId), tab: tabLabelsT()[state.tabIndex] || "" });
   } else {
     noSession.hidden = false;
     hasSession.hidden = true;
-    statusEl.textContent = "Belum ada sesi aktif.";
+    statusEl.textContent = t("teacher.session.none");
   }
 }
 
@@ -96,19 +98,20 @@ function renderRoster(roster, serverNow) {
   const countEl = document.getElementById("roster-count");
   const ids = Object.keys(roster || {});
   if (ids.length === 0) {
-    body.innerHTML = `<tr><td colspan="3" class="muted small">Belum ada siswa yang gabung.</td></tr>`;
+    body.innerHTML = `<tr><td colspan="3" class="muted small">${t("teacher.roster.empty")}</td></tr>`;
     countEl.textContent = "";
     return;
   }
   ids.sort((a, b) => (roster[b].lastSeen || 0) - (roster[a].lastSeen || 0));
+  const tabLabels = tabLabelsT();
   body.innerHTML = ids.map(id => {
     const r = roster[id];
     const cls = statusClass(r.lastSeen);
-    const activity = r.topicId ? `${topicTitle(r.topicId)} - ${TAB_LABELS_T[r.tabIndex] || "?"}` : "-";
+    const activity = r.topicId ? `${topicTitle(r.topicId)} - ${tabLabels[r.tabIndex] || "?"}` : "-";
     return `<tr><td>${id}</td><td>${activity}</td><td><span class="status-dot ${cls}"></span>${relativeTime(r.lastSeen)}</td></tr>`;
   }).join("");
   const onlineCount = ids.filter(id => statusClass(roster[id].lastSeen) === "online").length;
-  countEl.textContent = `${ids.length} siswa tercatat - ${onlineCount} online sekarang.`;
+  countEl.textContent = t("teacher.roster.count", { total: ids.length, online: onlineCount });
 }
 
 async function pollRoster() {
@@ -133,11 +136,11 @@ document.getElementById("teacher-login-btn").addEventListener("click", async () 
   const backendVal = document.getElementById("teacher-backend-input").value.trim();
   const codeVal = document.getElementById("teacher-control-input").value.trim();
   const statusEl = document.getElementById("teacher-login-status");
-  if (!codeVal) { statusEl.textContent = "Isi kode kontrol guru dulu."; return; }
+  if (!codeVal) { statusEl.textContent = t("teacher.login.needcode"); return; }
   if (backendVal) localStorage.setItem(STORAGE_KEY_BACKEND_T, backendVal);
   sessionStorage.setItem(SESSION_KEY_CONTROL_CODE, codeVal);
 
-  statusEl.textContent = "Memeriksa...";
+  statusEl.textContent = t("teacher.login.checking");
   const data = await callBackend({ mode: "teacher_roster", controlCode: codeVal });
   if (data.error) {
     statusEl.textContent = data.error;
@@ -156,7 +159,7 @@ document.getElementById("teacher-start-btn").addEventListener("click", async () 
   const topicId = document.getElementById("teacher-topic-select").value;
   const tabIndex = parseInt(document.getElementById("teacher-tab-select").value, 10);
   const statusEl = document.getElementById("teacher-session-status");
-  statusEl.textContent = "Memulai sesi...";
+  statusEl.textContent = t("teacher.session.starting");
   const data = await callBackend({ mode: "teacher_session", controlCode: getControlCode(), action: "start", topicId, tabIndex });
   if (data.error) { statusEl.textContent = data.error; return; }
   renderSessionUI(data.state);
@@ -166,7 +169,7 @@ document.getElementById("teacher-update-btn").addEventListener("click", async ()
   const topicId = document.getElementById("teacher-topic-select-2").value;
   const tabIndex = parseInt(document.getElementById("teacher-tab-select-2").value, 10);
   const statusEl = document.getElementById("teacher-session-status");
-  statusEl.textContent = "Menerapkan...";
+  statusEl.textContent = t("teacher.session.applying");
   const data = await callBackend({ mode: "teacher_session", controlCode: getControlCode(), action: "update", topicId, tabIndex });
   if (data.error) { statusEl.textContent = data.error; return; }
   renderSessionUI(data.state);
@@ -174,7 +177,7 @@ document.getElementById("teacher-update-btn").addEventListener("click", async ()
 
 document.getElementById("teacher-end-btn").addEventListener("click", async () => {
   const statusEl = document.getElementById("teacher-session-status");
-  statusEl.textContent = "Mengakhiri sesi...";
+  statusEl.textContent = t("teacher.session.ending");
   const data = await callBackend({ mode: "teacher_session", controlCode: getControlCode(), action: "end" });
   if (data.error) { statusEl.textContent = data.error; return; }
   renderSessionUI(data.state);
