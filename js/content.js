@@ -424,14 +424,356 @@ const KINEMATICS_LAB_CONCEPTS = [
 const DEFAULT_LAB_CONCEPTS = ["Konsep umum topik ini (jelaskan di instruksi tambahan)"];
 
 /* Tempelkan konten lengkap ke objek topik "kinematics" */
+
+/* ---- English (_EN) translations for KINEMATICS (auto-merged by merge_i18n.py) ---- */
+/* ------------------------------------------------------------
+   English translation of KINEMATICS topic content
+   (Cambridge International AS & A Level Physics 9702)
+   ------------------------------------------------------------ */
+
+const KINEMATICS_DESC_EN = "Describing motion: distance, displacement, velocity, acceleration, uniform velocity motion, uniformly accelerated motion, free fall, and projectile motion.";
+
+const KINEMATICS_MATERI_EN = `
+<h3>1. Basic Quantities of Kinematics</h3>
+<table>
+  <tr><th>Quantity</th><th>Type</th><th>Brief definition</th><th>SI unit</th></tr>
+  <tr><td>Distance</td><td>Scalar</td><td>Total path length travelled</td><td>m</td></tr>
+  <tr><td>Displacement</td><td>Vector</td><td>Change of position from the initial to the final point</td><td>m</td></tr>
+  <tr><td>Speed</td><td>Scalar</td><td>Distance / time</td><td>m s⁻¹</td></tr>
+  <tr><td>Velocity</td><td>Vector</td><td>Displacement / time</td><td>m s⁻¹</td></tr>
+  <tr><td>Acceleration</td><td>Vector</td><td>Rate of change of velocity</td><td>m s⁻²</td></tr>
+</table>
+${mediaRow(
+  { src: "https://upload.wikimedia.org/wikipedia/commons/4/40/Distancedisplacement.svg",
+    alt: "Diagram of distance vs displacement",
+    caption: "Comparison of distance (total path length, dashed line) with displacement (straight line from initial to final position).",
+    author: "Stannered", license: "CC BY-SA 3.0" },
+  { id: "vQCkYm3v3aA", title: "Distance and displacement introduction",
+    channel: "Khan Academy", desc: "A basic explanation of the difference between distance (scalar) and displacement (vector) with simple examples." }
+)}
+
+<h3>2. Uniform Velocity Motion</h3>
+<p>Constant velocity, zero acceleration. The $x$-$t$ graph is a straight line (gradient = velocity).</p>
+<div class="formula-box">$$v = \\dfrac{s}{t}$$</div>
+${mediaRow(
+  { src: "https://upload.wikimedia.org/wikipedia/commons/0/00/Uniform-motion.svg",
+    alt: "x-t, v-t, a-t graphs for uniform velocity motion",
+    caption: "Three motion graphs (position-time, velocity-time, acceleration-time) for an object moving with constant velocity (uniform velocity motion).",
+    author: "MikeRun", license: "CC BY-SA 4.0" },
+  { id: "pfTTHx9kCHk", title: "Instantaneous speed and velocity",
+    channel: "Khan Academy", desc: "Distinguishing instantaneous speed/velocity from average speed/velocity, the foundation for understanding motion at constant velocity." }
+)}
+
+<h3>3. Uniformly Accelerated Motion</h3>
+<p>Constant acceleration. The four equations of uniformly accelerated motion (as given in the Cambridge 9702 <em>List of Formulae</em>):</p>
+<div class="formula-box">
+$$v = u + at$$
+$$s = ut + \\tfrac{1}{2}at^2$$
+$$v^2 = u^2 + 2as$$
+$$s = \\tfrac{1}{2}(u+v)t$$
+</div>
+<p>where $u$ = initial velocity, $v$ = final velocity, $a$ = acceleration, $s$ = displacement, $t$ = time.</p>
+<p class="muted">Problem-solving tip: first write down the known variables (u, v, a, s, t), then choose the equation that does not involve the variable that is unknown/not asked for.</p>
+${mediaRow(
+  { src: "https://upload.wikimedia.org/wikipedia/commons/4/41/Uniform-acceleration.svg",
+    alt: "x-t, v-t, a-t graphs for motion with constant acceleration",
+    caption: "Three motion graphs for an object with constant acceleration (uniformly accelerated motion): note the parabolic x-t graph and the straight, sloped v-t graph.",
+    author: "MikeRun", license: "CC BY-SA 4.0" },
+  { id: "MAS6mBRZZXA", title: "Average velocity for constant acceleration",
+    channel: "Khan Academy", desc: "Deriving the average velocity relationship for motion with constant acceleration, the basis of the equations of uniformly accelerated motion." }
+)}
+
+<h3>4. Free Fall</h3>
+<p>A special case of uniformly accelerated motion with $a = g = 9.81~\\text{m s}^{-2}$ (the standard value on the Cambridge data sheet), initial velocity $u = 0$, with the downward direction taken as positive.</p>
+<div class="formula-box">
+$$h = \\tfrac{1}{2}gt^2 \\qquad v = gt \\qquad v^2 = 2gh$$
+</div>
+${mediaRow(
+  { src: "https://upload.wikimedia.org/wikipedia/commons/0/02/Falling_ball.jpg",
+    alt: "Stroboscopic photo of a ball in free fall",
+    caption: "Stroboscopic photo of a ball released in free fall (20 flashes/second). The gap between successive ball positions grows with time, consistent with $h \\propto t^2$.",
+    author: "Michael N Maggs", license: "CC BY-SA 3.0" },
+  { id: "tKIT68tYKnQ", title: "Free fall 1 body - solved example",
+    channel: "Khan Academy", desc: "A guided worked example calculating time and velocity in free fall." }
+)}
+
+<h3>5. Vertical Motion Upwards</h3>
+<p>The acceleration $g$ is constant but acts opposite to the initial velocity (a deceleration). At the highest point, $v = 0$. Because the motion is symmetric (no air resistance), the time to rise equals the time to fall.</p>
+${mediaRow(
+  { src: "https://upload.wikimedia.org/wikipedia/commons/2/28/Vertical-projectile-motion-graphs.jpg",
+    alt: "Position and velocity graphs for vertical motion upwards",
+    caption: "Position-time and velocity-time graphs for an object thrown straight up, which then falls back down under gravity.",
+    author: "MikeRun", license: "CC BY-SA 4.0" },
+  { id: "2zj4mjBRuL4", title: "Vertical motion under gravity - ball thrown upwards from a balcony",
+    channel: "ExamSolutions", desc: "A worked example of vertical motion under gravity for a ball thrown upwards from a balcony." }
+)}
+
+<h3>6. Projectile Motion</h3>
+<p>Two-dimensional motion: the horizontal component (constant velocity, uniform velocity motion) and the vertical component (acceleration $g$, uniformly accelerated motion) are <strong>independent</strong> of each other.</p>
+<div class="formula-box">
+$$\\text{Time of flight: } T = \\dfrac{2u\\sin\\theta}{g} \\qquad
+\\text{Maximum height: } H = \\dfrac{(u\\sin\\theta)^2}{2g} \\qquad
+\\text{Range: } R = \\dfrac{u^2\\sin 2\\theta}{g}$$
+</div>
+${mediaRow(
+  { src: "https://upload.wikimedia.org/wikipedia/commons/a/a4/Parabolic_trajectory.svg",
+    alt: "Diagram of a projectile's parabolic trajectory",
+    caption: "Diagram of a projectile's parabolic trajectory, complete with the velocity vector at one point along the path.",
+    author: "Oleg Alexandrov", license: "Public Domain" },
+  { id: "ZZ39o1rAZWY", title: "Projectile at an angle",
+    channel: "Khan Academy", desc: "Resolving the motion of a projectile launched at an angle of elevation into horizontal and vertical components." }
+)}
+${mediaRow(
+  { src: "https://upload.wikimedia.org/wikipedia/commons/3/3c/Bouncing_ball_strobe_edit.jpg",
+    alt: "Stroboscopic photo of a bouncing ball tracing parabolic paths",
+    caption: "Stroboscopic photo of a bouncing ball (25 frames/second) - each arc between bounces forms a parabolic curve due to gravity.",
+    author: "MichaelMaggs (edit: Richard Bartz)", license: "CC BY-SA 3.0" },
+  { id: "jmSWImPs6fQ", title: "Horizontally launched projectile",
+    channel: "Khan Academy", desc: "A special case of projectile motion: an object launched horizontally (zero initial vertical velocity) from some height." }
+)}
+
+<h3>7. Motion Graphs</h3>
+<ul>
+  <li>$x$-$t$ graph: gradient = instantaneous velocity.</li>
+  <li>$v$-$t$ graph: gradient = acceleration; area under the curve = displacement.</li>
+  <li>$a$-$t$ graph: area under the curve = change in velocity.</li>
+</ul>
+${mediaRow(
+  { src: "https://upload.wikimedia.org/wikipedia/commons/c/cf/Velocity_vs_time_graph.svg",
+    alt: "Example velocity-time graph",
+    caption: "An example velocity-time graph: the gradient of the line shows the acceleration, and the area under the curve shows the displacement.",
+    author: "Titoxd / Stannered", license: "CC BY-SA 3.0" },
+  { id: "GtoamALPOP0", title: "Position vs. time graphs",
+    channel: "Khan Academy", desc: "How to read and interpret position-time graphs, including the meaning of the gradient of the line." }
+)}
+`;
+
+const KINEMATICS_EKSPERIMEN_EN = {
+  title: "Real Experiment: Uniformly Accelerated Motion of a Trolley on an Inclined Plane (Ticker-Timer)",
+  intro: `
+    <p class="muted">This is a genuine physical experiment carried out in a lab/classroom with real apparatus,
+    not a computer simulation. If your school does not yet have the equipment, see the
+    <strong>Alternative without a Ticker-Timer</strong> section below, which needs only a stopwatch and a tape measure.</p>
+
+    <h4>Aim</h4>
+    <p>To investigate the motion of a trolley sliding down an inclined plane (uniformly accelerated motion),
+    to measure its acceleration from experimental data, and to compare it with the theoretical value.</p>
+
+    <h4>Underlying Concept</h4>
+    <p>When a trolley slides down an inclined plane at angle $\\theta$ to the horizontal, the component of
+    gravity along the plane ($mg\\sin\\theta$) is opposed by the kinetic friction force ($\\mu mg\\cos\\theta$),
+    so the theoretical acceleration is:</p>
+    <div class="formula-box">$$a = g(\\sin\\theta - \\mu\\cos\\theta)$$</div>
+    <p>where $\\theta$ = angle of inclination of the plane, $\\mu$ = coefficient of kinetic friction between the trolley and the plane, and
+    $g = 9.81$ m s⁻². Since the trolley starts from rest ($u=0$) with constant acceleration, the
+    equations of uniformly accelerated motion apply: $s = \\frac{1}{2}at^2$ and $v = at$, and these are what we will verify using the ticker-tape data.</p>
+
+    <h4>Apparatus &amp; Materials</h4>
+    <ul>
+      <li>A runway/track about 1 to 1.5 m long, and a block/book to raise one end to form an incline (a slope ratio of about 1:10 to begin with)</li>
+      <li>A dynamics trolley</li>
+      <li>A ticker-timer with its AC power supply, mounted at the top end of the plane</li>
+      <li>Enough ticker-tape, and carbon disc/inked tape for the ticker-timer</li>
+      <li>Tape, scissors, a ruler (mm precision), a protractor for measuring the angle $\\theta$</li>
+      <li>Graph paper/grid paper for sticking down and analysing the tape sections</li>
+      <li>String/thread to stretch across the lower end of the board (a safety catch, see the Safety section)</li>
+    </ul>
+
+    <h4>Procedure</h4>
+    <ol>
+      <li>Set up the runway inclined at a small angle $\\theta$ (about 5 to 10 degrees), measure the angle with a protractor and record it.</li>
+      <li>Mount the ticker-timer at the top end of the board and connect it to the AC power supply. Thread the ticker-tape through the ticker-timer and attach its end to the trolley.</li>
+      <li>Stretch the safety string across the lower end of the board to catch the trolley (see Safety Precautions).</li>
+      <li>Hold the trolley stationary right at the top of the board (near the ticker-timer). Switch on the ticker-timer, wait until it is ticking steadily, then release the trolley at the same moment (one student switches on the apparatus while another holds the tape so it does not tangle).</li>
+      <li>Let the trolley slide freely until it almost reaches the bottom of the board, then switch off the ticker-timer before the trolley is caught by the safety string.</li>
+      <li>Remove the tape from the trolley. Mark a clear starting point (the first few dots are usually close together/overlapping, so choose the first dot where the spacing has begun to increase regularly as the starting point for analysis).</li>
+      <li>Repeat this experiment 2 to 3 times for the same angle (take the average), then repeat the whole procedure for at least 2 other different angles $\\theta$.</li>
+    </ol>
+
+    <h4>How to Analyse the Ticker-Tape</h4>
+    <p>An AC-powered ticker-timer makes 50 dots per second (mains supply frequency of 50 Hz), so
+    the time interval between dots is:</p>
+    <div class="formula-box">$$\\Delta t_{dot} = \\frac{1}{50\\text{ Hz}} = 0.02\\text{ s}$$</div>
+    <p>To make the tape easier to read and to reduce the measurement error in the length of each segment, cut the tape into
+    groups of <strong>10 tick intervals (ten-tick tape)</strong>, with each section representing $10 \\times 0.02 = 0.2$ s:</p>
+    <ol>
+      <li>Starting from the marked starting point, count off and cut every 10 intervals (11 dots make up 1 tape section, the next section starts from the 11th dot, and so on).</li>
+      <li>Stick these tape sections side by side, upright (vertically), on graph paper in time order from left to right; this is called a <em>velocity bar chart</em> (tape chart), because the length of each tape section is proportional to the trolley's average velocity during that 0.2 s interval.</li>
+      <li>Measure the length of each tape section ($\\Delta s$) with a ruler. The average velocity for each section is $v = \\Delta s / 0.2\\text{ s}$.</li>
+      <li>Plot $v$ (y-axis) against the time at the midpoint of each interval (x-axis, multiples of 0.2 s) to obtain a $v$-$t$ graph.</li>
+      <li>Because this is uniformly accelerated motion, the points should form a straight line. <strong>The gradient of this line is the experimental acceleration</strong> ($a_{experiment} = \\Delta v / \\Delta t$).</li>
+    </ol>
+
+    <h4>Data Table (example, fill in with your own experimental data)</h4>
+    <table>
+      <tr><th>Section no.</th><th>Δs (cm)</th><th>t at midpoint of interval (s)</th><th>v = Δs/0.2s (cm/s)</th></tr>
+      <tr><td>1</td><td></td><td>0.1</td><td></td></tr>
+      <tr><td>2</td><td></td><td>0.3</td><td></td></tr>
+      <tr><td>3</td><td></td><td>0.5</td><td></td></tr>
+      <tr><td>4</td><td></td><td>0.7</td><td></td></tr>
+      <tr><td>5</td><td></td><td>0.9</td><td></td></tr>
+    </table>
+    <table>
+      <tr><th>θ (°)</th><th>a theory $=g(\\sin\\theta-\\mu\\cos\\theta)$ (m s⁻²)</th><th>a experiment (gradient of v-t graph) (m s⁻²)</th><th>Difference (%)</th></tr>
+      <tr><td></td><td></td><td></td><td></td></tr>
+      <tr><td></td><td></td><td></td><td></td></tr>
+      <tr><td></td><td></td><td></td><td></td></tr>
+    </table>
+
+    <h4>Analysis &amp; Calculation</h4>
+    <ul>
+      <li>Calculate $a_{experiment}$ from the gradient of the $v$-$t$ graph (not from just two points; draw the best straight line/<em>line of best fit</em> through all the points, then take its gradient).</li>
+      <li>To compare with theory, you need to estimate $\\mu$ (the coefficient of friction between the trolley and the board), which can be estimated with a separate "friction compensation" trial (tilt the board slightly until a gently-pushed trolley moves at constant velocity; under this condition $mg\\sin\\theta = \\mu mg\\cos\\theta$, so $\\mu = \\tan\\theta$).</li>
+      <li>Calculate the percentage difference between $a_{experiment}$ and $a_{theory}$: $\\left|\\dfrac{a_{experiment}-a_{theory}}{a_{theory}}\\right|\\times 100\\%$.</li>
+    </ul>
+
+    <h4>Safety Precautions</h4>
+    <ul>
+      <li>The runway is fairly heavy; carry/move it with two people, not alone.</li>
+      <li>You MUST stretch a string/thread across the lower end of the board so the trolley cannot slide off and strike someone's foot.</li>
+      <li>The ticker-timer uses AC mains electricity; make sure the cable and plug are in good condition, do not touch the metal parts of the ticker-timer while it is switched on, and switch it off immediately after each trial.</li>
+      <li>Keep enough distance between groups in the lab so that runways and tape-pullers do not collide with each other.</li>
+    </ul>
+
+    <h4>Sources of Error (for discussion in your report)</h4>
+    <ul>
+      <li>Friction on the trolley is not perfectly constant along the board (the wheel/rail surface is not perfectly smooth).</li>
+      <li>Parallax error when measuring the length of tape sections or the angle of inclination with a protractor.</li>
+      <li>The first few dots on the tape are often too close together/unstable (the trolley has not yet reached steady motion when the ticker-timer is first switched on), so they should be excluded from the analysis.</li>
+      <li>In practice the mains supply frequency varies only very slightly from the nominal 50 Hz, so this is usually neglected.</li>
+    </ul>
+
+    <h4>Alternative without a Ticker-Timer (if the apparatus is unavailable)</h4>
+    <p>If your school does not yet have a ticker-timer, a similar experiment can still be carried out using only a
+    <strong>stopwatch, a runway, a trolley/ball, and a tape measure</strong>:</p>
+    <ol>
+      <li>Incline the board gently (about 1:10), and mark distances every 25 cm from the release point (e.g. 25 cm, 50 cm, 75 cm, 100 cm, and so on).</li>
+      <li>Release the trolley/ball from rest at the starting point, and time how long it takes to reach each distance mark with a stopwatch. Repeat each distance 3 times and take the average time to reduce reaction-time error.</li>
+      <li>Calculate the average velocity for each 25 cm segment ($v = \\Delta s/\\Delta t$), then plot a graph of $v$ against $t$ (time at the midpoint of each segment); the gradient is the acceleration, just as with the ticker-tape method.</li>
+      <li>This method is simpler but less precise (stopwatch reaction-time error is quite significant for fast motion), so it is suitable as an alternative, not an equivalent replacement.</li>
+    </ol>
+
+    <h4>Discussion Questions</h4>
+    <ul>
+      <li>At what angle would the trolley just begin to move at constant velocity (acceleration = 0)? What does the condition $\\tan\\theta = \\mu$ mean physically?</li>
+      <li>Why are the first few dots on the ticker-tape usually not used in the analysis?</li>
+      <li>If your experimental $v$-$t$ graph does not pass through the origin (0,0), what could be the possible cause?</li>
+      <li>How does increasing the angle $\\theta$ affect the percentage contribution of friction to the total acceleration?</li>
+    </ul>
+
+    <h4>Prediction Simulation (optional)</h4>
+    <p class="muted">Before or after the practical, you can try the interactive simulation below to
+    predict/check the theoretical acceleration for various values of $\\theta$ and $\\mu$, but remember, this is only a
+    computer model to help with predictions, <strong>not a substitute for the real experimental data above</strong>.</p>
+
+    <h4>References</h4>
+    <ul>
+      <li><a href="https://spark.iop.org/finding-average-acceleration-ticker-timer" target="_blank" rel="noopener">Finding average acceleration with a ticker-timer, IOPSpark</a></li>
+      <li><a href="https://spark.iop.org/timing-trolley-slope" target="_blank" rel="noopener">Timing a trolley on a slope, IOPSpark</a></li>
+      <li><a href="https://spark.iop.org/ticker-timers-investigating-speed" target="_blank" rel="noopener">Ticker-timers for investigating speed, IOPSpark</a></li>
+    </ul>
+  `
+};
+// Note: in the original file, topic.eksperimen.simHTML is set separately to the
+// INCLINE_TROLLEY_SIM variable after attaching KINEMATICS_EKSPERIMEN_EN to the topic
+// object; that reference is left unchanged and is NOT redefined here.
+
+/* type: "mcq" or "structured".
+   For mcq: options[] and correct = index of the correct answer. */
+const KINEMATICS_LATIHAN_EN = [
+  {
+    type: "mcq",
+    question: "A car starts from rest and undergoes constant acceleration until it reaches a velocity of 20 m s⁻¹ in a time of 8 s. What is the acceleration of the car?",
+    options: ["0.4 m s⁻²", "2.0 m s⁻²", "2.5 m s⁻²", "160 m s⁻²"],
+    correct: 2,
+    solution: `Use $v = u + at$ with $u = 0$, $v = 20~\\text{m s}^{-1}$, $t = 8~\\text{s}$.
+    <br>$a = \\dfrac{v-u}{t} = \\dfrac{20-0}{8} = 2.5~\\text{m s}^{-2}$.`
+  },
+  {
+    type: "mcq",
+    question: "Using the data from the previous question (accelerating from rest to 20 m s⁻¹ in 8 s), what distance does the car travel during those 8 s?",
+    options: ["40 m", "80 m", "160 m", "200 m"],
+    correct: 1,
+    solution: `Use $s = \\tfrac{1}{2}(u+v)t = \\tfrac{1}{2}(0+20)(8) = 80~\\text{m}$.
+    <br>This can also be checked with $s = ut + \\tfrac12 at^2 = 0 + \\tfrac12(2.5)(8^2) = 80~\\text{m}$, a consistent result.`
+  },
+  {
+    type: "structured",
+    question: "A stone is dropped (with no initial velocity) from the top of a cliff 45 m high. Take $g = 9.81~\\text{m s}^{-2}$ and neglect air resistance. Find (a) the time for the stone to reach the base of the cliff, (b) the velocity of the stone as it hits the ground.",
+    solution: `<strong>(a)</strong> $h = \\tfrac12 gt^2 \\Rightarrow t = \\sqrt{\\dfrac{2h}{g}} = \\sqrt{\\dfrac{2(45)}{9.81}} = \\sqrt{9.17} \\approx 3.03~\\text{s}$.
+    <br><strong>(b)</strong> $v = gt = 9.81 \\times 3.03 \\approx 29.7~\\text{m s}^{-1}$
+    <br>or directly: $v = \\sqrt{2gh} = \\sqrt{2(9.81)(45)} = \\sqrt{882.9} \\approx 29.7~\\text{m s}^{-1}$, which is consistent.`
+  },
+  {
+    type: "structured",
+    question: "A ball is kicked horizontally from the top of a cliff 20 m high with a velocity of 15 m s⁻¹. Take $g = 9.81~\\text{m s}^{-2}$. Find (a) the time the ball is in the air, (b) the horizontal distance (range) travelled by the ball when it lands.",
+    solution: `<strong>(a)</strong> The vertical motion does not depend on the horizontal motion. $h = \\tfrac12 gt^2 \\Rightarrow t = \\sqrt{\\dfrac{2(20)}{9.81}} = \\sqrt{4.077} \\approx 2.02~\\text{s}$.
+    <br><strong>(b)</strong> The horizontal motion is uniform velocity motion: $x = v_x \\, t = 15 \\times 2.02 \\approx 30.3~\\text{m}$.`
+  },
+  {
+    type: "structured",
+    question: "The velocity-time data of an object are: $t$ (s) = 0, 1, 2, 3, 4 and $v$ (m s⁻¹) = 0, 5, 10, 15, 20. Find (a) the acceleration of the object, (b) the total distance travelled in 4 s.",
+    solution: `<strong>(a)</strong> The velocity increases by 5 m s⁻¹ every 1 s (uniformly), so $a = \\dfrac{\\Delta v}{\\Delta t} = \\dfrac{5}{1} = 5~\\text{m s}^{-2}$.
+    <br><strong>(b)</strong> Distance = area under the $v$-$t$ graph (a triangle) $= \\tfrac12 \\times 4 \\times 20 = 40~\\text{m}$.
+    <br>Check with $s = ut + \\tfrac12 at^2 = 0 + \\tfrac12(5)(4^2) = 40~\\text{m}$, which is consistent.`
+  },
+  {
+    type: "structured",
+    question: "A ball is thrown vertically upwards with an initial velocity of 24.5 m s⁻¹ from ground level. Take $g = 9.81~\\text{m s}^{-2}$ and neglect air resistance. Find (a) the time taken to reach the highest point, (b) the maximum height reached, (c) the total time the ball is in the air before returning to the point of projection.",
+    solution: `<strong>(a)</strong> At the highest point $v = 0$: $v = u - gt \\Rightarrow t = \\dfrac{u}{g} = \\dfrac{24.5}{9.81} \\approx 2.50~\\text{s}$.
+    <br><strong>(b)</strong> $H = \\dfrac{u^2}{2g} = \\dfrac{24.5^2}{2(9.81)} = \\dfrac{600.25}{19.62} \\approx 30.6~\\text{m}$.
+    <br><strong>(c)</strong> Because the motion is symmetric (time up = time down): $T = 2t = 2(2.50) \\approx 5.00~\\text{s}$.`
+  }
+];
+
+/* Concise formula sheet (plain text), used as automatic "grounding":
+   appended to the prompt sent to the AI so that it uses exactly the
+   formulas & values already validated by the teacher, instead of guessing
+   from general knowledge. */
+const KINEMATICS_FORMULA_SHEET_EN = `
+- Quantities: distance & speed (scalar); displacement, velocity, acceleration (vector).
+- Uniform velocity motion (constant velocity): v = s / t
+- Uniformly accelerated motion (constant acceleration), 4 equations: v = u + a t ; s = u t + 1/2 a t^2 ; v^2 = u^2 + 2 a s ; s = 1/2 (u+v) t
+  (u = initial velocity, v = final velocity, a = acceleration, s = displacement, t = time)
+- Free fall (special case of uniformly accelerated motion, u=0, a=g): h = 1/2 g t^2 ; v = g t ; v^2 = 2 g h
+- Vertical motion upwards: deceleration g acts opposite to the direction of motion; at the highest point v=0; time up = time down (with no air resistance)
+- Projectile motion (independent horizontal uniform velocity motion + vertical uniformly accelerated motion), with angle of elevation θ and initial velocity u:
+  time of flight T = 2 u sin(θ) / g ; maximum height H = (u sin θ)^2 / (2g) ; range R = u^2 sin(2θ) / g
+- Standard value g = 9.81 m/s^2 (Cambridge data sheet), unless otherwise requested by the user.
+- Graphs: gradient of x-t = velocity; gradient of v-t = acceleration; area under v-t = displacement.
+`;
+
+/* Topic-specific concepts for the Prompt Generator dropdown in the Virtual Simulation Lab */
+const KINEMATICS_LAB_CONCEPTS_EN = [
+  "Uniform Velocity Motion",
+  "Uniformly Accelerated Motion",
+  "Free Fall",
+  "Vertical Motion Upwards",
+  "Projectile Motion",
+  "Relationship between x-t, v-t, and a-t graphs",
+  "Other (write your own in the additional instructions)"
+];
+
 (function attachKinematicsContent() {
   const topic = TOPICS.find(t => t.id === "kinematics");
-  topic.materiHTML = KINEMATICS_MATERI;
-  topic.eksperimen = KINEMATICS_EKSPERIMEN;
+  topic.desc = { id: topic.desc, en: KINEMATICS_DESC_EN };
+  topic.materiHTML = { id: KINEMATICS_MATERI, en: KINEMATICS_MATERI_EN };
+  topic.eksperimen = {
+    title: { id: KINEMATICS_EKSPERIMEN.title, en: KINEMATICS_EKSPERIMEN_EN.title },
+    intro: { id: KINEMATICS_EKSPERIMEN.intro, en: KINEMATICS_EKSPERIMEN_EN.intro }
+  };
   topic.eksperimen.simHTML = INCLINE_TROLLEY_SIM;
-  topic.latihan = KINEMATICS_LATIHAN;
-  topic.labConcepts = KINEMATICS_LAB_CONCEPTS;
-  topic.formulaSheet = KINEMATICS_FORMULA_SHEET;
+  topic.latihan = KINEMATICS_LATIHAN.map((q, i) => {
+    const qEN = KINEMATICS_LATIHAN_EN[i] || {};
+    return {
+      ...q,
+      question: { id: q.question, en: qEN.question },
+      options: q.options ? q.options.map((opt, j) => ({ id: opt, en: (qEN.options || [])[j] })) : q.options,
+      solution: { id: q.solution, en: qEN.solution }
+    };
+  });
+  topic.labConcepts = KINEMATICS_LAB_CONCEPTS.map((c, i) => ({ id: c, en: KINEMATICS_LAB_CONCEPTS_EN[i] }));
+  topic.formulaSheet = { id: KINEMATICS_FORMULA_SHEET, en: KINEMATICS_FORMULA_SHEET_EN };
 })();
 
 /* ------------------------------------------------------------
@@ -745,13 +1087,356 @@ const MAGNETIC_LAB_CONCEPTS = [
 ];
 
 /* Tempelkan konten lengkap ke objek topik "magnetic-fields" */
+
+/* ---- English (_EN) translations for MAGNETIC (auto-merged by merge_i18n.py) ---- */
+/* ------------------------------------------------------------
+   English translation: MAGNETIC FIELDS (topic 20)
+   Mirrors js/content.js constants MAGNETIC_MATERI, MAGNETIC_EKSPERIMEN,
+   MAGNETIC_LATIHAN, MAGNETIC_FORMULA_SHEET, MAGNETIC_LAB_CONCEPTS,
+   plus the TOPICS "magnetic-fields" entry's desc field.
+   Depends on the same mediaRow(...) helper used in js/content.js.
+   ------------------------------------------------------------ */
+
+/* TOPICS entry desc field (Indonesian source: "Gaya magnetik, medan magnet
+   oleh arus, induksi elektromagnetik.") */
+const MAGNETIC_DESC_EN = "Magnetic force, magnetic field due to current, electromagnetic induction.";
+
+const MAGNETIC_MATERI_EN = `
+<h3>1. Magnetic Fields and Magnetic Flux</h3>
+<p>A magnetic field is the region around a magnet or a current-carrying conductor in which a magnetic
+material or another moving charge experiences a force. The strength of a magnetic field is expressed as
+the <strong>magnetic flux density</strong> $B$, with SI unit the tesla (T).</p>
+<p>The direction of a magnetic field is represented by field lines: they emerge from the north pole, enter
+the south pole, and never cross each other. The density of the lines indicates the strength of the field
+at that point.</p>
+${mediaRow(
+  { src: "https://upload.wikimedia.org/wikipedia/commons/2/25/Iron-filings-around-magnet.jpg",
+    alt: "Iron filing pattern around a bar magnet showing magnetic field lines",
+    caption: "Iron filings sprinkled around a bar magnet arrange themselves along the magnetic field lines, running from the north pole to the south pole.",
+    author: "Benjamin Crowell (Bcrowell)", license: "CC BY-SA 2.0" },
+  null
+)}
+
+<h3>2. Magnetic Field Due to Electric Current</h3>
+<p>An electric current flowing in a conductor always produces a magnetic field around it (Oersted's
+experiment). Its direction is found using the <strong>right-hand grip rule</strong>: grip the conductor
+with the thumb pointing in the direction of conventional current, and the direction in which the fingers
+curl shows the direction of the magnetic field.</p>
+<table>
+  <tr><th>Shape of conductor</th><th>Magnetic field pattern</th><th>Flux density (at reference point)</th></tr>
+  <tr><td>Long straight wire</td><td>Concentric circles around the wire</td><td>Proportional to $I$, inversely proportional to the distance $d$ from the wire</td></tr>
+  <tr><td>Circular loop (single turn)</td><td>Similar to a bar magnet's field, strongest at the centre of the loop</td><td>Proportional to $I$, inversely proportional to the radius of the loop</td></tr>
+  <tr><td>Solenoid (long coil)</td><td>Nearly uniform and parallel inside the coil, similar to a bar magnet</td><td>Proportional to $I$ and the number of turns per unit length $n$</td></tr>
+</table>
+<p class="muted">Cambridge 9702 does not require deriving the formula for $B$ from the Biot-Savart law, but
+it does require being able to sketch and recognise the field line patterns above and to determine their
+direction using the right-hand grip rule.</p>
+${mediaRow(
+  { src: "https://upload.wikimedia.org/wikipedia/commons/3/34/Right-hand_grip_rule.svg",
+    alt: "Right-hand grip rule for a straight current-carrying wire",
+    caption: "Right-hand grip rule: the thumb points in the direction of conventional current $I$, and the curl of the fingers shows the direction of the magnetic field $B$ around the straight wire.",
+    author: "Schorschi2 (original), SVG version by Wizard191", license: "Public Domain" },
+  { id: "I809vLGN1B8", title: "Field due to straight wire carrying current",
+    channel: "Khan Academy", desc: "Explanation of the magnetic field pattern around a straight current-carrying wire and how to determine its direction." }
+)}
+${mediaRow(
+  { src: "https://upload.wikimedia.org/wikipedia/commons/9/91/Solenoid_field_lines_rough_vector.svg",
+    alt: "Magnetic field line pattern inside and outside a solenoid",
+    caption: "Magnetic field lines in a solenoid: nearly uniform and parallel to the axis inside the coil, resembling the field pattern of a bar magnet outside it.",
+    author: "Ле Лой (Le Loy)", license: "CC0 (Public Domain)" },
+  null
+)}
+
+<h3>3. Magnetic Force on a Current-Carrying Conductor</h3>
+<p>A current-carrying conductor placed in an external magnetic field experiences a force (also called the
+motor effect). The magnitude of the force is:</p>
+<div class="formula-box">$$F = BIL\\sin\\theta$$</div>
+<p>where $B$ = magnetic flux density (T), $I$ = current (A), $L$ = length of conductor within the field
+(m), and $\\theta$ = the angle between the direction of the current and the direction of the magnetic
+field. The maximum force ($F=BIL$) occurs when the conductor is perpendicular to the field ($\\theta =
+90°$); the force is zero when the conductor is parallel to the field ($\\theta = 0°$).</p>
+<p>The direction of the force is determined using <strong>Fleming's Left-Hand Rule</strong>: the first
+finger points in the direction of the magnetic Field, the second finger points in the direction of the
+Current, and the thumb indicates the direction of the force/motion (Thrust) - the three are mutually
+perpendicular.</p>
+${mediaRow(
+  { src: "https://upload.wikimedia.org/wikipedia/commons/3/3d/Right_hand_rule_cross_product_F%3DJ%C3%97B.svg",
+    alt: "Vector diagram of force F, current I, and magnetic field B mutually perpendicular",
+    caption: "Vector diagram: the force $F$ on a current-carrying conductor is always perpendicular to both the direction of the current $I$ and the magnetic field $B$. To find its direction by hand, use Fleming's Left-Hand Rule (first finger = field, second finger = current, thumb = force).",
+    author: "Tokamac", license: "CC BY-SA 4.0" },
+  { id: "ckllSgcdS7g", title: "Force on a current-carrying conductor in a magnetic field",
+    channel: "Khan Academy", desc: "Explains the origin of the force on a current-carrying conductor in a magnetic field and how to calculate it using F = BIL sin theta." }
+)}
+
+<h3>4. Magnetic Force on a Moving Charge</h3>
+<p>A charge $Q$ moving with speed $v$ in a magnetic field $B$ also experiences a magnetic force (often
+called the Lorentz force when combined with the electric force):</p>
+<div class="formula-box">$$F = BQv\\sin\\theta$$</div>
+<p>where $\\theta$ = the angle between the direction of the velocity $v$ and the direction of the field
+$B$. The direction of the force is still found using Fleming's Left-Hand Rule (first finger = field,
+second finger = direction of motion of a positive charge, thumb = force).</p>
+<p>Because the magnetic force is always perpendicular to the velocity, this force <strong>never does work</strong>
+on the charge (it does not change the magnitude of the speed, only the direction of motion). If the charge
+moves perpendicular to a uniform magnetic field, the magnetic force acts as the centripetal force, so the
+path is a <strong>circle</strong> with radius:</p>
+<div class="formula-box">$$BQv = \\dfrac{mv^2}{r} \\quad\\Rightarrow\\quad r = \\dfrac{mv}{BQ}$$</div>
+${mediaRow(
+  { src: "https://upload.wikimedia.org/wikipedia/commons/8/8c/Lorentz_force.svg",
+    alt: "Diagram of the Lorentz force on a moving charge in a magnetic field",
+    caption: "The magnetic force on a charge moving in a magnetic field is always perpendicular to its velocity, causing a curved path (circular if the field is uniform and perpendicular to the velocity).",
+    author: "Jaro.p", license: "CC BY-SA 3.0" },
+  { id: "NnlAI4ZiUrQ", title: "Magnetic force on a charge",
+    channel: "Khan Academy", desc: "Explains the magnetic force on a moving charge (F = BQv sin theta) and why its path can be circular." }
+)}
+
+<h3>5. Magnetic Flux and Electromagnetic Induction</h3>
+<p><strong>Magnetic flux</strong> $\\Phi$ through a plane area $A$ is defined as:</p>
+<div class="formula-box">$$\\Phi = BA\\cos\\theta$$</div>
+<p>where $\\theta$ = the angle between the direction of the magnetic field $B$ and the normal
+(perpendicular) to that plane, the unit of flux is the weber (Wb), where $1~\\text{Wb} = 1~\\text{T
+m}^2$.</p>
+<p><strong>Faraday's law</strong> states that the induced e.m.f. (electromotive force) generated in a
+circuit is proportional to the rate of change of the magnetic flux (flux linkage $N\\Phi$ for a coil of
+$N$ turns) through it:</p>
+<div class="formula-box">$$\\varepsilon = -N\\dfrac{\\Delta\\Phi}{\\Delta t}$$</div>
+<p>An induced e.m.f. can arise because the magnet/field moves relative to the coil, the coil moves within
+the magnetic field, or the magnetic field changes with time (for example, an alternating current in
+another nearby coil).</p>
+${mediaRow(
+  { src: "https://upload.wikimedia.org/wikipedia/commons/c/cd/Faraday%27s_law_of_induction.svg",
+    alt: "Three ways of producing an induced e.m.f. according to Faraday's Law",
+    caption: "Three situations that produce an induced e.m.f. according to Faraday's Law: (a) a circuit moving in a fixed magnetic field, (b) a stationary circuit with a moving magnet/field, (c) a magnetic field that changes with time.",
+    author: "Jähmefyysikko", license: "CC0 (Public Domain)" },
+  { id: "vcStzn55MG0", title: "Faraday's Law Introduction",
+    channel: "Khan Academy", desc: "An introduction to Faraday's Law of electromagnetic induction and the relationship between induced e.m.f. and the rate of change of magnetic flux." }
+)}
+
+<h3>6. Lenz's Law</h3>
+<p>The negative sign in Faraday's law equation represents <strong>Lenz's Law</strong>: the direction of
+the induced current is always such that the magnetic field it produces <strong>opposes the change in
+flux</strong> that caused it. Lenz's Law is actually a consequence of the law of conservation of energy,
+because if the induced current instead reinforced the change in flux, energy would be created without any
+external work being done (violating the law of conservation of energy).</p>
+<p class="muted">Example application: when a magnet's north pole is brought closer to a coil, the induced
+current flows such that the end of the coil facing the magnet also becomes a north pole (repelling the
+approaching magnet); when the magnet is moved away, that end of the coil becomes a south pole (attracting
+the receding magnet, opposing its motion).</p>
+${mediaRow(
+  null,
+  { id: "xxZenoBs2Pg", title: "Lenz's Law",
+    channel: "Khan Academy", desc: "Explanation of Lenz's Law: why the direction of induced current always opposes the change in magnetic flux that produces it, and its connection to the law of conservation of energy." }
+)}
+`;
+
+const MAGNETIC_EKSPERIMEN_EN = {
+  title: "Real Experiment: Determining Magnetic Flux Density Using a Current Balance",
+  intro: `
+    <p class="muted">This is a genuine physical experiment using real laboratory equipment (an electronic
+    balance, magnets, and a power supply), not a computer simulation. This experiment is the Cambridge/A-Level
+    version of the standard practical used to verify $F = BIL$ and to determine the magnetic flux density
+    $B$ of a pair of magnets quantitatively.</p>
+
+    <h4>Aim</h4>
+    <p>To investigate the relationship between the magnetic force $F$ on a current-carrying conductor and
+    the magnitude of the current $I$ flowing through it, and to determine the magnetic flux density $B$
+    between a pair of magnets from experimental data.</p>
+
+    <h4>Underlying Concept</h4>
+    <p>When a current-carrying wire is placed perpendicular between the poles of a magnet, the wire
+    experiences a magnetic force $F = BIL$ (Newton's third law: an equal and opposite force also acts on
+    the magnet). If the magnet is placed on an electronic balance and the wire is held fixed (stationary)
+    exactly in the magnet's gap, this reaction force on the magnet is read as a <strong>measurable change in
+    mass</strong> $\\Delta m$ on the balance:</p>
+    <div class="formula-box">$$F = \\Delta m \\times g$$</div>
+    <p>where $g = 9.81$ m s⁻². Since $F = BIL$ (with $\\theta = 90°$ because the wire is perpendicular to
+    the field), a graph of $F$ against $I$ will be a straight line through the origin with gradient $BL$.
+    Since the length $L$ (the width of the magnet through which the wire passes) can be measured directly,
+    the magnetic flux density can be calculated:</p>
+    <div class="formula-box">$$B = \\dfrac{\\text{gradient of the } F\\text{-}I \\text{ graph}}{L}$$</div>
+
+    <h4>Apparatus &amp; Materials</h4>
+    <ul>
+      <li>A pair of Magnadur magnets (or U-shaped/horseshoe magnets) mounted on a soft-iron yoke so as to form a gap with a uniform magnetic field</li>
+      <li>An electronic top-pan balance with a precision of at least 0.01 g</li>
+      <li>Two retort stands with clamps to suspend/hold the wire fixed horizontally, passing through the magnet gap without touching it</li>
+      <li>Thick copper wire (rigid, not easily bent), of sufficient length to be stretched between the two stands</li>
+      <li>A variable DC (direct current) power supply, 0 - 6 A</li>
+      <li>An ammeter (or use the current reading from the power supply if it is calibrated), connecting wires, and a rheostat/variable resistor to adjust the current in steps</li>
+      <li>A ruler or vernier calipers to measure the length $L$ (the width of the magnet through which the wire passes, along the direction of the wire)</li>
+    </ul>
+
+    <h4>Procedure</h4>
+    <ol>
+      <li>Place the magnet (on its yoke) exactly at the centre of the electronic balance pan, then <strong>zero (tare)</strong> the balance so its reading is 0.00 g with the magnet on it but with no current yet flowing.</li>
+      <li>Set up the copper wire horizontally between the two stands so that the middle section of the wire lies exactly in the gap between the magnet's poles, perpendicular to the field direction, and does not touch either the magnet or the balance.</li>
+      <li>Connect the wire to the DC power supply through the ammeter and rheostat, but do not switch it on yet.</li>
+      <li>Measure and record the length $L$ (the width of the magnet along the direction of the wire, i.e. the length of wire that actually lies within the magnetic field).</li>
+      <li>Switch on a current of 0.50 A, and record the mass reading on the balance once it has stabilised. If the reading decreases (becomes negative) instead of increasing, reverse the direction of the current or the orientation of the magnet's poles so that the reading increases (making it easier to read positive values).</li>
+      <li>Increase the current in steps of 0.50 A each time (0.50 A; 1.00 A; 1.50 A; ... up to about 4.00-5.00 A - do not go beyond this so the wire does not overheat), recording the mass reading at each current value.</li>
+      <li>Switch off the current and check that the balance returns to 0.00 g (if not, repeat the taring and all the measurements). Repeat this whole set of measurements two more times to obtain an average at each current value.</li>
+    </ol>
+
+    <h4>Data Table (example - fill in with your own experimental data)</h4>
+    <table>
+      <tr><th>I (A)</th><th>Δm₁ (g)</th><th>Δm₂ (g)</th><th>Δm₃ (g)</th><th>Average Δm (g)</th><th>F = Δm × g (N)</th></tr>
+      <tr><td>0.50</td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>1.00</td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>1.50</td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>2.00</td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>2.50</td><td></td><td></td><td></td><td></td><td></td></tr>
+    </table>
+    <p class="muted">Remember: the mass reading on the balance, in grams (g), must be converted to
+    kilograms (divide by 1000) before multiplying by $g = 9.81$ m s⁻² to obtain the force $F$ in
+    newtons.</p>
+
+    <h4>Analysis &amp; Calculations</h4>
+    <ul>
+      <li>Plot a graph of $F$ (y-axis, unit N) against $I$ (x-axis, unit A). Correct data will form a straight line passing through (or very close to) the origin (0,0).</li>
+      <li>Draw a line of best fit and calculate its gradient: gradient $= \\dfrac{\\Delta F}{\\Delta I}$ (unit T m, since gradient $= BL$).</li>
+      <li>Calculate the magnetic flux density: $B = \\dfrac{\\text{gradient}}{L}$, with $L$ in metres.</li>
+      <li>School Magnadur magnets typically have a $B$ in the range $0.1$ to $0.5$ T; compare your result with this range as a sanity check (not as an absolute "correct" value, since every set of magnets differs).</li>
+    </ul>
+
+    <h4>Safety Precautions</h4>
+    <ul>
+      <li>A current of several amperes makes the wire hot - do not touch the wire while current is flowing, especially after several minutes of continuous measurement.</li>
+      <li>Switch off the power supply between measurements if the wire starts to feel warm, and let it cool before continuing.</li>
+      <li>Make sure the wiring connections are neat and there are no exposed metal parts that could be touched by wet hands.</li>
+      <li>Magnadur magnets are brittle (they crack easily if dropped) - handle and place them with care.</li>
+    </ul>
+
+    <h4>Sources of Error (to discuss in your report)</h4>
+    <ul>
+      <li>Unstable mains supply feeding a cheap power supply can cause the ammeter reading to fluctuate slightly.</li>
+      <li>If the wire slightly touches the magnet or the stand, it can give a spurious extra force reading (friction/mechanical loading rather than a pure magnetic force).</li>
+      <li>The measured length $L$ may not be exactly equal to the effective length of wire within the uniform field (the magnetic field weakens gradually at the edges of the gap rather than stopping abruptly).</li>
+      <li>Vibrations of the bench or draughts of air can disturb the stability of the electronic balance reading.</li>
+    </ul>
+
+    <h4>Alternative Without an Electronic Balance (if the equipment is unavailable)</h4>
+    <p>If a school does not yet have a sufficiently precise electronic balance, a qualitative version of
+    the experiment can still be carried out using a <strong>simple home-made current balance</strong>:
+    suspend a loop of thin wire (or a strip of aluminium foil) on a thread between the poles of a pair of
+    Magnadur magnets, so that the loop can swing freely towards or away from the magnet when current flows
+    through it. Observe that (a) the loop moves/deflects when the current is switched on, (b) the direction
+    of deflection reverses when the direction of the current is reversed, and (c) the size of the
+    deflection increases as the current is increased, consistent with $F = BIL$. This method does not give
+    a numerical value of $B$, but it still verifies the relationship $F \\propto I$ qualitatively.</p>
+
+    <h4>Discussion Questions</h4>
+    <ul>
+      <li>Why should a graph of $F$ against $I$ be a straight line through the origin rather than a curve?</li>
+      <li>What happens to the balance reading if the direction of the current is reversed? Explain using Newton's third law and Fleming's Left-Hand Rule.</li>
+      <li>If the distance between the magnet's poles is increased (making the field less uniform/weaker), how would this affect the gradient of the $F$-$I$ graph you obtain?</li>
+      <li>Why is it important to zero (tare) the balance with the magnet already on it, before the current is switched on?</li>
+    </ul>
+
+    <h4>References</h4>
+    <ul>
+      <li><a href="https://pmt.physicsandmathstutor.com/download/Physics/A-level/Notes/AQA/Practical-Skills/RP%2010%20-%20Magnetic%20Force%20on%20a%20Wire.pdf" target="_blank" rel="noopener">Required Practical 10: Magnetic Force on a Wire, Physics & Maths Tutor (AQA A-level)</a></li>
+      <li><a href="https://spark.iop.org/current-balance" target="_blank" rel="noopener">The current balance, IOPSpark</a></li>
+      <li><a href="https://spark.iop.org/force-wire-carrying-current-magnetic-field" target="_blank" rel="noopener">Force on a wire carrying a current in a magnetic field, IOPSpark</a></li>
+      <li><a href="https://spark.iop.org/episode-412-force-conductor-magnetic-field" target="_blank" rel="noopener">Episode 412: The force on a conductor in a magnetic field, IOPSpark</a></li>
+    </ul>
+  `
+};
+
+const MAGNETIC_LATIHAN_EN = [
+  {
+    type: "mcq",
+    question: "A straight wire of length 0.40 m carries a current of 3.0 A perpendicular to a uniform magnetic field of flux density 0.25 T. What is the magnitude of the magnetic force on the wire?",
+    options: ["0.030 N", "0.30 N", "3.0 N", "30 N"],
+    correct: 1,
+    solution: `Since the wire is perpendicular to the field, $\\theta = 90°$, so $\\sin\\theta = 1$.
+    <br>$F = BIL\\sin\\theta = 0.25 \\times 3.0 \\times 0.40 \\times 1 = 0.30~\\text{N}$.`
+  },
+  {
+    type: "mcq",
+    question: "A horizontal wire carries a current directed towards the east, in a uniform horizontal magnetic field directed towards the north. According to Fleming's Left-Hand Rule, in which direction is the magnetic force on the wire?",
+    options: ["Vertically upward (away from the ground)", "Vertically downward (towards the ground)", "Towards the west", "Towards the south"],
+    correct: 0,
+    solution: `Fleming's Left-Hand Rule: first finger = direction of the field (North), second finger = direction of the current (East), thumb = direction of the force.
+    <br>Since the current and field directions are perpendicular to each other in the horizontal plane, the force, being perpendicular to both, must be vertical.
+    <br>With the first finger pointing North and the second finger pointing East, the thumb (direction of the force) points <strong>vertically upward</strong>.`
+  },
+  {
+    type: "structured",
+    question: "A wire of length 25 cm carries a current of 4.0 A perpendicular to a uniform magnetic field. The measured force acting on the wire is 0.60 N. Determine the magnetic flux density B.",
+    solution: `Since the wire is perpendicular to the field, $\\sin\\theta = 1$, and $L = 25~\\text{cm} = 0.25~\\text{m}$.
+    <br>$F = BIL \\Rightarrow B = \\dfrac{F}{IL} = \\dfrac{0.60}{4.0 \\times 0.25} = \\dfrac{0.60}{1.0} = 0.60~\\text{T}$.`
+  },
+  {
+    type: "structured",
+    question: "A wire of length 0.50 m carries a current of 2.0 A at an angle of 40 degrees to the direction of a uniform magnetic field of flux density 0.80 T. Calculate the magnetic force acting on the wire.",
+    solution: `$F = BIL\\sin\\theta = 0.80 \\times 2.0 \\times 0.50 \\times \\sin 40°$.
+    <br>$\\sin 40° \\approx 0.643$, so $F \\approx 0.80 \\times 2.0 \\times 0.50 \\times 0.643 \\approx 0.51~\\text{N}$.`
+  },
+  {
+    type: "structured",
+    question: "An electron (mass $9.11\\times10^{-31}$ kg, charge $1.60\\times10^{-19}$ C) moves with a speed of $2.0\\times10^{6}$ m s⁻¹ perpendicular to a uniform magnetic field of 0.50 mT. Determine (a) the magnitude of the magnetic force on the electron, (b) the radius of its circular path.",
+    solution: `<strong>(a)</strong> $B = 0.50~\\text{mT} = 5.0\\times10^{-4}~\\text{T}$, and since the motion is perpendicular to the field, $\\sin\\theta=1$.
+    <br>$F = BQv = (5.0\\times10^{-4})(1.60\\times10^{-19})(2.0\\times10^{6}) = 1.6\\times10^{-16}~\\text{N}$.
+    <br><strong>(b)</strong> The magnetic force acts as the centripetal force: $r = \\dfrac{mv}{BQ} = \\dfrac{(9.11\\times10^{-31})(2.0\\times10^{6})}{(5.0\\times10^{-4})(1.60\\times10^{-19})} = \\dfrac{1.822\\times10^{-24}}{8.0\\times10^{-23}} \\approx 2.3\\times10^{-2}~\\text{m} = 2.3~\\text{cm}$.`
+  },
+  {
+    type: "structured",
+    question: "A flat coil with 200 turns and a cross-sectional area of $5.0\\times10^{-3}$ m² is placed perpendicular to a magnetic field (the coil's normal is parallel to the field). The magnetic field changes linearly from 0.10 T to 0.50 T over a time of 0.20 s. Determine (a) the magnitude of the change in magnetic flux through one turn, (b) the average induced e.m.f. in the coil.",
+    solution: `<strong>(a)</strong> Since the normal is parallel to the field, $\\theta = 0°$, so $\\Phi = BA$.
+    <br>$\\Phi_{initial} = 0.10 \\times 5.0\\times10^{-3} = 5.0\\times10^{-4}~\\text{Wb}$.
+    <br>$\\Phi_{final} = 0.50 \\times 5.0\\times10^{-3} = 2.5\\times10^{-3}~\\text{Wb}$.
+    <br>$\\Delta\\Phi = 2.5\\times10^{-3} - 5.0\\times10^{-4} = 2.0\\times10^{-3}~\\text{Wb}$.
+    <br><strong>(b)</strong> $\\varepsilon = N\\dfrac{\\Delta\\Phi}{\\Delta t} = 200 \\times \\dfrac{2.0\\times10^{-3}}{0.20} = 200 \\times 0.010 = 2.0~\\text{V}$.`
+  }
+];
+
+/* Concise formula sheet (plain text), used as automatic "grounding":
+   appended to the prompt sent to the AI so it uses exactly the formulas
+   & conventions already validated by the teacher, rather than guessing
+   from general knowledge. */
+const MAGNETIC_FORMULA_SHEET_EN = `
+- Magnetic flux density B, unit tesla (T). Field direction: out of the north pole, into the south pole.
+- Magnetic field due to current: direction found using the right-hand grip rule (thumb = direction of current, curl of fingers = direction of field).
+  Patterns: straight wire -> concentric circles; circular loop -> similar to a bar magnet, strongest at the centre; solenoid -> nearly uniform & parallel to the axis inside the coil.
+- Force on a current-carrying conductor (motor effect): F = B I L sin(theta), theta = angle between the current and the field. Maximum when perpendicular (theta=90), zero when parallel (theta=0).
+  Direction of force: Fleming's Left-Hand Rule (first finger = Field, second finger = Current, thumb = Thrust/force).
+- Force on a moving charge: F = B Q v sin(theta). The magnetic force is always perpendicular to the velocity, so it does no work (speed stays constant).
+  If v is perpendicular to B (uniform field), the path is a circle with radius r = m v / (B Q) (magnetic force = centripetal force).
+- Magnetic flux: Phi = B A cos(theta), theta = angle between the field B and the normal to the plane. Unit weber (Wb), 1 Wb = 1 T m^2.
+- Faraday's law: induced e.m.f. (EMF) = -N (change in Phi)/(change in time) = -N dPhi/dt. The e.m.f. arises from a changing flux (relative motion of magnet-coil, or a field changing with time).
+- Lenz's law (the negative sign in Faraday's law): the direction of the induced current always opposes the change in flux that causes it, a consequence of the law of conservation of energy.
+- The standard value g = 9.81 m/s^2 is used to convert the balance's mass reading (grams) into a force (newtons) in the current balance experiment, unless the user requests otherwise.
+`;
+
+/* Concepts for the Prompt Generator dropdown in the Virtual Simulation Lab */
+const MAGNETIC_LAB_CONCEPTS_EN = [
+  "Magnetic Field Due to a Straight Current-Carrying Wire (Right-Hand Rule)",
+  "Magnetic Field Due to a Solenoid/Coil",
+  "Magnetic Force on a Current-Carrying Conductor (F = BIL, Fleming's Left-Hand Rule)",
+  "Magnetic Force on a Moving Charge and Circular Motion (F = BQv)",
+  "Electromagnetic Induction (Faraday's Law)",
+  "Lenz's Law (direction of induced current)",
+  "Other (write your own in the additional instructions)"
+];
+
 (function attachMagneticFieldsContent() {
   const topic = TOPICS.find(t => t.id === "magnetic-fields");
-  topic.materiHTML = MAGNETIC_MATERI;
-  topic.eksperimen = MAGNETIC_EKSPERIMEN;
-  topic.latihan = MAGNETIC_LATIHAN;
-  topic.labConcepts = MAGNETIC_LAB_CONCEPTS;
-  topic.formulaSheet = MAGNETIC_FORMULA_SHEET;
+  topic.desc = { id: topic.desc, en: MAGNETIC_DESC_EN };
+  topic.materiHTML = { id: MAGNETIC_MATERI, en: MAGNETIC_MATERI_EN };
+  topic.eksperimen = {
+    title: { id: MAGNETIC_EKSPERIMEN.title, en: MAGNETIC_EKSPERIMEN_EN.title },
+    intro: { id: MAGNETIC_EKSPERIMEN.intro, en: MAGNETIC_EKSPERIMEN_EN.intro }
+  };
+  topic.latihan = MAGNETIC_LATIHAN.map((q, i) => {
+    const qEN = MAGNETIC_LATIHAN_EN[i] || {};
+    return {
+      ...q,
+      question: { id: q.question, en: qEN.question },
+      options: q.options ? q.options.map((opt, j) => ({ id: opt, en: (qEN.options || [])[j] })) : q.options,
+      solution: { id: q.solution, en: qEN.solution }
+    };
+  });
+  topic.labConcepts = MAGNETIC_LAB_CONCEPTS.map((c, i) => ({ id: c, en: MAGNETIC_LAB_CONCEPTS_EN[i] }));
+  topic.formulaSheet = { id: MAGNETIC_FORMULA_SHEET, en: MAGNETIC_FORMULA_SHEET_EN };
 })();
 
 /* ------------------------------------------------------------
@@ -1169,13 +1854,465 @@ const TEMPERATURE_LAB_CONCEPTS = [
 ];
 
 /* Tempelkan konten lengkap ke objek topik "temperature" */
+
+/* ---- English (_EN) translations for TEMPERATURE (auto-merged by merge_i18n.py) ---- */
+/* ------------------------------------------------------------
+   English translation: TEMPERATURE (topic 14, A2)
+   Cambridge International AS & A Level Physics (9702) study app.
+   Standalone i18n resource file - mirrors the constant names used
+   in js/content.js (TEMPERATURE_MATERI, TEMPERATURE_EKSPERIMEN,
+   TEMPERATURE_LATIHAN, TEMPERATURE_FORMULA_SHEET,
+   TEMPERATURE_LAB_CONCEPTS), each suffixed with _EN.
+   Does not redefine mediaRow() or TOPICS (already provided by
+   content.js) - this file assumes mediaRow() is available in
+   scope wherever TEMPERATURE_MATERI_EN is used.
+   ------------------------------------------------------------ */
+
+/* English translation of the "temperature" topic's short desc field
+   from the TOPICS array in content.js. */
+const TEMPERATURE_DESC_EN = "Temperature scales, thermal equilibrium, heat capacity.";
+
+const TEMPERATURE_MATERI_EN = `
+<h3>1. Thermal Equilibrium and the Concept of Temperature</h3>
+<p>When two bodies at different temperatures are brought into contact (or connected so that heat can flow
+between them), heat flows with a net transfer from the body at the <strong>higher temperature</strong> to the
+body at the <strong>lower temperature</strong>. This net flow continues until the temperatures of both bodies
+become equal - at this point the two bodies are said to be in <strong>thermal equilibrium</strong>, and there
+is no longer any net flow of heat between them (although, microscopically, molecules still exchange energy in
+both directions - it is just that the amounts exchanged each way are equal).</p>
+<p>This is the basic idea behind why <strong>temperature</strong> is defined as the physical quantity that
+determines whether two bodies are in thermal equilibrium or not: two bodies at the same temperature will not
+transfer any net heat to or from each other. This idea is sometimes referred to, in more formal treatments, as
+the <em>Zeroth Law of Thermodynamics</em> (if body A is in thermal equilibrium with body C, and body B is also
+in thermal equilibrium with body C, then A must also be in thermal equilibrium with B) - it is this concept
+that allows a thermometer to be used to measure the temperature of other bodies consistently.</p>
+<p class="muted">A thermometer itself works on this principle: the liquid/sensor inside the thermometer is
+allowed to reach thermal equilibrium with the body being measured, and the physical property of the
+thermometer that varies with temperature (for example, the length of a mercury column) is then read off as the
+temperature of that body.</p>
+${mediaRow(
+  { src: "https://upload.wikimedia.org/wikipedia/commons/b/bd/Mercury-thermometer.jpg",
+    alt: "Close-up photo of the mercury column inside a medical thermometer",
+    caption: "The mercury column in a medical thermometer expands or contracts following its own temperature, which adjusts to match the body being measured through thermal equilibrium, so the length of the mercury column can be used to read the temperature.",
+    author: "Jurii", license: "CC BY 3.0" },
+  { id: "-7Gl-yKF6Y4", title: "Thermal energy, temperature, and heat",
+    channel: "Khan Academy", desc: "An introduction to the relationship between thermal energy, temperature, and heat, and the direction of net heat flow between two bodies in contact." }
+)}
+
+<h3>2. Temperature Scales: Thermodynamic (Kelvin) and Celsius</h3>
+<p>The <strong>thermodynamic scale</strong> of temperature, with the unit <strong>kelvin (K)</strong>, is an
+absolute temperature scale that does not depend on the physical properties of any particular substance (for
+example, it does not depend on the freezing point/boiling point of water, unlike the Celsius scale). The zero
+point of this scale, <strong>0 K (absolute zero)</strong>, is the lowest temperature that can theoretically be
+reached, corresponding to the point at which the kinetic energy of the molecules/particles of a substance is
+at its minimum value.</p>
+<p>According to the Cambridge 9702 <em>syllabus</em> (2025-2027), the official conversion between the Celsius
+and Kelvin scales is:</p>
+<div class="formula-box">$$\\dfrac{T}{\\text{K}} = \\dfrac{\\theta}{{}^\\circ\\text{C}} + 273{,}15$$</div>
+<p>where $T$ = temperature in kelvin and $\\theta$ = temperature in degrees Celsius. This means $0~{}^\\circ\\text{C} =
+273{,}15~\\text{K}$ and absolute zero is $0~\\text{K} = -273{,}15~{}^\\circ\\text{C}$.</p>
+<p class="muted">Practical note: since the difference between $273{,}15$ and $273$ is only $0{,}15$ K, many
+questions (especially those involving a temperature <em>difference</em> $\\Delta T$, rather than an absolute
+value $T$) use the quick rounding $T/\\text{K}
+\\approx \\theta/{}^\\circ\\text{C} + 273$. Remember: because the size of one kelvin is exactly equal to the
+size of one degree Celsius, a <strong>change in temperature</strong> $\\Delta T$ (K) always has the same
+numerical value as $\\Delta\\theta$
+($^\\circ$C) - the constant $273{,}15$ cancels out when subtracting.</p>
+${mediaRow(
+  null,
+  { id: "eEJqaNaq9v8", title: "Absolute temperature and the kelvin scale",
+    channel: "Khan Academy", desc: "An explanation of the concept of absolute temperature, the Kelvin scale, and why absolute zero forms the theoretical lower limit of temperature." }
+)}
+
+<h3>3. Practical Temperature Scales: Resistance Thermometers and Thermocouples</h3>
+<p>The thermodynamic (Kelvin) scale is theoretical and difficult to measure directly in an everyday
+laboratory, so an <strong>empirical/practical temperature scale</strong> is used instead, based on a physical
+property of a material that varies (more or less) linearly with temperature. Two examples commonly discussed
+in Cambridge 9702 are:</p>
+<table>
+  <tr><th>Type of thermometer</th><th>Physical property measured</th><th>Range &amp; typical use</th></tr>
+  <tr><td>Resistance thermometer (e.g. platinum wire)</td><td>Electrical resistance $R$, which increases almost linearly with temperature</td><td>Wide range, high precision, somewhat slow response; suitable for steady or slowly-changing temperatures in industry &amp; the laboratory</td></tr>
+  <tr><td>Thermocouple</td><td>The small e.m.f. (voltage) produced by a junction of two different metals at different temperatures (the Seebeck effect)</td><td>Small in size, fast response, suitable for rapidly-changing temperatures or measurement points that are hard to reach</td></tr>
+</table>
+<p>Because the physical property $X$ (resistance or e.m.f.) being measured is generally <strong>not perfectly
+linear</strong> with temperature over the whole range, a practical thermometer needs to be
+<strong>calibrated</strong> using two known fixed points (for example, the ice point $0~{}^\\circ\\text{C}$ and
+the steam point $100~{}^\\circ\\text{C}$ at standard atmospheric pressure), after which temperatures between
+the two are estimated by linear interpolation:</p>
+<div class="formula-box">$$\\theta = \\dfrac{X_\\theta - X_0}{X_{100}-X_0}\\times 100~{}^\\circ\\text{C}$$</div>
+<p>where $X_0$ = value of the physical property at $0~{}^\\circ\\text{C}$, $X_{100}$ = value of the physical
+property at $100~{}^\\circ\\text{C}$, and $X_\\theta$ = value of the physical property at the unknown
+temperature $\\theta$. Because different materials are not linear in exactly the same way, two different types
+of practical thermometer may give slightly different temperature readings for the same object (except exactly
+at the calibration points) - this is why the thermodynamic (Kelvin) scale is still needed as an absolute
+reference that does not depend on any particular material.</p>
+${mediaRow(
+  { src: "https://upload.wikimedia.org/wikipedia/commons/f/f2/Thermocouple.png",
+    alt: "Diagram of the working principle of a thermocouple",
+    caption: "Diagram of how a thermocouple works: the junction of two different metals produces a small e.m.f. that depends on the temperature difference between the measuring junction and the reference junction (the Seebeck effect).",
+    author: "Vivikowski", license: "CC BY-SA 3.0" },
+  null
+)}
+
+<h3>4. Specific Heat Capacity</h3>
+<p>The <strong>specific heat capacity</strong> $c$ of a substance is defined as the amount of heat energy
+required to raise the temperature of $1~\\text{kg}$ of that substance by $1~\\text{K}$ (or $1~{}^\\circ\\text{C}$,
+since the two are the same size). Its SI unit is $\\text{J kg}^{-1}\\text{K}^{-1}$.</p>
+<div class="formula-box">$$Q = mc\\Delta\\theta$$</div>
+<p>where $Q$ = heat energy (J), $m$ = mass (kg), $c$ = specific heat capacity ($\\text{J kg}^{-1}
+\\text{K}^{-1}$), and $\\Delta\\theta$ = temperature change (K or $^\\circ$C). The value of $c$ differs from one
+substance to another - water has a very large $c$ compared with most metals, so water is "slower" to change
+temperature for the same amount of heat (this is why the sea or a lake helps to stabilise the temperature
+around it).</p>
+<p class="muted">Values of specific heat capacity (for example, of water, ice, or a particular metal) are
+<strong>not part of</strong> the universal Cambridge 9702 <em>Data and Formulae List</em> (which contains only
+fundamental physical constants such as $g$, $e$, $h$, $N_A$), so these values will always be <strong>given
+directly in the exam question</strong>. Commonly used values: $c_{air} \\approx 4200~\\text{J kg}^{-1}\\text{K}^{-1}$,
+$c_{es} \\approx 2100~\\text{J kg}^{-1}\\text{K}^{-1}$, $c_{aluminium} \\approx 900~\\text{J kg}^{-1}
+\\text{K}^{-1}$.</p>
+<p><strong>The electrical method</strong> is the standard way of measuring $c$ for a substance (solid or
+liquid) in the laboratory: the substance is heated using an electrical heater (e.g. an immersion heater) whose
+electrical energy is known precisely from $E = VIt$ (voltage $\\times$ current $\\times$ time), and the
+resulting temperature rise $\\Delta\\theta$ is measured. Assuming (or correcting for) heat losses to the
+surroundings, $E \\approx Q = mc\\Delta\\theta$, so:</p>
+<div class="formula-box">$$c = \\dfrac{VIt}{m\\Delta\\theta}$$</div>
+<p class="muted">The complete procedure for this electrical method (including how to minimise errors from heat
+loss) is discussed in full in the <strong>Experiment</strong> tab of this topic.</p>
+${mediaRow(
+  { src: "https://upload.wikimedia.org/wikipedia/commons/3/3f/Immersion_heater_(zoom).jpg",
+    alt: "Close-up photo of an electrical immersion heater element",
+    caption: "An electrical immersion heater: the electrical energy flowing through it ($E=VIt$) is converted into heat, and is used to measure the specific heat capacity of a substance using the electrical method.",
+    author: "Simon A. Eugster (LivingShadow)", license: "CC BY-SA 3.0" },
+  { id: "GNelfJ6IAJw", title: "Specific heat capacity",
+    channel: "Khan Academy", desc: "An explanation of the concept of specific heat capacity and how to use the equation Q = mcΔθ in basic problems." }
+)}
+
+<h3>5. Specific Latent Heat</h3>
+<p>When a pure substance changes state (for example, ice melting into water, or water evaporating into steam)
+at a constant temperature (for example, exactly $0~{}^\\circ\\text{C}$ for the melting of ice, or
+$100~{}^\\circ\\text{C}$ for the vaporisation of water at standard atmospheric pressure), <strong>the
+temperature of the substance does not change</strong> even though heat continues to be absorbed/released. This
+energy is used to break/form intermolecular bonds (changing the arrangement of the substance's particles),
+rather than to increase the average kinetic energy of the molecules (which is what temperature is related
+to).</p>
+<p><strong>Specific latent heat</strong> $L$ of a substance is defined as the amount of heat energy required to
+change the state of $1~\\text{kg}$ of that substance, without any accompanying change in temperature:</p>
+<div class="formula-box">$$Q = mL$$</div>
+<p>where $Q$ = heat energy (J), $m$ = mass of substance that changes state (kg), and $L$ = specific latent heat
+($\\text{J kg}^{-1}$). There are two types of specific latent heat for the same substance, and they do
+<strong>not</strong> have the same value:</p>
+<ul>
+  <li><strong>Specific latent heat of fusion, $L_f$</strong>: for a solid $\\leftrightarrow$ liquid change of
+  state. Example: $L_f$ of ice $\\approx 3{,}34\\times10^{5}~\\text{J kg}^{-1}$.</li>
+  <li><strong>Specific latent heat of vaporisation, $L_v$</strong>: for a liquid $\\leftrightarrow$ gas change
+  of state. Example: $L_v$ of water $\\approx 2{,}26\\times10^{6}~\\text{J kg}^{-1}$.</li>
+</ul>
+<p class="muted">$L_v$ is much greater than $L_f$ for the same substance (water), because vaporising means
+breaking almost all of the intermolecular bonds so that the molecules become completely separated far apart as
+a gas, whereas melting "only" changes the rigid arrangement of a solid into a liquid in which the molecules
+are still close together.</p>
+<p>Just as with specific heat capacity, $L$ can also be measured using the <strong>electrical method</strong>:
+an electrical heater of known power melts/vaporises a certain mass of the substance over a given time, and the
+mass that changes state ($m$) is weighed, so that $L = VIt/m$ (with a correction for heat loss where
+necessary).</p>
+${mediaRow(
+  { src: "https://upload.wikimedia.org/wikipedia/commons/b/b4/Cooling_curve_pure_metal.svg",
+    alt: "Graph of the cooling curve of a pure metal showing a constant-temperature plateau during freezing",
+    caption: "Cooling curve of a pure metal: the temperature falls steadily while the metal is liquid and while it is solid, but is flat (the temperature stays constant) while freezing is taking place - heat continues to be released, but all of it is used for the change of state (latent heat), not for lowering the temperature.",
+    author: "Wizard191", license: "CC BY-SA 3.0" },
+  { id: "7bvqJUszxhs", title: "Specific latent heat / Cambridge International AS & A Level Physics",
+    channel: "College Physics", desc: "An explanation of the definition and use of specific latent heat (Q = mL) in the context of the Cambridge International AS & A Level Physics syllabus." }
+)}
+
+<h3>6. Bringing It Together: Temperature-Time Graphs During Heating</h3>
+<p>Imagine a block of ice being heated at a constant rate of heat supply (for example, using an electrical
+heater of constant power), starting below $0~{}^\\circ\\text{C}$ until it has all become hot steam. A graph of
+temperature against time (or against the heat energy absorbed so far, since heat $\\propto$ time at constant
+power) shows a characteristic rising-flat-rising-flat pattern, with <strong>five stages</strong>:</p>
+<ol>
+  <li>The temperature of the ice rises steadily from $<0~{}^\\circ\\text{C}$ towards $0~{}^\\circ\\text{C}$
+  (using $c_{es}$).</li>
+  <li>The temperature is <strong>flat at exactly $0~{}^\\circ\\text{C}$</strong> while all of the ice melts
+  into water (using $L_f$ of ice) - during this stage there is a mixture of ice and water at the same
+  temperature.</li>
+  <li>The temperature of the (liquid) water rises steadily from $0~{}^\\circ\\text{C}$ towards
+  $100~{}^\\circ\\text{C}$ (using $c_{air}$).</li>
+  <li>The temperature is <strong>flat at exactly $100~{}^\\circ\\text{C}$</strong> while all of the water
+  vaporises into steam (using $L_v$ of water).</li>
+  <li>The temperature of the steam rises again above $100~{}^\\circ\\text{C}$ (using the specific heat capacity
+  of steam).</li>
+</ol>
+<p>Because the rate of heat supply (heater power) is constant, the <strong>width of a flat section</strong> on
+the graph (the length of time the temperature stays unchanged) is directly proportional to the value of $L$
+for that stage, while the <strong>gradient</strong> of a rising section is inversely proportional to $c$ for
+that phase (the larger $c$ is, the shallower/slower the temperature rise for the same rate of heat supply). To
+calculate the total energy required from one end of the process to the other, the heat for <strong>each stage
+is calculated separately and then added together</strong> - this is the type of combined multi-stage question
+that often appears in exams (see Practice Question 5 below for a full example).</p>
+${mediaRow(
+  null,
+  { id: "hxe7Ce7vUwU", title: "A Level Physics: Specific Heat Capacity Question examples from past papers",
+    channel: "ZPhysics", desc: "Practice working through several exam-style A Level specific heat capacity questions, as extra practice after understanding the basic concepts." }
+)}
+`;
+
+const TEMPERATURE_EKSPERIMEN_EN = {
+  title: "Real Experiment: Determining the Specific Heat Capacity of Aluminium Using the Electrical Method",
+  intro: `
+    <p class="muted">This is a genuine physical experiment using real laboratory apparatus (immersion heater,
+    ammeter, voltmeter, metal block), not a computer simulation. It is a classic, standard practical found in
+    many syllabuses (including as a <em>required practical</em> in various A-Level curricula) for determining
+    the specific heat capacity $c$ of a metal (aluminium, in this case) using the electrical method.</p>
+
+    <h4>Aim</h4>
+    <p>To determine the specific heat capacity $c$ of aluminium from experimental data (electrical energy,
+    mass, and temperature rise), and then compare it with the reference value $c_{aluminium} \\approx 900~\\text{J
+    kg}^{-1}\\text{K}^{-1}$.</p>
+
+    <h4>Underlying Concept</h4>
+    <p>An immersion heater carrying current $I$ at voltage $V$ for a time $t$ supplies electrical energy:</p>
+    <div class="formula-box">$$E = VIt$$</div>
+    <p>Assuming that all of this electrical energy is absorbed by the metal block (with none lost to the
+    surrounding air, to the thermometer, or to the heater hole), this energy raises the temperature of the
+    block according to:</p>
+    <div class="formula-box">$$E = mc\\Delta\\theta \\quad\\Rightarrow\\quad c = \\dfrac{VIt}{m\\Delta\\theta}$$</div>
+    <p>where $m$ = mass of the block (kg) and $\\Delta\\theta$ = temperature rise of the block (K). Because in
+    practice there is always some heat lost to the surroundings (the block is never perfectly insulated), the
+    value of $c$ calculated from experimental data is usually slightly <strong>larger</strong> than the
+    reference value (because some of the electrical energy is "wasted", yet the formula above assumes it all
+    goes into the block, making it appear as if more energy is needed per kg-K than is really the case).</p>
+
+    <h4>Apparatus &amp; Materials</h4>
+    <ul>
+      <li>A drilled aluminium block (an aluminium cylinder with two holes: one for the immersion heater, one
+      for the thermometer/temperature sensor), mass approximately $0{,}20$ - $1{,}0$ kg</li>
+      <li>An electrical immersion heater that fits snugly into the hole in the block, connected to a
+      low-voltage power supply of 12 V AC/DC</li>
+      <li>A voltmeter (or the voltage reading on the power supply if it is calibrated) and an ammeter, or
+      alternatively a joulemeter that reads electrical energy directly in joules</li>
+      <li>A thermometer (or a thermocouple/digital temperature sensor), with a range of at least $-10$ to
+      $110~{}^\\circ\\text{C}$</li>
+      <li>A balance (precision of at least 1 g) for weighing the mass of the block</li>
+      <li>A stopwatch (in case the heater power is not perfectly constant, or to control the heating time)</li>
+      <li>A little lubricating oil (to fill the gaps in the thermometer and heater holes for better thermal
+      contact), and insulating material (cotton wool/wool/rolled paper) to wrap the block and reduce heat loss
+      to the air</li>
+    </ul>
+
+    <h4>Procedure</h4>
+    <ol>
+      <li>Weigh the mass of the aluminium block ($m$) and record the result.</li>
+      <li>Insert the immersion heater into one hole of the block, and the thermometer/temperature sensor into
+      the other hole, adding a little oil into the gaps of both holes for good thermal contact.</li>
+      <li>Wrap the block with insulating material (cotton wool/wool) to reduce heat loss to the surrounding
+      air during heating (leaving a small gap for reading the thermometer).</li>
+      <li>Record the initial temperature of the block $\\theta_1$ before switching on the heater.</li>
+      <li>Connect the heater to the power supply through the ammeter and voltmeter. Switch on the heater at
+      the same time as starting the stopwatch. Record the readings of $V$ and $I$ (if both remain relatively
+      stable during heating).</li>
+      <li>Heat for a set time $t$ (for example, 5 to 10 minutes, enough to raise the temperature of the block
+      by about 20-30°C), then switch off the heater and stop the stopwatch at the same time.</li>
+      <li>Stir/wait briefly to allow the temperature throughout the block to become uniform, then record the
+      highest temperature reached, $\\theta_2$ (the temperature may still rise slightly after the heater is
+      switched off, because heat from the heater has not yet fully spread through the block - record the peak
+      temperature).</li>
+      <li>Repeat this whole procedure 2-3 times (either with the same metal block after it has cooled back to
+      room temperature, or with a different metal such as copper for comparison) to check the repeatability of
+      the results.</li>
+    </ol>
+
+    <h4>Data Table (example - fill in with your own experimental data)</h4>
+    <table>
+      <tr><th>Trial</th><th>m (kg)</th><th>V (V)</th><th>I (A)</th><th>t (s)</th><th>θ₁ (°C)</th><th>θ₂ (°C)</th><th>Δθ (K)</th><th>c = VIt/(mΔθ) (J kg⁻¹ K⁻¹)</th></tr>
+      <tr><td>1</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>2</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>3</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    </table>
+
+    <h4>Analysis &amp; Calculations</h4>
+    <ul>
+      <li>Calculate the electrical energy $E = VIt$ for each trial, then calculate $c = E/(m\\Delta\\theta)$.</li>
+      <li>Calculate the average $c$ from several trials/repeats, then compare it with the reference value
+      $900~\\text{J kg}^{-1}\\text{K}^{-1}$ by calculating the percentage difference:
+      $\\left|\\dfrac{c_{eksperimen}-c_{referensi}}{c_{referensi}}\\right|\\times100\\%$.</li>
+      <li>If apparatus is available to vary the heating time $t$ (with $V$, $I$ fixed), also plot a graph of
+      $\\Delta\\theta$ (y-axis) against $t$ (x-axis): this graph should be a straight line through the origin
+      with gradient $VI/(mc)$, so that $c$ can be calculated from the gradient without relying on a single data
+      point alone (more accurate, since it uses a <em>line of best fit</em>).</li>
+    </ul>
+
+    <h4>Safety Precautions</h4>
+    <ul>
+      <li>The immersion heater uses low-voltage electricity but can still become very hot - do not touch the
+      heating element directly with your hands; use tongs/pliers if it needs to be moved.</li>
+      <li>Do not switch on the immersion heater in open air (outside the block's hole / without a
+      heat-absorbing medium) - the heating element can be damaged and become extremely hot without a cooling
+      medium.</li>
+      <li>The aluminium block will become hot (it can reach 40-60°C or more) - wait until it has cooled
+      sufficiently before handling it directly without gloves/a cloth.</li>
+      <li>Switch off the power supply before disconnecting or connecting any wiring.</li>
+      <li>If a variant using water is used (see the Alternative below), take care with hot water and make sure
+      no spilled water reaches the electrical power supply.</li>
+    </ul>
+
+    <h4>Sources of Error (for discussion in your report)</h4>
+    <ul>
+      <li>Heat loss to the surrounding air and to the insulating material during heating (the most significant
+      source), which makes the experimental value of $c$ tend to be larger than the true value.</li>
+      <li>The heat capacity of the thermometer/sensor and of the heater itself also absorbs a small amount of
+      heat (neglected in the simple calculation above).</li>
+      <li>A delay in the thermometer's response (it does not instantly show the true temperature of the
+      block), especially while the temperature is still rising shortly after the heater is switched off.</li>
+      <li>Small fluctuations in the readings of $V$ and $I$ during heating if the power supply is not
+      perfectly stable.</li>
+    </ul>
+
+    <h4>Simple Alternative: Method of Mixtures (if no immersion heater/ammeter/voltmeter is available)</h4>
+    <p>If electrical apparatus (immersion heater, ammeter, voltmeter) is not available, the specific heat
+    capacity of a metal can still be estimated using the <strong>method of mixtures</strong>, applying Black's
+    principle - all that is needed is water, an insulated calorimeter/cup, a balance, and a thermometer:</p>
+    <ol>
+      <li>Weigh a block/piece of metal ($m_{logam}$), and heat it in boiling water (in a separate pan) until
+      its temperature is close to $100~{}^\\circ\\text{C}$.</li>
+      <li>Weigh a quantity of water ($m_{air}$) in an insulated container (a simple calorimeter), and record
+      the initial temperature of the water, $\\theta_{air}$.</li>
+      <li>Transfer the hot metal into the water as quickly as possible, stir gently, and record the final
+      temperature of the mixture, $\\theta_c$, once it has stabilised (thermal equilibrium reached).</li>
+      <li>Because the heat released by the metal equals the heat absorbed by the water (Black's principle,
+      assuming no heat is lost to the container/surroundings): $m_{logam}\\,c_{logam}(100-\\theta_c) =
+      m_{air}\\,c_{air}(\\theta_c - \\theta_{air})$, so that $c_{logam}$ can be calculated.</li>
+      <li>This method is simpler and cheaper, but its error tends to be larger (transferring the metal from
+      the pan to the calorimeter takes time, so the metal has already cooled slightly before it is fully
+      immersed).</li>
+    </ol>
+
+    <h4>Discussion Questions</h4>
+    <ul>
+      <li>Why is the experimental value of $c$ from the electrical method usually slightly larger than the
+      reference value, rather than smaller? Explain the direction of the error.</li>
+      <li>How does wrapping the block with insulating material (cotton wool/wool) help to reduce error in this
+      experiment?</li>
+      <li>Why, in the method of mixtures, must the metal be transferred "as quickly as possible" from the
+      boiling water to the calorimeter?</li>
+      <li>If two different metals of equal mass are heated with exactly the same amount of electrical energy,
+      which metal will undergo the greater temperature rise - the one with a larger $c$ or a smaller $c$?
+      Explain.</li>
+    </ul>
+
+    <h4>References</h4>
+    <ul>
+      <li><a href="https://spark.iop.org/specific-thermal-capacity-aluminium" target="_blank" rel="noopener">Specific thermal capacity of aluminium, IOPSpark</a></li>
+      <li><a href="https://spark.iop.org/specific-thermal-capacity-aluminium-more-accurately" target="_blank" rel="noopener">Specific thermal capacity of aluminium, more accurately, IOPSpark</a></li>
+      <li><a href="https://spark.iop.org/episode-607-specific-heat-capacity" target="_blank" rel="noopener">Episode 607: Specific heat capacity, IOPSpark</a></li>
+      <li><a href="https://pmt.physicsandmathstutor.com/download/Physics/A-level/Notes/OCR-A/1-Practical-Skills-in-Physics/PAG%2011.2%20-%20Determining%20specific%20heat%20capacity.pdf" target="_blank" rel="noopener">PAG 11.2 - Determining specific heat capacity, Physics & Maths Tutor (OCR A-level)</a></li>
+    </ul>
+  `
+};
+
+/* type: "mcq" or "structured".
+   For mcq: options[] and correct = index of the correct answer. */
+const TEMPERATURE_LATIHAN_EN = [
+  {
+    type: "mcq",
+    question: "The temperature of a laboratory room reads 23°C on a Celsius thermometer. What is this temperature expressed in kelvin? (use T/K = θ/°C + 273.15)",
+    options: ["250.15 K", "273.15 K", "296.15 K", "296.00 K"],
+    correct: 2,
+    solution: `$\\dfrac{T}{\\text{K}} = \\dfrac{\\theta}{{}^\\circ\\text{C}} + 273{,}15 = 23 + 273{,}15 = 296{,}15$.
+    <br>So $T = 296{,}15~\\text{K}$. (The option "296.00 K" is a common trap, since it forgets the decimal digit $0{,}15$.)`
+  },
+  {
+    type: "mcq",
+    question: "How much heat energy is required to raise the temperature of 2.0 kg of water from 20°C to 80°C? (specific heat capacity of water c = 4200 J kg⁻¹ K⁻¹)",
+    options: ["5.04 × 10⁴ J", "5.04 × 10⁵ J", "1.01 × 10⁶ J", "2.52 × 10⁵ J"],
+    correct: 1,
+    solution: `$\\Delta\\theta = 80-20 = 60~\\text{K}$.
+    <br>$Q = mc\\Delta\\theta = 2{,}0 \\times 4200 \\times 60 = 504\\,000~\\text{J} = 5{,}04\\times10^{5}~\\text{J}$.`
+  },
+  {
+    type: "structured",
+    question: "An aluminium block of mass 0.20 kg is heated using an electrical immersion heater connected to a 12 V power supply carrying a current of 4.0 A, for 5.0 minutes. The temperature of the block rises from 18.0°C to 90.0°C. (a) Calculate the total electrical energy supplied by the heater. (b) From this data, calculate the specific heat capacity of aluminium measured in this experiment. (c) The reference value for the specific heat capacity of aluminium is 900 J kg⁻¹ K⁻¹. Explain why the value obtained from this experiment is slightly higher than this reference value.",
+    solution: `<strong>(a)</strong> $t = 5{,}0$ minutes $= 300~\\text{s}$.
+    <br>$E = VIt = 12 \\times 4{,}0 \\times 300 = 14\\,400~\\text{J} = 1{,}44\\times10^{4}~\\text{J}$.
+    <br><strong>(b)</strong> $\\Delta\\theta = 90{,}0 - 18{,}0 = 72{,}0~\\text{K}$.
+    <br>$c = \\dfrac{E}{m\\Delta\\theta} = \\dfrac{14\\,400}{0{,}20 \\times 72{,}0} = \\dfrac{14\\,400}{14{,}4} = 1000~\\text{J kg}^{-1}\\text{K}^{-1}$.
+    <br><strong>(c)</strong> The experimental value ($1000~\\text{J kg}^{-1}\\text{K}^{-1}$) is higher than the reference value ($900~\\text{J kg}^{-1}\\text{K}^{-1}$) because some of the electrical energy supplied by the heater is lost to the surroundings (the air, the thermometer, the mounting of the block) instead of entirely raising the temperature of the block. Because the calculation in part (b) assumes that all of the electrical energy goes into the block, the temperature rise that "should" occur for that amount of energy appears smaller than it would without any heat loss, so the calculated value of $c$ comes out larger than the true value.`
+  },
+  {
+    type: "structured",
+    question: "A mass of 0.50 kg of ice, already at exactly 0°C, is completely melted into water at 0°C using an electrical heater. The specific latent heat of fusion of ice is 3.34 × 10⁵ J kg⁻¹. (a) Calculate the heat energy required to melt all of the ice. (b) If the heater has an output power of 60 W and all of its energy is assumed to be used for melting (with no heat loss), how long (in minutes) is needed to melt all of the ice?",
+    solution: `<strong>(a)</strong> $Q = mL_f = 0{,}50 \\times 3{,}34\\times10^{5} = 1{,}67\\times10^{5}~\\text{J}$ (167,000 J).
+    <br><strong>(b)</strong> $P = \\dfrac{Q}{t} \\Rightarrow t = \\dfrac{Q}{P} = \\dfrac{1{,}67\\times10^{5}}{60} \\approx 2783~\\text{s}$.
+    <br>In minutes: $t \\approx \\dfrac{2783}{60} \\approx 46{,}4~\\text{minutes}$.`
+  },
+  {
+    type: "structured",
+    question: "A mass of 0.30 kg of ice at −10°C is heated until it has all become steam at 100°C, at normal atmospheric pressure. Given: specific heat capacity of ice c_es = 2100 J kg⁻¹ K⁻¹, specific heat capacity of water c_air = 4200 J kg⁻¹ K⁻¹, specific latent heat of fusion of ice L_f = 3.34 × 10⁵ J kg⁻¹, specific latent heat of vaporisation of water L_v = 2.26 × 10⁶ J kg⁻¹. Calculate the heat energy for each of the following stages, then calculate the overall total energy: (a) heating the ice from −10°C to 0°C, (b) melting the ice at 0°C, (c) heating the (liquid) water from 0°C to 100°C, (d) vaporising the water at 100°C, (e) the total energy for the whole process.",
+    solution: `<strong>(a)</strong> $Q_1 = mc_{es}\\Delta\\theta = 0{,}30 \\times 2100 \\times 10 = 6300~\\text{J}$.
+    <br><strong>(b)</strong> $Q_2 = mL_f = 0{,}30 \\times 3{,}34\\times10^{5} = 1{,}002\\times10^{5}~\\text{J}$ (100,200 J).
+    <br><strong>(c)</strong> $Q_3 = mc_{air}\\Delta\\theta = 0{,}30 \\times 4200 \\times 100 = 126\\,000~\\text{J}$.
+    <br><strong>(d)</strong> $Q_4 = mL_v = 0{,}30 \\times 2{,}26\\times10^{6} = 6{,}78\\times10^{5}~\\text{J}$ (678,000 J).
+    <br><strong>(e)</strong> $Q_{total} = Q_1+Q_2+Q_3+Q_4 = 6300 + 100\\,200 + 126\\,000 + 678\\,000 = 910\\,500~\\text{J} \\approx 9{,}11\\times10^{5}~\\text{J}$.
+    <br>Note that the vaporisation stage (d) absorbs the greatest amount of energy of all the stages, far more than the melting stage (b), consistent with $L_v \\gg L_f$ for water.`
+  },
+  {
+    type: "structured",
+    question: "A metal block of mass 0.15 kg is heated to 100°C and then quickly placed into 0.20 kg of water initially at 20.0°C, inside a well-insulated calorimeter vessel (the heat capacity of the vessel is neglected). The final temperature of the mixture, once thermal equilibrium has been reached, is 27.3°C. The specific heat capacity of water is 4200 J kg⁻¹ K⁻¹. (a) Using the concept of net heat flow, explain why the temperatures of the metal and the water become equal at thermal equilibrium. (b) Assuming no heat is lost to the surroundings, use Black's principle (heat released by the metal = heat absorbed by the water) to calculate the specific heat capacity of the metal.",
+    solution: `<strong>(a)</strong> As long as the temperature of the metal is still higher than the temperature of the water, heat continues to flow with a net transfer from the metal (higher temperature) to the water (lower temperature). This net flow only stops once the two temperatures become exactly equal, because at that point there is no longer any temperature difference to drive a net flow of heat in either direction - this is the state of thermal equilibrium.
+    <br><strong>(b)</strong> Heat absorbed by the water: $Q_{air} = m_{air}c_{air}\\Delta\\theta_{air} = 0{,}20 \\times 4200 \\times (27{,}3-20{,}0) = 0{,}20 \\times 4200 \\times 7{,}3 = 6132~\\text{J}$.
+    <br>The heat released by the metal is equal to this (Black's principle): $Q_{logam} = m_{logam}c_{logam}\\Delta\\theta_{logam} = 0{,}15 \\times c_{logam} \\times (100-27{,}3) = 0{,}15 \\times c_{logam} \\times 72{,}7$.
+    <br>$0{,}15 \\times 72{,}7 \\times c_{logam} = 6132 \\Rightarrow c_{logam} = \\dfrac{6132}{10{,}905} \\approx 562~\\text{J kg}^{-1}\\text{K}^{-1}$.`
+  }
+];
+
+/* Concise formula sheet (plain text), used as automatic "grounding":
+   attached to prompts sent to the AI so that the AI uses exactly the
+   formulas & values already validated by the teacher, rather than
+   guessing from general knowledge. */
+const TEMPERATURE_FORMULA_SHEET_EN = `
+- Thermal equilibrium: heat flows with a net transfer from a body at a higher temperature to a body at a lower temperature; once both reach the same temperature, there is no longer any net flow of heat (thermal equilibrium). This idea underlies the definition of temperature (similar, informally, to the Zeroth Law of Thermodynamics).
+- Official Cambridge 9702 temperature conversion (2025-2027 syllabus): T/K = theta/degC + 273.15. The rounded form T/K = theta/degC + 273 is sometimes used for a quick estimate.
+- Absolute zero: 0 K = -273.15 degC, the lowest temperature theoretically possible.
+- Because the size of 1 K is the same as the size of 1 degC, a temperature change delta-T (K) always has the same numerical value as delta-theta (degC); the constant 273.15 cancels out when subtracting.
+- Thermodynamic (Kelvin) scale: absolute, independent of the properties of any particular material. Practical/empirical scale (platinum resistance thermometer, thermocouple): uses a physical property of a material (resistance R, e.m.f.) that varies roughly linearly with temperature, calibrated using 2 fixed points (e.g. 0 degC and 100 degC), then theta = (X_theta - X_0)/(X_100 - X_0) x 100 degC.
+- Specific heat capacity c: heat per unit mass per unit rise in temperature, unit J/(kg K). Q = m c deltaTheta.
+- Electrical method for measuring c: E = V I t (electrical energy) is converted into heat, c = V I t / (m deltaTheta), assuming/correcting for no heat loss to the surroundings.
+- Specific latent heat L: heat per unit mass to change the state of a substance WITHOUT a change in temperature. Q = m L. There is L_fusion (solid<->liquid) and L_vaporization (liquid<->gas); their values differ for the same substance (L_vaporization is much greater than L_fusion).
+- Values commonly used in Cambridge 9702 questions (NOT part of the universal Data and Formulae List, usually given directly in the question): c_water = 4200 J/(kg K); c_ice is approximately 2100 J/(kg K); c_aluminium is approximately 900 J/(kg K); L_fusion of ice = 3.34 x 10^5 J/kg; L_vaporization of water = 2.26 x 10^6 J/kg.
+- Temperature-time graph during constant-rate heating: the temperature rises steadily during one phase (the gradient is inversely proportional to c for that phase), then stays flat during a change of state (the width of the flat section is directly proportional to L).
+- Combined multi-stage questions (e.g. cold ice -> melting -> water -> steam): calculate the heat for each stage separately (heating uses Q=mcDeltaTheta, a change of state uses Q=mL), then add up all the stages to find the total energy.
+- Black's principle (method of mixtures/calorimetry): in an isolated system, the heat released by the body at higher temperature = the heat absorbed by the body at lower temperature; used to determine the c of an unknown body.
+`;
+
+/* Specific concepts for the Prompt Generator dropdown in the Virtual Simulation Lab */
+const TEMPERATURE_LAB_CONCEPTS_EN = [
+  "Thermal Equilibrium and the Direction of Net Heat Flow",
+  "Thermodynamic (Kelvin) Temperature Scale vs the Celsius Scale",
+  "Calibration of Practical Thermometers (Resistance Thermometer / Thermocouple)",
+  "Specific Heat Capacity and the Electrical Method (Q = mcΔθ)",
+  "Specific Latent Heat of Fusion and Vaporisation (Q = mL)",
+  "Temperature-Time Graphs During Heating Through a Change of State",
+  "Other (write your own in additional instructions)"
+];
+
 (function attachTemperatureContent() {
   const topic = TOPICS.find(t => t.id === "temperature");
-  topic.materiHTML = TEMPERATURE_MATERI;
-  topic.eksperimen = TEMPERATURE_EKSPERIMEN;
-  topic.latihan = TEMPERATURE_LATIHAN;
-  topic.labConcepts = TEMPERATURE_LAB_CONCEPTS;
-  topic.formulaSheet = TEMPERATURE_FORMULA_SHEET;
+  topic.desc = { id: topic.desc, en: TEMPERATURE_DESC_EN };
+  topic.materiHTML = { id: TEMPERATURE_MATERI, en: TEMPERATURE_MATERI_EN };
+  topic.eksperimen = {
+    title: { id: TEMPERATURE_EKSPERIMEN.title, en: TEMPERATURE_EKSPERIMEN_EN.title },
+    intro: { id: TEMPERATURE_EKSPERIMEN.intro, en: TEMPERATURE_EKSPERIMEN_EN.intro }
+  };
+  topic.latihan = TEMPERATURE_LATIHAN.map((q, i) => {
+    const qEN = TEMPERATURE_LATIHAN_EN[i] || {};
+    return {
+      ...q,
+      question: { id: q.question, en: qEN.question },
+      options: q.options ? q.options.map((opt, j) => ({ id: opt, en: (qEN.options || [])[j] })) : q.options,
+      solution: { id: q.solution, en: qEN.solution }
+    };
+  });
+  topic.labConcepts = TEMPERATURE_LAB_CONCEPTS.map((c, i) => ({ id: c, en: TEMPERATURE_LAB_CONCEPTS_EN[i] }));
+  topic.formulaSheet = { id: TEMPERATURE_FORMULA_SHEET, en: TEMPERATURE_FORMULA_SHEET_EN };
 })();
 
 /* ------------------------------------------------------------
@@ -1616,13 +2753,469 @@ const IDEALGASES_LAB_CONCEPTS = [
 ];
 
 /* Tempelkan konten lengkap ke objek topik "ideal-gases" */
+
+/* ---- English (_EN) translations for IDEALGASES (auto-merged by merge_i18n.py) ---- */
+/* ------------------------------------------------------------
+   English translation of topic content: IDEAL GASES (topic 15, A2)
+   Source: js/content.js (IDEALGASES_* constants), translated from
+   Indonesian to English for the Cambridge International AS & A Level
+   Physics (9702) study app. HTML structure, LaTeX math, class names,
+   ids, and media URLs are preserved exactly; only prose is translated.
+   ------------------------------------------------------------ */
+
+/* TOPICS array entry "ideal-gases" — translated desc field */
+const IDEALGASES_DESC_EN = "Ideal gas laws, kinetic theory of gases.";
+
+const IDEALGASES_MATERI_EN = `
+<h3>1. Amount of Substance: The Mole and the Avogadro Constant</h3>
+<p>The <strong>mole</strong> is the SI unit for <em>amount of substance</em>. One mole of any
+substance contains exactly the same number of particles (atoms, molecules, ions, etc.), namely
+the <strong>Avogadro constant</strong> $N_A$. As given in the Cambridge 9702 data sheet:</p>
+<div class="formula-box">$$N_A = 6.02 \\times 10^{23}~\\text{mol}^{-1}$$</div>
+<p>If a sample of a substance consists of $n$ moles, then the number of molecules (or particles) it contains is:</p>
+<div class="formula-box">$$N = nN_A$$</div>
+<p>where $N$ = number of molecules (no unit, a pure number) and $n$ = amount of substance in moles (mol). The
+number of moles in a sample can also be calculated from its mass if the molar mass $M$ of the substance is known:</p>
+<div class="formula-box">$$n = \\dfrac{\\text{sample mass}}{\\text{molar mass}} = \\dfrac{m}{M}$$</div>
+<p class="muted">Watch the units carefully: molar mass $M$ is usually given in g mol⁻¹ (for example, oxygen
+has $M=32~\\text{g mol}^{-1}$), whereas the ideal gas equation $pV=nRT$ requires quantities in pure SI units.
+Since $n$ (in moles) is already independent of whether mass is expressed in kg or g, you may use $M$ in either
+g mol⁻¹ or kg mol⁻¹, provided the unit of sample mass you use is consistent (grams with grams, or kilograms
+with kilograms).</p>
+${mediaRow(
+  null,
+  { id: "_Su9Fij7TMQ", title: "The mole and Avogadro's number | Moles and molar mass | High school chemistry | Khan Academy",
+    channel: "Khan Academy", desc: "An introduction to the concept of the mole and the Avogadro constant, and how to convert a sample's mass into the amount of substance and number of particles." }
+)}
+
+<h3>2. The Ideal Gas Equation of State</h3>
+<p>An ideal gas is a model of a gas that obeys a simple relationship between pressure $p$, volume $V$, amount
+of substance $n$, and absolute temperature $T$ (in kelvin) exactly, under all conditions. This relationship is
+called the <strong>ideal gas equation of state</strong>:</p>
+<div class="formula-box">$$pV = nRT$$</div>
+<p>where $R$ = the <strong>molar gas constant</strong>, with the standard value given in the data sheet for
+Cambridge 9702:</p>
+<div class="formula-box">$$R = 8.31~\\text{J K}^{-1}\\text{mol}^{-1}$$</div>
+<p>Since $n = N/N_A$ (amount of substance = number of molecules divided by the Avogadro constant), the ideal
+gas equation of state can be rewritten in a per-molecule form:</p>
+<div class="formula-box">$$pV = nRT = \\dfrac{N}{N_A}RT = NkT$$</div>
+<p>where $k$ = the <strong>Boltzmann constant</strong>, the gas constant per molecule (not per mole):</p>
+<div class="formula-box">$$k = \\dfrac{R}{N_A} = 1.38 \\times 10^{-23}~\\text{J K}^{-1}$$</div>
+<table>
+  <tr><th>Symbol</th><th>Quantity</th><th>SI unit</th></tr>
+  <tr><td>$p$</td><td>Gas pressure</td><td>Pa (N m⁻²)</td></tr>
+  <tr><td>$V$</td><td>Gas volume</td><td>m³</td></tr>
+  <tr><td>$n$</td><td>Amount of substance</td><td>mol</td></tr>
+  <tr><td>$N$</td><td>Number of molecules</td><td>no unit</td></tr>
+  <tr><td>$T$</td><td>Absolute temperature</td><td>K (not °C!)</td></tr>
+  <tr><td>$R$</td><td>Molar gas constant</td><td>J K⁻¹ mol⁻¹</td></tr>
+  <tr><td>$k$</td><td>Boltzmann constant</td><td>J K⁻¹</td></tr>
+</table>
+<p class="muted">Always remember to convert temperature to kelvin before calculating. As in the Cambridge 9702
+syllabus (2025-2027, see also the Temperature topic): $T(\\text{K}) = T(°\\text{C}) + 273.15$. Since the
+difference is only $0.15$ K, many questions (including the practice questions below) use the quick rounding
+$T(\\text{K}) \\approx T(°\\text{C}) + 273$ for practical estimation - both give the same final answer to the
+2-3 significant figures typically used in ideal gas questions.</p>
+${mediaRow(
+  { src: "https://upload.wikimedia.org/wikipedia/commons/1/12/Isotherms-in-p-V-diagram.svg",
+    alt: "Graph of pressure against volume isotherms for an ideal gas at three different temperatures",
+    caption: "Isotherms (constant-temperature curves) on a $p$-$V$ graph for an ideal gas, at three different temperatures $T_1 < T_2 < T_3$. Each curve is a hyperbola $pV=\\text{constant}$ (Boyle's law) for one particular value of T; the curve shifts up and to the right as the temperature increases.",
+    author: "MikeRun", license: "CC BY-SA 4.0" },
+  { id: "erjMiErRgSQ", title: "Ideal gas equation example 1 | Chemistry | Khan Academy",
+    channel: "Khan Academy", desc: "A worked example calculating one unknown quantity (p, V, n, or T) using the ideal gas equation pV=nRT." }
+)}
+
+<h3>3. The Gas Laws as Special Cases of pV = nRT</h3>
+<p>If the amount of gas ($n$) is fixed (the mass of gas does not change), the three classical gas laws below
+are special cases of $pV=nRT$ when one of $p$, $V$, or $T$ is held constant:</p>
+<table>
+  <tr><th>Law</th><th>Quantity held constant</th><th>Relationship</th><th>Graph shape</th></tr>
+  <tr><td>Boyle's law</td><td>Temperature $T$ (isothermal)</td><td>$p_1V_1 = p_2V_2$</td><td>$p$-$V$ graph: hyperbola (isotherm). Graph of $p$ against $1/V$: straight line through the origin.</td></tr>
+  <tr><td>Pressure law (Gay-Lussac's law)</td><td>Volume $V$ (isochoric)</td><td>$\\dfrac{p_1}{T_1} = \\dfrac{p_2}{T_2}$</td><td>Graph of $p$ against $T$: straight line through the origin (T in kelvin).</td></tr>
+  <tr><td>Charles's law</td><td>Pressure $p$ (isobaric)</td><td>$\\dfrac{V_1}{T_1} = \\dfrac{V_2}{T_2}$</td><td>Graph of $V$ against $T$: straight line through the origin (T in kelvin).</td></tr>
+</table>
+<p>These three laws can be combined into a single <strong>combined gas law</strong> for a fixed mass of gas
+that changes from state 1 to state 2:</p>
+<div class="formula-box">$$\\dfrac{p_1V_1}{T_1} = \\dfrac{p_2V_2}{T_2}$$</div>
+<p class="muted">Note that a "straight line through the origin" on the $p$-$T$ and $V$-$T$ graphs only holds if
+temperature is plotted in <strong>kelvin</strong>; if temperature is plotted in °C, the line remains straight
+but does not pass through the origin (it crosses the temperature axis at $-273°\\text{C}$, i.e. absolute
+zero).</p>
+${mediaRow(
+  { src: "https://upload.wikimedia.org/wikipedia/commons/3/36/Boyles_law_experiment.png",
+    alt: "Diagram of a Boyle's law apparatus set-up using a syringe and pressure gauge",
+    caption: "Diagram of an experimental set-up for investigating Boyle's law: weights are added on top of the syringe piston to increase the pressure of the trapped gas, while a pressure meter records the pressure reading.",
+    author: "Ppritchett", license: "CC BY-SA 3.0" },
+  { id: "GZORmhded2I", title: "A Level Physics: The Ideal Gas Equation, pV=nRT",
+    channel: "ZPhysics", desc: "An A-level-paced explanation of the ideal gas equation and how Boyle's law, the pressure law, and Charles's law arise as special cases of it." }
+)}
+
+<h3>4. The Kinetic Model of an Ideal Gas: Basic Assumptions</h3>
+<p>The equation $pV=nRT$ is the result of experimental observation (an empirical law). The <strong>kinetic
+theory of gases</strong> explains <em>why</em> gases behave this way, by modelling a gas as a collection of
+moving molecules. This model is built on several basic assumptions (as in the Cambridge 9702 syllabus,
+learning outcome 15.3.1):</p>
+<ol>
+  <li>A gas consists of a <strong>very large number of molecules</strong> moving in <strong>random
+  motion</strong>, with a range of speeds and directions.</li>
+  <li><strong>The volume of the molecules themselves is negligible</strong> compared with the total volume of
+  the gas (the molecules are treated as extremely small points).</li>
+  <li><strong>Forces between molecules (attractive or repulsive) are negligible</strong>, except during the
+  instant a collision occurs.</li>
+  <li>Collisions between molecules, and between molecules and the walls of the container, are <strong>perfectly
+  elastic</strong> — no total kinetic energy is lost — and <strong>last for a time that is very short</strong>
+  compared with the time between collisions.</li>
+  <li>Between collisions, molecules move in <strong>straight lines at constant speed</strong>, obeying Newton's
+  laws of motion.</li>
+</ol>
+<p class="muted">Because collisions are perfectly elastic and very brief, the total kinetic energy of the
+system stays constant (it is not converted into other forms of energy), and because intermolecular forces are
+neglected, the intermolecular potential energy is taken to be zero — all the energy in an ideal gas is in the
+form of the translational kinetic energy of its molecules.</p>
+${mediaRow(
+  { src: "https://upload.wikimedia.org/wikipedia/commons/3/3f/Kinetic_theory_of_gases.svg",
+    alt: "Diagram of gas molecules moving randomly inside a container and colliding with its walls",
+    caption: "The central idea of the kinetic theory of gases: molecules move randomly inside a container, and the constant collisions of these molecules with the container walls are experienced as the pressure of the gas.",
+    author: "Sharayanan", license: "CC BY-SA 3.0" },
+  { id: "UMXSNjjUVt4", title: "Kinetic molecular theory of gases | Physics | Khan Academy",
+    channel: "Khan Academy Physics", desc: "An explanation of the basic assumptions of the kinetic model of an ideal gas and how this microscopic model accounts for the macroscopically observed properties of a gas." }
+)}
+
+<h3>5. Gas Pressure from the Kinetic Theory: pV = (1/3) N m &lt;c²&gt;</h3>
+<p>The pressure a gas exerts on the walls of its container arises from the continual collisions of its
+molecules with those walls. Each time a molecule rebounds from a wall, its momentum changes direction, which
+means the wall exerts a force on the molecule (and, by Newton's third law, the molecule exerts an equal and
+opposite force back on the wall). It is the total force from the very large number of collisions per second
+that is observed as the pressure of the gas.</p>
+<p>The outline of the derivation (you do not need to memorise the detailed mathematical steps for Cambridge
+9702, but it is important to understand the reasoning):</p>
+<ol>
+  <li>Consider a single molecule of mass $m$ moving with a velocity component $c_x$ perpendicular to one wall
+  of the box. Because the collision is perfectly elastic, the molecule rebounds with the same speed but in the
+  opposite direction, so its change in momentum is $2mc_x$ for each collision with that wall.</li>
+  <li>This molecule strikes the same wall repeatedly; the faster the molecule moves and the shorter its
+  back-and-forth distance (the smaller the box), the more often collisions occur per second.</li>
+  <li>The average force on the wall from a single molecule = rate of change of momentum = (change in momentum
+  per collision) × (number of collisions per second).</li>
+  <li>Summing the force contributions from <strong>all $N$ molecules</strong> in the box (taking a statistical
+  average over all directions of molecular motion, not just the single $x$-direction), and dividing the total
+  force by the wall area to obtain pressure, gives the kinetic theory equation for the pressure of an ideal
+  gas:</li>
+</ol>
+<div class="formula-box">$$pV = \\tfrac{1}{3}Nm\\overline{c^2}$$</div>
+<p>where $N$ = number of gas molecules, $m$ = mass of one molecule, and $\\overline{c^2}$ = the <strong>mean
+square speed</strong> of all the molecules — that is, the average of $c^2$ for each molecule, <strong>not</strong>
+the square of the average speed (because molecules move randomly in all directions, this is the correct
+average to use, rather than simply the ordinary average speed).</p>
+${mediaRow(
+  null,
+  { id: "tQcB9BLUoVI", title: "Thermodynamics part 1: Molecular theory of gases | Physics | Khan Academy",
+    channel: "Khan Academy", desc: "A full derivation of the relationship pV = (1/3) N m <c²> from molecular collisions with the container walls, and how this result is connected to the temperature of a gas." }
+)}
+
+<h3>6. Molecular Kinetic Energy and Temperature</h3>
+<p>This is the section that links the microscopic world (the motion and kinetic energy of individual
+molecules) with the macroscopic world (the temperature of a gas, which can be measured with a thermometer) —
+a topic that appears frequently in Cambridge 9702 exams. Compare the two forms of the ideal gas equation we
+already have:</p>
+<div class="formula-box">
+$$pV = \\tfrac{1}{3}Nm\\overline{c^2} \\qquad \\text{(from the kinetic theory)}$$
+$$pV = NkT \\qquad \\text{(from the ideal gas equation of state)}$$
+</div>
+<p>Since the left-hand side of both equations is $pV$, the right-hand sides must also be equal:</p>
+<div class="formula-box">$$\\tfrac{1}{3}Nm\\overline{c^2} = NkT \\quad\\Rightarrow\\quad \\tfrac{1}{3}m\\overline{c^2} = kT$$</div>
+<p>Multiply both sides by $\\tfrac{3}{2}$:</p>
+<div class="formula-box">$$\\tfrac{1}{2}m\\overline{c^2} = \\tfrac{3}{2}kT$$</div>
+<p>The left-hand side, $\\tfrac{1}{2}m\\overline{c^2}$, is simply the <strong>average translational kinetic
+energy of a single gas molecule</strong> (the average of $\\tfrac12 mc^2$ for each molecule). So:</p>
+<div class="formula-box">$$E_k = \\tfrac{1}{2}m\\overline{c^2} = \\tfrac{3}{2}kT$$</div>
+<p><strong>Important conclusion:</strong> the average translational kinetic energy of a molecule of an ideal
+gas <strong>is directly proportional to the absolute temperature $T$</strong> (in kelvin) — and does not
+depend on the type of gas (a light gas such as hydrogen and a heavy gas such as carbon dioxide at the same
+temperature $T$ have exactly the <em>same</em> average kinetic energy per molecule, even though their speeds
+differ because their masses differ). This is the physical reason why temperature is a measure of the average
+kinetic energy of the particles making up a substance.</p>
+<p class="muted">If the absolute temperature of a gas is doubled (for example, from 300 K to 600 K), the
+average translational kinetic energy of each molecule also doubles — but the speed does <strong>not</strong>
+double, because $E_k \\propto v^2$, so the (rms) speed increases only by a factor of $\\sqrt{2}$.</p>
+
+<h3>7. Root-Mean-Square (rms) Speed</h3>
+<p>Since $\\overline{c^2}$ is the mean square speed, its square root is called the <strong>root-mean-square
+speed</strong> (the square root of the mean of the squares), abbreviated $c_{rms}$:</p>
+<div class="formula-box">$$c_{rms} = \\sqrt{\\overline{c^2}}$$</div>
+<p>From the results of sections 5 and 6 above ($\\tfrac13 m\\overline{c^2} = kT$, and $k=R/N_A$ while $M=mN_A$
+is the molar mass), $c_{rms}$ can be calculated directly from the temperature and molar mass of the gas:</p>
+<div class="formula-box">$$c_{rms} = \\sqrt{\\dfrac{3kT}{m}} = \\sqrt{\\dfrac{3RT}{M}}$$</div>
+<p>where $M$ = the molar mass of the gas in <strong>kg mol⁻¹</strong> (not g mol⁻¹ — remember the conversion
+$1~\\text{g mol}^{-1} = 1\\times10^{-3}~\\text{kg mol}^{-1}$).</p>
+<p><strong>Worked example:</strong> What is the rms speed of nitrogen gas molecules (N₂, the main component of
+air, $M = 28~\\text{g mol}^{-1} = 2.8\\times10^{-2}~\\text{kg mol}^{-1}$) at room temperature $20°\\text{C}$
+($T=293$ K)?</p>
+<div class="formula-box">$$c_{rms} = \\sqrt{\\dfrac{3RT}{M}} = \\sqrt{\\dfrac{3 \\times 8.31 \\times 293}{2.8\\times10^{-2}}} \\approx \\sqrt{2.61\\times10^{5}} \\approx 511~\\text{m s}^{-1}$$</div>
+<p class="muted">This speed (about 511 m/s, more than 1800 km/h!) is far greater than typical wind speeds, but
+air molecules are constantly colliding with other molecules (their mean free path is very short), so the net
+movement of a molecule from one place to another (diffusion) is much slower than its rms speed itself.</p>
+${mediaRow(
+  { src: "https://upload.wikimedia.org/wikipedia/commons/6/61/Maxwell-Boltzmann-Distribution.svg",
+    alt: "Graph of the Maxwell-Boltzmann distribution of gas molecule speeds at three different temperatures",
+    caption: "The Maxwell-Boltzmann distribution: the spread of speeds of gas molecules at three different temperatures ($T=100$ K, $1200$ K, $5000$ K). Not all molecules have the same speed; the graph shifts towards higher speeds and broadens as temperature increases. The rms speed lies slightly to the right of the peak of the curve (the most probable speed).",
+    author: "MikeRun", license: "CC BY-SA 4.0" },
+  null
+)}
+`;
+
+const IDEALGASES_EKSPERIMEN_EN = {
+  title: "Real Experiment: Investigating Boyle's Law with a Trapped Column of Air",
+  intro: `
+    <p class="muted">This is a genuine physical experiment using real laboratory apparatus (a graduated
+    Boyle's law tube, a pressure gauge, and a pump), not a computer simulation. It is a standard practical
+    used to verify Boyle's law ($pV=\\text{constant}$ at constant temperature) that is common across many
+    A-Level syllabuses (including as a <em>Required/Core Practical</em> on AQA and Edexcel, and documented on
+    IOPSpark and CLEAPSS).</p>
+
+    <h4>Aim</h4>
+    <p>To investigate the relationship between the pressure $p$ and volume $V$ of a fixed amount of gas (air)
+    at constant temperature, and to verify Boyle's law ($pV = \\text{constant}$).</p>
+
+    <h4>Underlying Concept</h4>
+    <p>As long as the temperature $T$ and the amount of gas $n$ are kept constant, the ideal gas equation of
+    state $pV=nRT$ predicts that the product $pV$ must be constant:</p>
+    <div class="formula-box">$$p_1V_1 = p_2V_2 \\quad (\\text{Boyle's law, } T \\text{ and } n \\text{ constant})$$</div>
+    <p>Because the volume of the air column trapped in the uniform-bore tube (constant cross-sectional area
+    $A$) is directly proportional to the length of the column ($V = A \\times L$), measuring the length of the
+    air column $L$ alone is enough to represent the volume $V$ — we do not need to know the value of $A$ to
+    verify the form of the relationship, because $A$ remains constant throughout the experiment (it cancels
+    out when comparing the data).</p>
+
+    <h4>Apparatus &amp; Materials</h4>
+    <ul>
+      <li>Boyle's law apparatus: a thick-walled glass tube with a length scale, containing a column of dry air
+      trapped above a column of oil, fitted with a Bourdon gauge that reads the absolute gas pressure directly</li>
+      <li>A hand pump or foot pump (or a bicycle/car tyre pump) connected to the apparatus's oil reservoir,
+      used to increase the pressure</li>
+      <li>A pressure release valve on the reservoir, for lowering the pressure in a controlled way</li>
+      <li>A stand/clamp or weights at the base of the apparatus to keep the tube upright and prevent it
+      tipping over</li>
+      <li>A transparent safety screen to be placed in front of the apparatus</li>
+      <li>Safety goggles for every student involved</li>
+      <li>A stopwatch (to allow time for the temperature to re-equilibrate after each pressure change)</li>
+    </ul>
+
+    <h4>Procedure</h4>
+    <ol>
+      <li>Before doing anything else, place the safety screen in front of the apparatus and make sure all
+      students are wearing safety goggles. Make sure the apparatus stands upright and stable (clamped or
+      weighted down).</li>
+      <li>Record the initial readings: the pressure on the Bourdon gauge (usually already showing atmospheric
+      pressure before the pump is used) and the length $L_0$ of the air column trapped in the tube.</li>
+      <li>Pump slowly and carefully (vertically, pressing the pump gently, especially once the pressure is
+      already high) to raise the pressure in small steps. After each pressure increase, <strong>wait for a
+      short time</strong> (use a stopwatch, typically 30-60 seconds) so that the gas temperature, which rises
+      slightly due to compression, settles back to room temperature before reading the column length (your
+      eye must be level horizontally with the scale/meniscus when reading, to avoid parallax error).</li>
+      <li>Record the data pair (pressure $p$, column length $L$) at each pressure step, up to close to the
+      maximum limit of the apparatus (do not exceed it).</li>
+      <li>After reaching a safe maximum pressure, release the pump and use the release valve to lower the
+      pressure in stages (opening the valve gradually), recording the data pairs (p, L) again on the way down
+      as a repeat/check.</li>
+      <li>Repeat the entire set of measurements (increasing and decreasing) once more to check that the data
+      is consistent, and take an average if there is a small discrepancy.</li>
+    </ol>
+
+    <h4>Data Table (example — fill in with your own experimental data)</h4>
+    <table>
+      <tr><th>p (× 10⁵ Pa)</th><th>L (cm)</th><th>V &prop; L (cm, representing volume)</th><th>1/L (cm⁻¹)</th><th>p × L (× 10⁵ Pa cm)</th></tr>
+      <tr><td>1.0</td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>1.5</td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>2.0</td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>2.5</td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>3.0</td><td></td><td></td><td></td><td></td></tr>
+    </table>
+
+    <h4>Analysis &amp; Calculations</h4>
+    <ul>
+      <li>Method 1 (constant check): calculate the last column of the table, $p \\times L$, for every row of
+      data. If Boyle's law holds, all the $p \\times L$ values should be roughly the same (constant within the
+      uncertainty of the measurements).</li>
+      <li>Method 2 (graphical, statistically more convincing): plot a graph of $p$ (y-axis) against $1/L$
+      (x-axis). Since $pV=p(AL)=\\text{constant}$, we have $p = \\dfrac{\\text{constant}}{A}\\times\\dfrac{1}{L}$,
+      so a graph of $p$ against $1/L$ should be a <strong>straight line through the origin (0,0)</strong>.
+      Draw a line of best fit and check whether it does indeed pass through the origin.</li>
+      <li>For comparison, also plot a graph of $p$ directly against $L$ — its shape should be a curve
+      (a hyperbola), <strong>not</strong> a straight line, confirming that the $p$-$V$ relationship is indeed
+      not directly linear.</li>
+    </ul>
+
+    <h4>Safety</h4>
+    <ul>
+      <li>Safety goggles MUST be worn and a transparent safety screen MUST be placed in front of the apparatus
+      throughout the experiment — a glass tube under high pressure carries a risk of cracking or shattering.</li>
+      <li>Never exceed the maximum pressure limit marked on the apparatus (usually shown in red on the Bourdon
+      gauge).</li>
+      <li>Pump slowly and carefully, especially once the pressure is already high, because the pumping action
+      becomes harder against the gas's back-pressure.</li>
+      <li>Make sure the apparatus is clamped or weighted at its base so it cannot easily tip over or slide off
+      the edge of the bench while being pumped.</li>
+      <li>Observe the apparatus from a safe distance behind the safety screen; do not place your face too
+      close to the glass tube.</li>
+    </ul>
+
+    <h4>Sources of Error (for discussion in your report)</h4>
+    <ul>
+      <li>Compressing the gas too quickly momentarily raises its temperature (the process approaches adiabatic
+      rather than fully isothermal) before it has time to re-equilibrate with room temperature — this is why
+      the waiting time before reading the column length is important.</li>
+      <li>Parallax error when reading the position of the oil meniscus against the length scale on the tube.</li>
+      <li>A small amount of gas/air may leak slowly through the pump/valve connections during the experiment,
+      meaning the amount of gas $n$ may not remain perfectly constant.</li>
+      <li>The precision of the Bourdon gauge reading is limited by its smallest scale division (usually in
+      tens of kPa).</li>
+    </ul>
+
+    <h4>Simple Alternative Using a Syringe — if Boyle's law apparatus is not available</h4>
+    <p>If a school does not have standard Boyle's law apparatus, the $p$-$V$ relationship can still be
+    investigated quantitatively using a graduated <strong>gas syringe</strong> and added weights:</p>
+    <ol>
+      <li>Seal the tip of the syringe tightly (for example with rubber cement/a bung) so that a fixed amount
+      of air is trapped inside it, and record the initial volume $V_0$ directly from the syringe's scale with
+      the piston free (no added weights, just held horizontally).</li>
+      <li>Mount the syringe vertically (piston facing upward) and add weights of known mass on top of the
+      piston in stages; record the gas volume (from the syringe's scale) after each addition of weight.</li>
+      <li>Calculate the gas pressure in each state: $p = p_{atm} + \\dfrac{mg}{A_{piston}}$, where $p_{atm}
+      \\approx 1.0\\times10^5$ Pa (atmospheric pressure), $m$ = the total mass of the weights on the piston,
+      $g=9.81$ m s⁻², and $A_{piston}$ = the cross-sectional area of the syringe piston (calculated from the
+      syringe's stated diameter, $A = \\pi r^2$).</li>
+      <li>Analyse the data in the same way as the main method: plot $p$ against $1/V$, which should be a
+      straight line through the origin.</li>
+      <li>This method is cheaper and safer (no high-pressure glass tube), but the range of pressures it can
+      reach is much smaller than with standard Boyle's law apparatus, so the change in volume is relatively
+      small and the proportional measurement error is larger.</li>
+    </ol>
+
+    <h4>Discussion Questions</h4>
+    <ul>
+      <li>Why is it important to wait for a short time after increasing/decreasing the pressure before
+      recording the length of the air column?</li>
+      <li>If your graph of $p$ against $1/L$ does not pass exactly through the origin (there is a small
+      intercept), what could be the possible causes?</li>
+      <li>How can you make sure the temperature of the gas during the experiment is genuinely constant (rather
+      than simply assumed to be constant)?</li>
+      <li>In the syringe alternative method, why does the syringe need to be mounted vertically when weights
+      are added, rather than horizontally?</li>
+    </ul>
+
+    <h4>References</h4>
+    <ul>
+      <li><a href="https://spark.iop.org/boyles-law" target="_blank" rel="noopener">Boyle's law, IOPSpark (Institute of Physics)</a></li>
+      <li><a href="https://science.cleapss.org.uk/resource-info/pp028-investigating-gas-laws-1-pressure-volume-boyle-s-law.aspx" target="_blank" rel="noopener">PP028 — Investigating gas laws 1: pressure/volume (Boyle's law), CLEAPSS</a></li>
+      <li><a href="https://qualifications.pearson.com/content/dam/pdf/A%20Level/Physics/2015/teaching-and-learning-materials/AS-and-A-level-Physics-Core-Practical-14-Pressure-and-Volume-(Student,-Teacher,-Technician-Worksheets).pdf" target="_blank" rel="noopener">Core Practical 14: Pressure and Volume of a Gas, Pearson Edexcel AS/A Level Physics</a></li>
+      <li><a href="https://www.3bscientific.com/product-manual/U30046_EN.pdf" target="_blank" rel="noopener">Boyle's Law Apparatus U30046, Instruction Sheet, 3B Scientific</a></li>
+    </ul>
+  `
+};
+
+/* type: "mcq" or "structured".
+   For mcq: options[] and correct = index of the correct answer. */
+const IDEALGASES_LATIHAN_EN = [
+  {
+    type: "mcq",
+    question: "A container holds 16 g of oxygen gas (O₂, molar mass 32 g mol⁻¹). The Avogadro constant N_A = 6.02 × 10²³ mol⁻¹. What is the number of oxygen molecules in the container?",
+    options: ["1.5 × 10²³", "3.0 × 10²³", "6.0 × 10²³", "9.6 × 10²⁴"],
+    correct: 1,
+    solution: `Amount of substance: $n = \\dfrac{\\text{mass}}{\\text{molar mass}} = \\dfrac{16}{32} = 0.50~\\text{mol}$.
+    <br>Number of molecules: $N = nN_A = 0.50 \\times 6.02\\times10^{23} = 3.01\\times10^{23} \\approx 3.0\\times10^{23}$ molecules.`
+  },
+  {
+    type: "mcq",
+    question: "A fixed amount of ideal gas at constant temperature has a volume of 480 cm³ at a pressure of 1.0 × 10⁵ Pa. The gas is then compressed at the same temperature until its volume becomes 320 cm³. What is the pressure of the gas after compression?",
+    options: ["0.67 × 10⁵ Pa", "1.0 × 10⁵ Pa", "1.5 × 10⁵ Pa", "2.25 × 10⁵ Pa"],
+    correct: 2,
+    solution: `The temperature is constant, so Boyle's law applies: $p_1V_1 = p_2V_2$.
+    <br>$p_2 = \\dfrac{p_1V_1}{V_2} = \\dfrac{(1.0\\times10^5)(480)}{320} = 1.5\\times10^{5}~\\text{Pa}$.
+    <br>This makes sense: the volume decreases (compression), so the pressure must increase, consistent with the answer above.`
+  },
+  {
+    type: "structured",
+    question: "A cylinder of volume 0.025 m³ contains an ideal gas at a pressure of 2.4 × 10⁵ Pa and a temperature of 22 °C. The molar gas constant R = 8.31 J K⁻¹ mol⁻¹. Determine (a) the temperature of the gas in kelvin, (b) the amount of gas (in moles) in the cylinder.",
+    solution: `<strong>(a)</strong> $T = 22 + 273 = 295~\\text{K}$.
+    <br><strong>(b)</strong> From $pV=nRT$: $n = \\dfrac{pV}{RT} = \\dfrac{(2.4\\times10^5)(0.025)}{(8.31)(295)} = \\dfrac{6000}{2451.45} \\approx 2.4~\\text{mol}$.`
+  },
+  {
+    type: "structured",
+    question: "A fixed amount of ideal gas (the mass of gas does not change) initially has a volume of 300 cm³, a pressure of 1.0 × 10⁵ Pa, and a temperature of 27 °C. The gas then expands until its volume becomes 500 cm³ while its pressure falls to 8.0 × 10⁴ Pa. Determine (a) the initial temperature of the gas in kelvin, (b) the final temperature of the gas after this change of state.",
+    solution: `<strong>(a)</strong> $T_1 = 27 + 273 = 300~\\text{K}$.
+    <br><strong>(b)</strong> Since the amount of gas is constant, the combined gas law applies: $\\dfrac{p_1V_1}{T_1} = \\dfrac{p_2V_2}{T_2}$.
+    <br>$T_2 = T_1 \\times \\dfrac{p_2V_2}{p_1V_1} = 300 \\times \\dfrac{(8.0\\times10^4)(500)}{(1.0\\times10^5)(300)} = 300 \\times \\dfrac{4.0\\times10^7}{3.0\\times10^7} = 300 \\times 1.333 \\approx 400~\\text{K}$
+    <br>(equivalent to $400 - 273 = 127°\\text{C}$). Note: since $V$ in cm³ appears in both the numerator and the denominator, the volume does not need to be converted to m³, because it cancels out in this ratio.`
+  },
+  {
+    type: "structured",
+    question: "The Boltzmann constant k = 1.38 × 10⁻²³ J K⁻¹. Determine (a) the average translational kinetic energy of a molecule of an ideal gas at a temperature of 300 K, (b) the temperature (in kelvin) required for the average translational kinetic energy of that molecule to become twice the value found in part (a).",
+    solution: `<strong>(a)</strong> $E_k = \\tfrac{3}{2}kT = \\tfrac{3}{2}(1.38\\times10^{-23})(300) = 6.21\\times10^{-21}~\\text{J}$.
+    <br><strong>(b)</strong> Since $E_k = \\tfrac32 kT$, the average kinetic energy is directly proportional to the absolute temperature $T$. For $E_k$ to double, $T$ must also double:
+    <br>$T_{new} = 2 \\times 300 = 600~\\text{K}$.
+    <br>(Check: $E_k = \\tfrac32(1.38\\times10^{-23})(600) = 1.242\\times10^{-20}~\\text{J}$, exactly twice $6.21\\times10^{-21}$ J, consistent.)`
+  },
+  {
+    type: "structured",
+    question: "The molar gas constant R = 8.31 J K⁻¹ mol⁻¹. Nitrogen molecules (N₂) have a molar mass of 28 g mol⁻¹. Determine (a) the molar mass of nitrogen in kg mol⁻¹, (b) the root-mean-square (rms) speed of nitrogen molecules at a temperature of 20 °C.",
+    solution: `<strong>(a)</strong> $M = 28~\\text{g mol}^{-1} = 28\\times10^{-3}~\\text{kg mol}^{-1} = 2.8\\times10^{-2}~\\text{kg mol}^{-1}$.
+    <br><strong>(b)</strong> $T = 20 + 273 = 293~\\text{K}$.
+    <br>$c_{rms} = \\sqrt{\\dfrac{3RT}{M}} = \\sqrt{\\dfrac{3(8.31)(293)}{2.8\\times10^{-2}}} = \\sqrt{\\dfrac{7304.3}{2.8\\times10^{-2}}} = \\sqrt{2.609\\times10^{5}} \\approx 5.1\\times10^{2}~\\text{m s}^{-1}$ (approximately 511 m s⁻¹).`
+  }
+];
+
+/* Concise formula sheet (plain text), used as automatic "grounding":
+   appended to the prompt sent to the AI so it uses exactly the formulas
+   & values already validated by the teacher, rather than guessing from
+   general knowledge. */
+const IDEALGASES_FORMULA_SHEET_EN = `
+- Mole and the Avogadro constant: N = n * NA, where NA = Avogadro constant = 6.02 x 10^23 mol^-1 (Cambridge data sheet)
+- Amount of substance from mass: n = sample mass / molar mass (M). Watch units carefully: the unit of molar mass (g/mol vs kg/mol) must be consistent with the unit of sample mass used.
+- Ideal gas equation of state: pV = nRT, where R = molar gas constant = 8.31 J K^-1 mol^-1 (Cambridge data sheet)
+- Per-molecule form: pV = NkT, where k = Boltzmann constant = 1.38 x 10^-23 J K^-1 (Cambridge data sheet), and k = R / NA
+- T must be in kelvin in all ideal gas formulas: T(K) = T(degrees C) + 273.15 (9702 syllabus 2025-2027); the quick rounding +273 is often used for practical estimation in questions (the difference is only 0.15 K, which does not change the final answer to 2-3 significant figures).
+- Boyle's law (T and n constant): p1 V1 = p2 V2. p-V graph is a hyperbola/isotherm; graph of p vs 1/V is a straight line through the origin.
+- Pressure law / Gay-Lussac's law (V and n constant): p1/T1 = p2/T2. Graph of p vs T (kelvin) is a straight line through the origin.
+- Charles's law (p and n constant): V1/T1 = V2/T2. Graph of V vs T (kelvin) is a straight line through the origin.
+- Combined gas law (n constant): p1 V1 / T1 = p2 V2 / T2
+- Basic assumptions of the kinetic theory of an ideal gas (9702 syllabus 15.3.1): (1) a very large number of molecules move in random motion; (2) the volume of the molecules is negligible compared with the volume of the gas; (3) intermolecular forces are negligible except during collisions; (4) collisions between molecules, and with the walls, are perfectly elastic and last for a very short time compared with the time between collisions; (5) molecules move in straight lines at constant speed between collisions, obeying Newton's laws of motion.
+- Gas pressure from the kinetic theory: pV = 1/3 N m <c^2>, where N = number of molecules, m = mass of one molecule, <c^2> = mean square speed (NOT the square of the average speed)
+- Linking to temperature (compare pV=1/3 N m<c^2> with pV=NkT): (1/2) m <c^2> = (3/2) k T -> average translational kinetic energy of one molecule E_k = (3/2) k T, directly proportional to absolute temperature T, independent of the type of gas.
+- Root-mean-square speed: c_rms = sqrt(<c^2>) = sqrt(3 k T / m) = sqrt(3 R T / M), where M = molar mass of the gas in kg/mol.
+- Standard values from the Cambridge 9702 data sheet: R = 8.31 J K^-1 mol^-1 ; NA = 6.02 x 10^23 mol^-1 ; k = 1.38 x 10^-23 J K^-1 ; g = 9.81 m/s^2 (for related experiments, if needed).
+`;
+
+/* Specific concepts for the Virtual Simulation Lab's Prompt Generator dropdown */
+const IDEALGASES_LAB_CONCEPTS_EN = [
+  "The Concept of the Mole and the Avogadro Constant (N = n x NA)",
+  "The Ideal Gas Equation of State (pV = nRT and pV = NkT)",
+  "Boyle's Law, the Pressure Law, and Charles's Law (p-V, p-T, V-T graphs)",
+  "Basic Assumptions of the Kinetic Theory of an Ideal Gas",
+  "Gas Pressure from the Kinetic Theory (pV = 1/3 N m <c^2>)",
+  "Relationship Between Molecular Kinetic Energy and Temperature ((1/2) m <c^2> = (3/2) k T) and rms Speed",
+  "Other (write your own in additional instructions)"
+];
+
 (function attachIdealGasesContent() {
   const topic = TOPICS.find(t => t.id === "ideal-gases");
-  topic.materiHTML = IDEALGASES_MATERI;
-  topic.eksperimen = IDEALGASES_EKSPERIMEN;
-  topic.latihan = IDEALGASES_LATIHAN;
-  topic.labConcepts = IDEALGASES_LAB_CONCEPTS;
-  topic.formulaSheet = IDEALGASES_FORMULA_SHEET;
+  topic.desc = { id: topic.desc, en: IDEALGASES_DESC_EN };
+  topic.materiHTML = { id: IDEALGASES_MATERI, en: IDEALGASES_MATERI_EN };
+  topic.eksperimen = {
+    title: { id: IDEALGASES_EKSPERIMEN.title, en: IDEALGASES_EKSPERIMEN_EN.title },
+    intro: { id: IDEALGASES_EKSPERIMEN.intro, en: IDEALGASES_EKSPERIMEN_EN.intro }
+  };
+  topic.latihan = IDEALGASES_LATIHAN.map((q, i) => {
+    const qEN = IDEALGASES_LATIHAN_EN[i] || {};
+    return {
+      ...q,
+      question: { id: q.question, en: qEN.question },
+      options: q.options ? q.options.map((opt, j) => ({ id: opt, en: (qEN.options || [])[j] })) : q.options,
+      solution: { id: q.solution, en: qEN.solution }
+    };
+  });
+  topic.labConcepts = IDEALGASES_LAB_CONCEPTS.map((c, i) => ({ id: c, en: IDEALGASES_LAB_CONCEPTS_EN[i] }));
+  topic.formulaSheet = { id: IDEALGASES_FORMULA_SHEET, en: IDEALGASES_FORMULA_SHEET_EN };
 })();
 
 /* ------------------------------------------------------------
@@ -1976,11 +3569,382 @@ const THERMODYNAMICS_LAB_CONCEPTS = [
 ];
 
 /* Tempelkan konten lengkap ke objek topik "thermodynamics" */
+
+/* ---- English (_EN) translations for THERMODYNAMICS (auto-merged by merge_i18n.py) ---- */
+/* ------------------------------------------------------------
+   English translation of THERMODYNAMICS topic content
+   (Cambridge International AS & A Level Physics 9702)
+   ------------------------------------------------------------ */
+
+const THERMODYNAMICS_DESC_EN = "Internal energy, the first law of thermodynamics.";
+
+const THERMODYNAMICS_MATERI_EN = `
+<h3>1. Internal Energy</h3>
+<p>The <strong>internal energy</strong> $U$ of a system (for example, a quantity of gas) is defined as
+<strong>the sum of the random kinetic energy and random potential energy of all the molecules</strong> in the
+system, arising from the disordered motion and arrangement of the molecules.</p>
+<div class="formula-box">$$U = \\sum(\\text{KE of molecules}) + \\sum(\\text{PE of molecules})$$</div>
+<ul>
+  <li><strong>Molecular kinetic energy</strong> arises from the translational motion (and, for polyatomic
+  molecules, also rotational/vibrational motion) of randomly moving molecules. This component is directly
+  related to the absolute temperature of the gas.</li>
+  <li><strong>Molecular potential energy</strong> arises from the attractive/repulsive forces between
+  molecules (intermolecular forces). For an ideal gas, intermolecular forces are assumed to be negligible, so
+  this potential energy is taken to be zero.</li>
+</ul>
+<p class="muted"><strong>Internal energy is NOT the same as temperature.</strong> Temperature is related only
+to the average kinetic energy of the molecules (see the Ideal Gases topic: $\\tfrac12 m\\overline{c^2} \\propto T$).
+Internal energy includes kinetic energy <em>and</em> the total potential energy of all the molecules. For
+example: when ice melts into water at a constant temperature of 0°C, the temperature (and hence the average
+kinetic energy of the molecules) does not change, but the internal energy still increases because the latent
+heat absorbed is used to change the arrangement/spacing between molecules, so their molecular potential energy
+increases. For an <strong>ideal gas</strong> alone (since its intermolecular potential energy is zero), the
+internal energy is entirely kinetic energy, so the change in internal energy of an ideal gas is directly
+proportional to the change in its absolute temperature.</p>
+
+<h3>2. Work Done on/by a Gas</h3>
+<p>When a gas expands or is compressed by a piston, energy is transferred in the form of mechanical work. For
+a gas at <strong>constant pressure</strong> $p$ whose volume changes by $\\Delta V$, the magnitude of the work
+involved is:</p>
+<div class="formula-box">$$W = p\\,\\Delta V$$</div>
+<p>More generally (the pressure need not be constant), the magnitude of the work done in a process is equal to
+<strong>the area under the curve on a $p$-$V$ graph</strong> between the initial and final volumes; the
+formula $W = p\\Delta V$ is simply the special case where the curve is a horizontal line (constant pressure),
+so the area forms a rectangle.</p>
+${mediaRow(
+  { src: "https://upload.wikimedia.org/wikipedia/commons/2/29/P-V_diagram_work_closed_system.svg",
+    alt: "Pressure against volume graph showing the shaded area as the work done by a gas",
+    caption: "$p$-$V$ graph for a gas expanding in a closed system: the area under the curve (shaded) equals the magnitude of the work involved in the process.",
+    author: "Olivier Cleynen", license: "CC0 (Public Domain)" },
+  { id: "Xcrco59p40o", title: "PV diagrams - part 1: Work and isobaric processes",
+    channel: "Khan Academy", desc: "Explains how to calculate work from a p-V graph, including the special case of an isobaric (constant-pressure) process, W = p ΔV." }
+)}
+<p>It is important to distinguish the <strong>direction</strong> of this energy transfer:</p>
+<ul>
+  <li>When a gas <strong>expands</strong> ($\\Delta V > 0$), pushing the piston outward, the gas <strong>does
+  work on the surroundings</strong> (energy leaves the gas as work).</li>
+  <li>When a gas <strong>is compressed</strong> ($\\Delta V < 0$) by a piston pushed in from outside, the
+  surroundings <strong>do work on the gas</strong> (energy enters the gas as work).</li>
+</ul>
+<p class="muted">This distinction is crucial in determining the sign (+/-) of the work term $w$ in the first
+law of thermodynamics in the next section — pay close attention to the sign convention used by Cambridge
+9702.</p>
+
+<h3>3. The First Law of Thermodynamics</h3>
+<p>The first law of thermodynamics is a statement of <strong>the law of conservation of energy</strong>
+applied to a thermodynamic system (for example, a quantity of enclosed gas). In accordance with the official
+Cambridge International AS &amp; A Level Physics 9702 <em>syllabus</em>, this law is written as:</p>
+<div class="formula-box">$$\\Delta U = q + w$$</div>
+<p><strong>Definitions of the terms according to the Cambridge 9702 convention (important, memorise
+exactly):</strong></p>
+<table>
+  <tr><th>Symbol</th><th>Meaning</th><th>POSITIVE when&hellip;</th><th>NEGATIVE when&hellip;</th></tr>
+  <tr><td>$\\Delta U$</td><td>Change in the internal energy of the system</td><td>The internal energy of the system <strong>increases</strong></td><td>The internal energy of the system <strong>decreases</strong></td></tr>
+  <tr><td>$q$</td><td>Heat <strong>received</strong> by the system (energy transferred to the system by heating)</td><td>Heat <strong>enters</strong> the system (the system is heated)</td><td>Heat <strong>leaves</strong> the system (the system releases heat to the surroundings)</td></tr>
+  <tr><td>$w$</td><td>Work done <strong>on</strong> the system/gas</td><td>The gas <strong>is compressed</strong> (the surroundings do work on the gas)</td><td>The gas <strong>expands</strong> (the gas does work on the surroundings)</td></tr>
+</table>
+<p class="muted"><strong>Important warning:</strong> some textbooks (especially older chemistry/engineering
+texts) use the classical physics convention $\\Delta U = Q - W$, where $W$ = work done <em>by</em> the system.
+Cambridge 9702 does <strong>NOT</strong> use that convention. Always use $\\Delta U = q + w$ with $w$ = work
+done <em>on</em> the system, as given in the Cambridge data sheet and <em>syllabus</em>, so that the sign of
+the work term is never mixed up when working through problems or answering exam questions.</p>
+
+<p><strong>Qualitative examples of applying the signs:</strong></p>
+<ul>
+  <li>A gas is compressed (receiving work, $w > 0$) <em>while also</em> being heated (receiving heat,
+  $q > 0$) &rarr; both terms are positive &rarr; $\\Delta U$ clearly increases (a large positive value).</li>
+  <li>A gas expands, doing work on the surroundings, without receiving any heat at all ($q = 0$, an
+  <strong>adiabatic</strong> process) &rarr; $w < 0$ and $q = 0$ &rarr; $\\Delta U = w < 0$, the internal
+  energy <strong>decreases</strong>, so the temperature of the gas falls. This is the principle behind
+  <strong>adiabatic cooling</strong> (for example: air that rises and expands in the atmosphere becomes
+  cooler).</li>
+</ul>
+${mediaRow(
+  null,
+  { id: "Xb05CaG7TsQ", title: "First law of thermodynamics / internal energy",
+    channel: "Khan Academy", desc: "An introduction to the first law of thermodynamics ΔU = Q + W and an explanation of internal energy as the sum of the kinetic and potential energy of molecules." }
+)}
+
+<h3>4. Special Cases: Constant Volume and Adiabatic Processes</h3>
+<table>
+  <tr><th>Case</th><th>Condition</th><th>Consequence for the first law</th></tr>
+  <tr><td><strong>Constant volume (isochoric)</strong></td><td>The gas is in a rigid/tightly sealed container, with no change in volume ($\\Delta V = 0$)</td><td>$w = 0$ (no work is done because no piston moves), so $\\Delta U = q$: all the heat received directly becomes an increase in internal energy.</td></tr>
+  <tr><td><strong>Adiabatic</strong></td><td>The system is thermally isolated (no heat enters or leaves), or the change happens so rapidly that there is no time for heat to be transferred</td><td>$q = 0$, so $\\Delta U = w$: the entire change in internal energy comes purely from the work done on/by the gas.</td></tr>
+</table>
+<p>This constant-volume case ($\\Delta U = q$) is the theoretical basis for why heat measurements made in a
+constant-volume process (for example, heating a solid/liquid in a rigid container) can be used directly to
+determine the <strong>specific heat capacity</strong> (see the Temperature topic): $q = mc\\Delta\\theta$, and
+since $w \\approx 0$ for solids/liquids (their expansion is negligible), $\\Delta U = q = mc\\Delta\\theta$
+directly.</p>
+${mediaRow(
+  { src: "https://upload.wikimedia.org/wikipedia/commons/5/58/Fire_piston.jpg",
+    alt: "A fire piston, a glass tube with a piston that compresses air adiabatically until it ignites tinder",
+    caption: "Fire piston: a small piece of cotton/tinder inside a transparent tube ignites from the heat generated by very rapid compression of air (close to adiabatic, $q \\approx 0$), so $\\Delta U = w$ is large enough to raise the air temperature to its ignition point.",
+    author: "Chocolateoak", license: "CC BY-SA 3.0 / GFDL" },
+  { id: "6sP3kV-zgZk", title: "First law of thermodynamics problem solving",
+    channel: "Khan Academy", desc: "Practice applying the first law of thermodynamics ΔU = q + w to various problem cases, including constant-volume and adiabatic processes." }
+)}
+
+<h3>5. Numerical Example: Applying $\\Delta U = q + w$</h3>
+<p><strong>Question:</strong> An ideal gas in a piston-cylinder arrangement is at a constant pressure of
+$2{,}0\\times10^{5}$ Pa. The gas is heated so that its volume increases from $3{,}0\\times10^{-4}$ m³ to
+$5{,}0\\times10^{-4}$ m³, while a total of 90 J of heat is supplied to the gas. Determine the change in
+internal energy of the gas.</p>
+<p><strong>Solution:</strong></p>
+<p>Step 1 - calculate the magnitude of the work done <em>by</em> the gas on the surroundings as it expands at
+constant pressure:</p>
+<div class="formula-box">$$\\Delta V = (5{,}0-3{,}0)\\times10^{-4} = 2{,}0\\times10^{-4}~\\text{m}^3$$
+$$W_{\\text{by gas}} = p\\,\\Delta V = (2{,}0\\times10^{5})(2{,}0\\times10^{-4}) = 40~\\text{J}$$</div>
+<p>Step 2 - because the gas <em>expands</em> (doing work on the surroundings), the work done <strong>on</strong>
+the gas ($w$, following the Cambridge convention) is <strong>negative</strong>:</p>
+<div class="formula-box">$$w = -40~\\text{J}$$</div>
+<p>Step 3 - heat is supplied <em>to</em> the gas, so $q$ is positive: $q = +90$ J. Apply the first law of
+thermodynamics:</p>
+<div class="formula-box">$$\\Delta U = q + w = (+90) + (-40) = +50~\\text{J}$$</div>
+<p>So the internal energy of the gas <strong>increases by 50 J</strong>. This makes sense: of the 90 J of heat
+supplied, 40 J is "used" by the gas to do work pushing the piston outward, while the remainder (50 J) is
+retained as an increase in internal energy (raising the temperature of the gas).</p>
+`;
+
+const THERMODYNAMICS_EKSPERIMEN_EN = {
+  title: "Real Experiment: Fire Piston (Compression Fire Starter) - Demonstrating the First Law of Thermodynamics",
+  intro: `
+    <p class="muted">This is a genuine physical experiment/demonstration using real apparatus (a fire
+    piston/fire syringe), not a computer simulation. This demonstration is a classic one widely used in
+    university physics laboratories and school physics equipment collections to show an adiabatic process in
+    a real and dramatic way. If a fire piston is not available at your school, see the
+    <strong>Alternative</strong> section below, which gives a quantitative version using ordinary electrical
+    heating apparatus.</p>
+
+    <h4>Objective</h4>
+    <p>To observe and qualitatively explain how the very rapid compression of air can significantly raise its
+    temperature (a process close to adiabatic), as a direct application of the first law of thermodynamics
+    $\\Delta U = q + w$ in the case $q \\approx 0$.</p>
+
+    <h4>Basic Concept</h4>
+    <p>A fire piston is a glass/metal cylindrical tube closed at one end, with a tightly fitting piston at the
+    other end. If the piston is pushed into the tube <strong>very rapidly</strong> (a single strong hand
+    thrust), the air inside the tube is compressed in a very short time, so <strong>there is not enough time
+    for heat to transfer out</strong> through the walls of the tube. This process is close to an
+    <strong>adiabatic</strong> process ($q \\approx 0$), so the first law of thermodynamics becomes:</p>
+    <div class="formula-box">$$\\Delta U = q + w \\approx 0 + w = w$$</div>
+    <p>Because the piston does work <em>on</em> the air (compressing it, $\\Delta V < 0$), $w$ is
+    <strong>positive</strong> and fairly large (a human hand thrust can compress air to a compression ratio of
+    20:1 or more in less than 0.1 seconds). As a result $\\Delta U$ is also large and positive, drastically
+    raising the temperature of the air inside the tube (which can exceed 250-300°C) almost instantly - hot
+    enough to ignite a small piece of dry cotton/fibre (tinder) placed at the bottom of the tube, producing a
+    brief flash of flame. This is the same physical principle used in diesel engines to ignite fuel without a
+    spark plug.</p>
+
+    <h4>Apparatus &amp; Materials</h4>
+    <ul>
+      <li>Fire piston / fire syringe (a transparent glass or metal cylinder with a rubber/leather-sealed piston at one end) - a fairly common piece of physics demonstration equipment available as an educational tool</li>
+      <li>A small piece of dry cotton wool, char-cloth fibre, or dry tinder/wick as the material to be ignited</li>
+      <li>Safety goggles for both observers and the operator</li>
+      <li>A room with somewhat dim lighting (to make the brief flash of flame easier to see)</li>
+      <li>A heat-resistant/non-flammable mat under the apparatus (as a precaution)</li>
+      <li>(Optional) an infrared thermometer to estimate the temperature rise, if available</li>
+    </ul>
+
+    <h4>Procedure</h4>
+    <ol>
+      <li>An experienced teacher/instructor checks the condition of the fire piston (the piston seal must be in good condition so that air does not leak out during compression).</li>
+      <li>Place a small piece of dry cotton wool/tinder at the bottom of the tube (the closed end).</li>
+      <li>Pull the piston out to its starting position (the air inside the tube is at its initial pressure and volume, close to atmospheric pressure).</li>
+      <li>Dim the room lights so the flash of flame is easier to observe.</li>
+      <li>With a single fast, strong thrust (not a slow, gradual push), push the piston fully into the tube, then immediately observe the bottom of the tube through the transparent wall.</li>
+      <li>Observe for a brief flash/spark of light and/or a thin wisp of smoke at the bottom of the tube, a sign that the cotton has begun to burn from the heat of compression.</li>
+      <li>Slowly pull the piston back out and examine the condition of the cotton (usually slightly charred/smoking).</li>
+      <li>Repeat 2-3 times with fresh cotton to check that the result is consistent, and compare the result of a fast thrust with a slow push (see Discussion Questions).</li>
+    </ol>
+
+    <h4>Observation Table (qualitative, fill in with your own experimental results)</h4>
+    <table>
+      <tr><th>Trial no.</th><th>Speed of piston thrust</th><th>Flame/smoke observed?</th><th>Condition of cotton afterward</th></tr>
+      <tr><td>1</td><td>Fast (thrust)</td><td></td><td></td></tr>
+      <tr><td>2</td><td>Fast (thrust)</td><td></td><td></td></tr>
+      <tr><td>3</td><td>Slow (gradual push)</td><td></td><td></td></tr>
+    </table>
+
+    <h4>Analysis</h4>
+    <ul>
+      <li>With a fast thrust, the process is close to adiabatic ($q \\approx 0$) because there is too little time for heat to conduct out through the walls of the tube, so all the work $w$ (which is positive because the air is compressed) directly becomes an increase in internal energy: $\\Delta U = w$.</li>
+      <li>With a slow push, most of the heat generated has time to conduct out ($q$ is negative, reducing the increase in $\\Delta U$ even though $w$ remains positive), so the final air temperature is much lower and is usually not enough to ignite the cotton. This shows the importance of the "fast" condition for the process to be genuinely close to adiabatic.</li>
+      <li>Rough estimate: with a high compression ratio ($V_1/V_2 \\approx 20$-$25$), the adiabatic ideal-gas model predicts a temperature rise from around 20°C to over 250°C, well above the ignition point of dry cotton (around 200°C), so ignition can occur even though it lasts only a fraction of a second.</li>
+    </ul>
+
+    <h4>Safety Precautions</h4>
+    <ul>
+      <li><strong>Safety goggles must be worn</strong> - even though the flame is very small and brief, sparks or fragments from the apparatus (if the seal/tube is damaged) could risk hitting the eyes.</li>
+      <li>This demonstration should be <strong>carried out by a teacher/instructor or under direct supervision</strong>, not attempted freely by students without supervision, since it requires the correct thrusting technique to remain safe and to avoid damaging the apparatus.</li>
+      <li>Keep all flammable materials (paper, alcohol, gas, loose hair/clothing) away from the demonstration area.</li>
+      <li>Carry out the demonstration in a well-ventilated room; although very little smoke is produced, avoid repeatedly inhaling it at close range.</li>
+      <li>Check the physical condition of the glass tube before use (cracks/scratches can cause it to shatter under sudden pressure); do not use apparatus that appears damaged.</li>
+      <li>After the demonstration, make sure the burnt cotton is completely extinguished before disposal.</li>
+    </ul>
+
+    <h4>Sources of Error/Limitations</h4>
+    <ul>
+      <li>This process is not truly 100% adiabatic ($q$ is not exactly zero) - there is always a small amount of heat that conducts out through the walls of the tube, especially if the thrust is not fast enough or the tube is already warm from a previous trial.</li>
+      <li>The strength and speed of the thrust varies from person to person, so the outcome (successful ignition or not) is not always consistent - this is a qualitative demonstration, not a precision measurement.</li>
+      <li>The moisture content of the cotton/tinder used greatly affects the success of ignition (damp cotton is hard to ignite even if the temperature is high enough).</li>
+      <li>A small leak around the piston seal (if worn) reduces the effective compression ratio, lowering the temperature rise achieved.</li>
+    </ul>
+
+    <h4>Alternative: Electrical Heating Method for Specific Heat Capacity (Quantitative, Constant Volume)</h4>
+    <p>The fire piston provides only <strong>qualitative</strong> evidence that work can raise internal energy
+    without heat (the case $q=0$). To complement it with <strong>quantitative</strong> evidence for the first
+    law in the opposite case ($w=0$, constant volume, so $\\Delta U = q$ directly), carry out the standard
+    practical for determining the <strong>specific heat capacity of a solid using the electrical heating
+    method</strong>:</p>
+    <ol>
+      <li>Measure the mass $m$ of a metal block (for example, aluminium or copper) that has two holes: one for an electrical heating element and one for a thermometer (with a little oil added for good thermal contact).</li>
+      <li>Insert the heating element and thermometer into their respective holes. Since a solid block practically does not expand significantly, <strong>no mechanical work is done by the block on the surroundings</strong> ($w \\approx 0$).</li>
+      <li>Record the initial temperature $\\theta_1$. Pass a current $I$ at a known voltage $V$ through the heater for a time $t$ (measured with a stopwatch), so the electrical energy supplied is $q = VIt$.</li>
+      <li>Record the final temperature $\\theta_2$ immediately after the heater is switched off (to minimise heat lost to the surroundings).</li>
+      <li>Since $w=0$, the first law gives $\\Delta U = q = VIt$. Since $\\Delta U = mc\\Delta\\theta$ for a solid, the specific heat capacity can be calculated: $c = \\dfrac{VIt}{m(\\theta_2-\\theta_1)}$.</li>
+      <li>For a more accurate result, repeat with the block insulated (wrapped in wool/cork) to minimise heat lost to the surrounding air, and compare the value of $c$ obtained with reference values (for example, aluminium $\\approx 900$ J kg⁻¹ K⁻¹, copper $\\approx 385$ J kg⁻¹ K⁻¹).</li>
+    </ol>
+    <p class="muted">Notice how these two experiments complement each other: the fire piston demonstrates the
+    case $q=0 \\Rightarrow \\Delta U = w$ (adiabatic), while the electrical heating method on a solid
+    demonstrates the case $w=0 \\Rightarrow \\Delta U = q$ (constant volume) - two special cases of the same
+    first law of thermodynamics.</p>
+
+    <h4>Discussion Questions</h4>
+    <ul>
+      <li>Why does the fire piston only succeed in igniting the cotton when the piston is pushed in <strong>quickly</strong>, not slowly? Relate your answer to the value of $q$ in each case.</li>
+      <li>In the fire piston, does the resulting $\\Delta U$ come from heat or from work? Explain using the first law of thermodynamics, including the sign of each term.</li>
+      <li>If the fire piston is pushed in and then left held in place (the piston not released) for several minutes before being pulled out, what would happen to the temperature of the air inside, and why?</li>
+      <li>In the alternative experiment (electrical heating of a metal block), why is it important to record the final temperature <em>immediately</em> after the heater is switched off, rather than waiting several minutes?</li>
+    </ul>
+
+    <h4>References</h4>
+    <ul>
+      <li><a href="https://en.wikipedia.org/wiki/Fire_piston" target="_blank" rel="noopener">Fire piston, Wikipedia (historical background and working principle)</a></li>
+      <li><a href="https://www.physics.purdue.edu/demos/display_page.php?item=3E-03" target="_blank" rel="noopener">Fire Syringe Demo (3E-03), Purdue University Physics Lecture Demonstrations</a></li>
+      <li><a href="https://www.isu.edu/physics/outreach/physics-class-demos/thermodynamics/fire-syringe/" target="_blank" rel="noopener">Fire Syringe, Idaho State University Physics Outreach</a></li>
+      <li><a href="https://web.physics.ucsb.edu/~lecturedemonstrations/Composer/Pages/52.24.html" target="_blank" rel="noopener">52.24 - Fire syringe, UC Santa Barbara Lecture Demonstrations</a></li>
+      <li><a href="https://spark.iop.org/episode-607-specific-heat-capacity" target="_blank" rel="noopener">Episode 607: Specific heat capacity (electrical method), IOPSpark</a></li>
+    </ul>
+  `
+};
+
+/* type: "mcq" or "structured".
+   For mcq: options[] and correct = index of the correct answer.
+   Cambridge 9702 convention: delta U = q + w, q = heat RECEIVED by the system, w = work DONE ON the system. */
+const THERMODYNAMICS_LATIHAN_EN = [
+  {
+    type: "mcq",
+    question: "A gas is compressed by a piston, receiving 180 J of work from the surroundings. At the same time, the gas also receives 60 J of heat. What is the change in internal energy of the gas, $\\Delta U$?",
+    options: ["120 J", "180 J", "240 J", "300 J"],
+    correct: 2,
+    solution: `The gas receives work (it is compressed), so according to the Cambridge convention $w$ is positive: $w = +180~\\text{J}$.
+    <br>The gas also receives heat, so $q$ is positive: $q = +60~\\text{J}$.
+    <br>Using the first law of thermodynamics: $\\Delta U = q + w = 60 + 180 = 240~\\text{J}$.
+    <br>Both terms are positive (the gas receives heat AND receives work), so the internal energy of the gas clearly increases, matching the answer <strong>240 J</strong>.`
+  },
+  {
+    type: "mcq",
+    question: "A gas undergoes an adiabatic process (no heat enters or leaves the system). During this process the gas expands and does 95 J of work on the surroundings. What is the change in internal energy of the gas, $\\Delta U$?",
+    options: ["-95 J", "+95 J", "0 J", "-190 J"],
+    correct: 0,
+    solution: `An adiabatic process means $q = 0$ (no heat transfer occurs at all).
+    <br>The gas <em>expands</em> and does work ON the surroundings (rather than receiving work), so according to the Cambridge convention, the work done ON the gas is negative: $w = -95~\\text{J}$.
+    <br>$\\Delta U = q + w = 0 + (-95) = -95~\\text{J}$.
+    <br>The internal energy of the gas decreases by 95 J - the gas uses its own internal energy to do work pushing against the surroundings, since no heat enters to replace it. This is the principle of adiabatic cooling.`
+  },
+  {
+    type: "structured",
+    question: "A quantity of gas is compressed adiabatically by a piston. The piston does $3{,}4\\times10^{2}$ J of work on the gas during this process. (a) State the value of q for this process, giving a reason. (b) Calculate the change in internal energy of the gas, $\\Delta U$. (c) What happens to the temperature of the gas? Explain using the concept of internal energy of an ideal gas.",
+    solution: `<strong>(a)</strong> An adiabatic process means the system exchanges no heat with the surroundings at all, so $q = 0$.
+    <br><strong>(b)</strong> The gas is compressed (receiving work from the piston), so $w = +3{,}4\\times10^{2}~\\text{J}$ (positive, following the Cambridge convention: work done on the gas during compression is positive).
+    <br>$\\Delta U = q + w = 0 + 3{,}4\\times10^{2} = 3{,}4\\times10^{2}~\\text{J}$ (the internal energy increases by 340 J).
+    <br><strong>(c)</strong> For an ideal gas, the internal energy is entirely molecular kinetic energy (intermolecular potential energy is negligible), and the average kinetic energy of the molecules is directly proportional to the absolute temperature. Since $\\Delta U$ is positive (the internal energy increases), <strong>the temperature of the gas rises</strong>.`
+  },
+  {
+    type: "structured",
+    question: "A copper block of mass 0.20 kg (specific heat capacity of copper $c = 385~\\text{J kg}^{-1}\\text{K}^{-1}$) is heated electrically inside a rigid, tightly sealed container, so that its volume does not change during heating. The electrical heater supplies 770 J of energy to the block. (a) Explain why $w = 0$ for this process. (b) Use the first law of thermodynamics to determine $\\Delta U$ for the copper block. (c) Calculate the temperature rise of the copper block.",
+    solution: `<strong>(a)</strong> Since the container is rigid and tightly sealed, the volume of the block (and the air around it inside the container) does not change ($\\Delta V = 0$). No piston/surface moves, so no mechanical work is done on or by the system: $w = 0$.
+    <br><strong>(b)</strong> The electrical energy supplied by the heater is heat received by the system, so $q = +770~\\text{J}$.
+    <br>With $w = 0$: $\\Delta U = q + w = 770 + 0 = 770~\\text{J}$.
+    <br><strong>(c)</strong> Since the volume is constant (no work is done), all of this energy raises the temperature of the solid block according to $\\Delta U = mc\\Delta\\theta$:
+    <br>$\\Delta\\theta = \\dfrac{\\Delta U}{mc} = \\dfrac{770}{0{,}20 \\times 385} = \\dfrac{770}{77{,}0} = 10{,}0~\\text{K}$.
+    <br>So the temperature of the copper block rises by <strong>10.0 K (or 10.0°C)</strong>.`
+  },
+  {
+    type: "structured",
+    question: "The gas inside a cylinder is compressed by a piston so that its volume decreases. During this compression process, the gas releases 25 J of heat to its surroundings, while the piston does 60 J of work on the gas. (a) State the sign (positive/negative) of q and w for this process, giving reasons. (b) Calculate the change in internal energy of the gas, $\\Delta U$. (c) Does the internal energy of the gas increase or decrease?",
+    solution: `<strong>(a)</strong> The gas <em>releases</em> heat (heat leaves the system for the surroundings), so according to the Cambridge convention $q$ is <strong>negative</strong>: $q = -25~\\text{J}$.
+    <br>The piston does work ON the gas (the gas is compressed, receiving work from outside), so $w$ is <strong>positive</strong>: $w = +60~\\text{J}$.
+    <br><strong>(b)</strong> $\\Delta U = q + w = (-25) + (+60) = +35~\\text{J}$.
+    <br><strong>(c)</strong> Since $\\Delta U$ is positive, the internal energy of the gas <strong>increases</strong> by 35 J - although the gas loses some energy by releasing heat, the work it receives from the piston is much larger, so overall its internal energy still rises.`
+  },
+  {
+    type: "structured",
+    question: "An ideal gas is in a piston-cylinder arrangement at a constant pressure of $2{,}0\\times10^{5}$ Pa. The gas is heated so that its volume increases from $3{,}0\\times10^{-4}$ m³ to $5{,}0\\times10^{-4}$ m³, while a total of 90 J of heat is supplied to the gas during this process. (a) Calculate the magnitude of the work done BY the gas on the surroundings during this expansion. (b) State the value of w (work done on the gas, following the first law of thermodynamics convention) for this process, giving a reason for its sign. (c) Calculate the change in internal energy of the gas, $\\Delta U$.",
+    solution: `<strong>(a)</strong> Since the pressure is constant, the work done by the gas on the surroundings is calculated from the area under the $p$-$V$ graph (a rectangle):
+    <br>$\\Delta V = (5{,}0-3{,}0)\\times10^{-4} = 2{,}0\\times10^{-4}~\\text{m}^3$.
+    <br>$W_{\\text{by gas}} = p\\,\\Delta V = (2{,}0\\times10^{5})(2{,}0\\times10^{-4}) = 40~\\text{J}$.
+    <br><strong>(b)</strong> Because the gas <em>expands</em> (doing work ON the surroundings, rather than receiving work), the work done ON the gas is negative: $w = -40~\\text{J}$.
+    <br><strong>(c)</strong> Heat is supplied to the gas, so $q = +90~\\text{J}$.
+    <br>$\\Delta U = q + w = 90 + (-40) = +50~\\text{J}$.
+    <br>The internal energy of the gas increases by 50 J: of the 90 J of heat supplied, 40 J is used by the gas to do work pushing the piston outward, while the remainder (50 J) becomes an increase in the internal energy of the gas.`
+  }
+];
+
+/* Concise formula sheet (plain text), used as automatic "grounding":
+   appended to the prompt sent to the AI so that it uses exactly the
+   formulas & sign convention already verified from the official Cambridge
+   9702 syllabus, rather than guessing from general knowledge (many
+   textbooks use a DIFFERENT/reversed sign convention, so this MUST be
+   followed exactly). */
+const THERMODYNAMICS_FORMULA_SHEET_EN = `
+- Internal energy U = sum of the random kinetic energy + random potential energy of all molecules in the system.
+  U is NOT the same as temperature: temperature is related only to the average kinetic energy of the molecules; U also includes the intermolecular potential energy (e.g. it changes during a change of state at constant temperature).
+  For an ideal gas, intermolecular potential energy is neglected, so U for an ideal gas is entirely kinetic energy and is proportional to the absolute temperature.
+- Work at constant pressure: W = p * delta_V. In general, work = the area under the curve on a p-V graph.
+  Gas expands (delta_V > 0) -> the gas does work ON the surroundings. Gas is compressed (delta_V < 0) -> the surroundings do work ON the gas.
+- OFFICIAL CAMBRIDGE 9702 SIGN CONVENTION (MANDATORY, do not reverse it): First law of thermodynamics: delta U = q + w
+  * delta U = change in internal energy of the system. Positive if the internal energy INCREASES.
+  * q = heat RECEIVED by the system (energy transferred to the system by heating). Positive if heat ENTERS the system (it is heated). Negative if the system RELEASES heat to the surroundings.
+  * w = work DONE ON the system/gas. Positive if the gas IS COMPRESSED (receiving work from outside). Negative if the gas EXPANDS (doing work on the surroundings, rather than receiving work).
+  * WARNING: this is DIFFERENT from the classical physics/chemistry convention delta U = Q - W (W = work done BY the system). Cambridge 9702 ALWAYS uses delta U = q + w with w = work done ON the system. Never reverse the sign of w.
+- Special case, constant volume (isochoric): delta_V = 0 so w = 0, hence delta U = q directly.
+  For a solid/liquid being heated (expansion negligible, w approximately 0): delta U = q = m c delta_theta (c = specific heat capacity, see the Temperature topic).
+- Special case, adiabatic: no heat transfer occurs (perfect thermal isolation, or the process is very rapid) so q = 0, hence delta U = w directly.
+  Example: fire piston/fire syringe - very rapid compression of air (close to adiabatic, q approximately 0) drastically raises the air temperature (delta U = w, a large positive value), enough to ignite dry cotton.
+  Another example: adiabatic expansion (the gas expands without receiving heat, w negative, q=0) causes delta U to be negative, and the gas cools (adiabatic cooling).
+- Standard values g = 9.81 m/s^2 and gas constant R = 8.31 J/(mol K) are used where relevant in related ideal gas problems, unless the user requests otherwise.
+`;
+
+/* Specific concepts for the Prompt Generator dropdown in the Virtual Simulation Lab */
+const THERMODYNAMICS_LAB_CONCEPTS_EN = [
+  "Internal Energy as the Sum of Molecular KE and PE",
+  "Work Done on a Gas: W = p delta V and the Area Under a p-V Graph",
+  "The First Law of Thermodynamics: delta U = q + w (Cambridge Sign Convention)",
+  "Constant-Volume (Isochoric) Process: w = 0, delta U = q",
+  "Adiabatic Process: q = 0, delta U = w (Adiabatic Cooling/Heating)",
+  "Identifying the Signs of q and w from a Description of a Thermodynamic Process",
+  "Other (write your own in the additional instructions)"
+];
+
 (function attachThermodynamicsContent() {
   const topic = TOPICS.find(t => t.id === "thermodynamics");
-  topic.materiHTML = THERMODYNAMICS_MATERI;
-  topic.eksperimen = THERMODYNAMICS_EKSPERIMEN;
-  topic.latihan = THERMODYNAMICS_LATIHAN;
-  topic.labConcepts = THERMODYNAMICS_LAB_CONCEPTS;
-  topic.formulaSheet = THERMODYNAMICS_FORMULA_SHEET;
+  topic.desc = { id: topic.desc, en: THERMODYNAMICS_DESC_EN };
+  topic.materiHTML = { id: THERMODYNAMICS_MATERI, en: THERMODYNAMICS_MATERI_EN };
+  topic.eksperimen = {
+    title: { id: THERMODYNAMICS_EKSPERIMEN.title, en: THERMODYNAMICS_EKSPERIMEN_EN.title },
+    intro: { id: THERMODYNAMICS_EKSPERIMEN.intro, en: THERMODYNAMICS_EKSPERIMEN_EN.intro }
+  };
+  topic.latihan = THERMODYNAMICS_LATIHAN.map((q, i) => {
+    const qEN = THERMODYNAMICS_LATIHAN_EN[i] || {};
+    return {
+      ...q,
+      question: { id: q.question, en: qEN.question },
+      options: q.options ? q.options.map((opt, j) => ({ id: opt, en: (qEN.options || [])[j] })) : q.options,
+      solution: { id: q.solution, en: qEN.solution }
+    };
+  });
+  topic.labConcepts = THERMODYNAMICS_LAB_CONCEPTS.map((c, i) => ({ id: c, en: THERMODYNAMICS_LAB_CONCEPTS_EN[i] }));
+  topic.formulaSheet = { id: THERMODYNAMICS_FORMULA_SHEET, en: THERMODYNAMICS_FORMULA_SHEET_EN };
 })();
