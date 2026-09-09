@@ -216,9 +216,20 @@ function doPost(e) {
     if (mode === "teacher_session") return handleTeacherSession(body);
     if (mode === "teacher_roster") return handleTeacherRoster(body);
 
-    // Mode lain (chat, simulate) benar-benar memanggil Gemini API, jadi
-    // butuh API key Gemini milik pengguna sendiri (lihat catatan arsitektur
-    // di atas - key ini TIDAK pernah disimpan di server).
+    // Mode Kuis Topik (Panel Guru) - bank soal/publish/hasil/jawaban siswa,
+    // sama seperti sesi kelas di atas, juga TIDAK butuh API key Gemini
+    // (murni baca/tulis PropertiesService), KECUALI "quiz_generate" yang
+    // memanggil Gemini untuk membuat soal otomatis (lihat di bawah).
+    if (mode === "quiz_bank_get") return handleQuizBankGet(body);
+    if (mode === "quiz_bank_save") return handleQuizBankSave(body);
+    if (mode === "quiz_publish") return handleQuizPublish(body);
+    if (mode === "quiz_unpublish") return handleQuizUnpublish(body);
+    if (mode === "quiz_results") return handleQuizResults(body);
+    if (mode === "quiz_submit") return handleQuizSubmit(body);
+
+    // Mode lain (chat, simulate, quiz_generate) benar-benar memanggil Gemini
+    // API, jadi butuh API key Gemini milik pengguna sendiri (lihat catatan
+    // arsitektur di atas - key ini TIDAK pernah disimpan di server).
     const apiKey = (body.apiKey || "").toString().trim();
     const model = (body.model || "").toString().trim() || DEFAULT_MODEL;
 
@@ -233,6 +244,9 @@ function doPost(e) {
 
     if (mode === "chat") {
       return handleChat(body, apiKey, model);
+    }
+    if (mode === "quiz_generate") {
+      return handleQuizGenerate(body, apiKey, model);
     }
     return handleSimulate(body, apiKey, model);
 
@@ -541,7 +555,24 @@ function handleSessionSync(body) {
     }
   }
 
-  return jsonResponse(publicSessionState(state));
+  const response = publicSessionState(state);
+  // Sisipkan info kuis yang sedang dipublikasikan (kalau ada) - lihat blok
+  // "Kuis Topik" di bawah. Dikirim ke SEMUA pemanggil (bukan cuma yang kode
+  // sesinya cocok) supaya konsisten dengan topicId/tabIndex di atas yang
+  // juga sudah publik tanpa validasi kode - kode sesi di sini murni penanda
+  // kelas, bukan rahasia keamanan.
+  const quiz = readActiveQuiz();
+  if (quiz.active && quiz.id) {
+    const publicQuiz = publicQuizView(quiz);
+    if (studentId) {
+      const answered = PropertiesService.getScriptProperties().getProperty(quizAnswerKey(quiz.id, studentId));
+      publicQuiz.submitted = !!answered;
+    }
+    response.activeQuiz = publicQuiz;
+  } else {
+    response.activeQuiz = null;
+  }
+  return jsonResponse(response);
 }
 
 // Semua aksi berikut ini KHUSUS GURU - wajib mengirim controlCode yang
@@ -601,7 +632,11 @@ function handleTeacherRoster(body) {
   }
   const state = readSessionState();
   const roster = readRoster();
-  return jsonResponse({ state: publicSessionState(state), roster: roster, serverNow: Date.now() });
+  // Disisipkan juga status kuis (versi LENGKAP untuk guru, termasuk field
+  // `correct`/`modelAnswer` - lihat blok "Kuis Topik" di bawah) supaya kartu
+  // "Kuis aktif" di panel guru ikut ter-update otomatis lewat polling roster
+  // yang sudah berjalan (~8 detik), tanpa perlu loop polling terpisah.
+  return jsonResponse({ state: publicSessionState(state), roster: roster, serverNow: Date.now(), activeQuiz: readActiveQuiz() });
 }
 
 function generateSessionCode() {
@@ -611,6 +646,396 @@ function generateSessionCode() {
     code += chars.charAt(Math.floor(Math.random() * chars.length));
   }
   return code;
+}
+
+/* ============================================================
+   Kuis Topik (Panel Guru), ditambahkan 2026-09-27 atas permintaan
+   user: bank soal per topik (mcq/short/essay) yang bisa diedit guru
+   (termasuk generate otomatis lewat AI), dipublikasikan ke sesi
+   kelas yang sedang aktif, lalu dijawab siswa langsung di situs
+   utama. Disimpan di PropertiesService, pola sama seperti Sesi
+   Kelas di atas (gratis, tanpa DB eksternal).
+   ------------------------------------------------------------
+   quiz_bank_<topicId> (properti per topik, PERMANEN - dipakai ulang
+   lintas sesi): array soal [{
+     id, type: "mcq"|"short"|"essay", question (boleh LaTeX $...$),
+     options (mcq saja, tepat 4 string), correct (mcq saja, index
+     0-3), modelAnswer (jawaban model/poin penilaian untuk guru,
+     TIDAK pernah dikirim ke siswa)
+   }, ...]
+
+   active_quiz (properti tunggal): {
+     active: boolean, id, topicId, questions: [...], publishedAt
+   } - HANYA SATU kuis aktif dalam satu waktu (selaras dengan
+   batasan "satu sesi kelas aktif" di atas, supaya tetap sederhana
+   & gratis). `active` mengikuti pola session_state: false berarti
+   kuis sudah diakhiri guru, TAPI datanya tetap disimpan supaya guru
+   masih bisa melihat hasilnya sampai kuis BERIKUTNYA dipublikasikan
+   (lihat handleQuizPublish, yang baru menghapus jawaban kuis lama
+   saat kuis BARU menggantikannya).
+
+   quiz_answers_<quizId>_<studentIdBase64> (properti TERPISAH per
+   siswa per kuis, bukan satu objek gabungan): {
+     studentId, answers: { "<questionId>": jawaban }, submittedAt
+   } - dipisah per siswa supaya satu kelas penuh menjawab esai
+   panjang tidak pernah mendekati batas 9 KB per properti Apps
+   Script. Properti kuis SEBELUMNYA dihapus otomatis begitu kuis
+   BARU dipublikasikan, jadi hasil kuis bersifat SEMENTARA (untuk
+   dilihat selama/segera setelah sesi berlangsung), bukan arsip
+   jangka panjang - batasan yang disengaja demi kesederhanaan &
+   supaya penyimpanan (batas total 500 KB) tidak membengkak.
+   ============================================================ */
+
+const MAX_QUIZ_BANK_QUESTIONS = 30;   // per topik
+const MAX_QUIZ_PUBLISH_QUESTIONS = 20; // per publikasi ke sesi aktif
+const MAX_QUIZ_GENERATE_COUNT = 10;    // per klik "Generate Otomatis"
+const MAX_QUIZ_JSON_LEN = 8000;        // jaga di bawah batas 9 KB/properti
+
+function quizBankKey(topicId) {
+  return "quiz_bank_" + String(topicId || "").replace(/[^a-zA-Z0-9_-]/g, "").slice(0, 60);
+}
+function quizAnswerKeyPrefix(quizId) {
+  return "quiz_answers_" + String(quizId || "").replace(/[^a-zA-Z0-9_-]/g, "").slice(0, 40) + "_";
+}
+// studentId siswa bisa berisi spasi/tanda kurung (mis. "Budi Santoso (XI IPA
+// 2)"), jadi di-encode base64 dulu supaya selalu jadi key properti yang
+// aman/legal - identitas asli tetap disimpan utuh di dalam NILAI properti
+// (field `studentId`), jadi tidak perlu didekode balik dari key.
+function quizAnswerKey(quizId, studentId) {
+  const encoded = Utilities.base64EncodeWebSafe(Utilities.newBlob(String(studentId || "")).getBytes()).slice(0, 80);
+  return quizAnswerKeyPrefix(quizId) + encoded;
+}
+
+function readQuizBank(topicId) {
+  const raw = PropertiesService.getScriptProperties().getProperty(quizBankKey(topicId));
+  if (!raw) return [];
+  try {
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (e) {
+    return [];
+  }
+}
+function writeQuizBank(topicId, questions) {
+  PropertiesService.getScriptProperties().setProperty(quizBankKey(topicId), JSON.stringify(questions));
+}
+function readActiveQuiz() {
+  const raw = PropertiesService.getScriptProperties().getProperty("active_quiz");
+  if (!raw) return { active: false, id: null, topicId: null, questions: [], publishedAt: null };
+  try {
+    const parsed = JSON.parse(raw);
+    return {
+      active: !!parsed.active,
+      id: parsed.id || null,
+      topicId: parsed.topicId || null,
+      questions: Array.isArray(parsed.questions) ? parsed.questions : [],
+      publishedAt: parsed.publishedAt || null
+    };
+  } catch (e) {
+    return { active: false, id: null, topicId: null, questions: [], publishedAt: null };
+  }
+}
+function writeActiveQuiz(quiz) {
+  PropertiesService.getScriptProperties().setProperty("active_quiz", JSON.stringify(quiz));
+}
+// Bentuk yang aman dikirim ke SISWA: hapus jawaban benar (mcq) & modelAnswer
+// guru, supaya tidak bisa "dicontek" lewat Lihat Kode/tab Network browser.
+function publicQuizView(quiz) {
+  return {
+    active: quiz.active,
+    id: quiz.id,
+    topicId: quiz.topicId,
+    publishedAt: quiz.publishedAt,
+    questions: (quiz.questions || []).map(function (q) {
+      const out = { id: q.id, type: q.type, question: q.question };
+      if (q.type === "mcq") out.options = q.options || [];
+      return out;
+    })
+  };
+}
+// Hapus semua jawaban siswa milik SATU kuis (dipanggil saat kuis itu
+// digantikan oleh kuis baru - lihat catatan "SEMENTARA" di atas).
+function deleteQuizAnswers(quizId) {
+  if (!quizId) return;
+  const props = PropertiesService.getScriptProperties();
+  const all = props.getProperties();
+  const prefix = quizAnswerKeyPrefix(quizId);
+  Object.keys(all).forEach(function (k) {
+    if (k.indexOf(prefix) === 0) props.deleteProperty(k);
+  });
+}
+// Validasi + bersihkan bentuk satu objek soal (dipakai baik untuk soal yang
+// ditulis manual guru maupun hasil generate AI) - menolak (return null)
+// entri yang bentuknya tidak masuk akal alih-alih menyimpan data sampah.
+function validateQuestionShape(q) {
+  if (!q || typeof q !== "object") return null;
+  const type = (q.type === "mcq" || q.type === "short" || q.type === "essay") ? q.type : null;
+  if (!type) return null;
+  const question = String(q.question || "").trim().slice(0, 2000);
+  if (!question) return null;
+  const out = {
+    id: (q.id ? String(q.id) : "").slice(0, 40) || ("q_" + Utilities.getUuid().slice(0, 8)),
+    type: type,
+    question: question,
+    modelAnswer: String(q.modelAnswer || "").trim().slice(0, 2000)
+  };
+  if (type === "mcq") {
+    let options = Array.isArray(q.options) ? q.options.map(function (o) { return String(o || "").trim().slice(0, 300); }) : [];
+    while (options.length < 4) options.push("");
+    options = options.slice(0, 4);
+    out.options = options;
+    let correct = parseInt(q.correct, 10);
+    if (isNaN(correct) || correct < 0 || correct > 3) correct = 0;
+    out.correct = correct;
+  }
+  return out;
+}
+
+// mode "quiz_bank_get": guru membuka daftar soal tersimpan untuk satu topik.
+function handleQuizBankGet(body) {
+  if (!requireTeacherControlCode(body)) {
+    return jsonResponse({ error: "Kode kontrol guru salah atau belum diisi." });
+  }
+  const topicId = (body.topicId || "").toString().slice(0, 60);
+  if (!topicId) return jsonResponse({ error: "topicId wajib diisi." });
+  return jsonResponse({ questions: readQuizBank(topicId) });
+}
+
+// mode "quiz_bank_save": guru menyimpan (menimpa) seluruh daftar soal satu
+// topik sekaligus (setelah tambah/edit/hapus/generate AI di panel guru).
+function handleQuizBankSave(body) {
+  if (!requireTeacherControlCode(body)) {
+    return jsonResponse({ error: "Kode kontrol guru salah atau belum diisi." });
+  }
+  const topicId = (body.topicId || "").toString().slice(0, 60);
+  if (!topicId) return jsonResponse({ error: "topicId wajib diisi." });
+  const rawQuestions = Array.isArray(body.questions) ? body.questions : [];
+  if (rawQuestions.length > MAX_QUIZ_BANK_QUESTIONS) {
+    return jsonResponse({ error: "Maksimal " + MAX_QUIZ_BANK_QUESTIONS + " soal per bank topik." });
+  }
+  const questions = rawQuestions.map(validateQuestionShape).filter(Boolean);
+  const json = JSON.stringify(questions);
+  if (json.length > MAX_QUIZ_JSON_LEN) {
+    return jsonResponse({ error: "Bank soal terlalu besar untuk disimpan (maks sekitar " + MAX_QUIZ_JSON_LEN + " karakter gabungan). Kurangi jumlah soal atau perpendek teksnya." });
+  }
+  writeQuizBank(topicId, questions);
+  return jsonResponse({ ok: true, questions: questions });
+}
+
+// mode "quiz_publish": guru memilih sebagian/semua soal dari bank topik lalu
+// mempublikasikannya ke sesi kelas yang SEDANG AKTIF - begitu tersimpan,
+// muncul otomatis di situs siswa yang tergabung (lewat session_sync, lihat
+// di atas) dalam siklus polling berikutnya (~12 detik).
+function handleQuizPublish(body) {
+  if (!requireTeacherControlCode(body)) {
+    return jsonResponse({ error: "Kode kontrol guru salah atau belum diisi." });
+  }
+  const sessionState = readSessionState();
+  if (!sessionState.active) {
+    return jsonResponse({ error: "Belum ada sesi kelas aktif. Mulai sesi kelas dulu di kartu \"Sesi Kelas\" di atas, baru publikasikan kuis." });
+  }
+  const topicId = (body.topicId || "").toString().slice(0, 60);
+  const rawQuestions = Array.isArray(body.questions) ? body.questions : [];
+  if (!rawQuestions.length) {
+    return jsonResponse({ error: "Pilih minimal 1 soal untuk dipublikasikan." });
+  }
+  if (rawQuestions.length > MAX_QUIZ_PUBLISH_QUESTIONS) {
+    return jsonResponse({ error: "Maksimal " + MAX_QUIZ_PUBLISH_QUESTIONS + " soal per publikasi kuis." });
+  }
+  const questions = rawQuestions.map(validateQuestionShape).filter(Boolean);
+  if (!questions.length) {
+    return jsonResponse({ error: "Soal yang dipilih tidak valid." });
+  }
+  const json = JSON.stringify(questions);
+  if (json.length > MAX_QUIZ_JSON_LEN) {
+    return jsonResponse({ error: "Soal yang dipilih terlalu besar untuk dipublikasikan sekaligus. Pilih lebih sedikit soal." });
+  }
+  // Kuis SEBELUMNYA (kalau ada) digantikan sepenuhnya - hapus jawaban lama
+  // supaya penyimpanan tidak membengkak (lihat catatan "SEMENTARA" di atas).
+  const previous = readActiveQuiz();
+  if (previous && previous.id) deleteQuizAnswers(previous.id);
+  const quiz = {
+    active: true,
+    id: "quiz_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+    topicId: topicId,
+    questions: questions,
+    publishedAt: Date.now()
+  };
+  writeActiveQuiz(quiz);
+  return jsonResponse({ quiz: quiz });
+}
+
+// mode "quiz_unpublish": guru mengakhiri kuis yang sedang berjalan (siswa
+// tidak bisa mengirim jawaban baru lagi), TANPA menghapus hasil jawaban yang
+// sudah masuk (guru masih bisa membukanya lewat "Lihat Jawaban Siswa" sampai
+// kuis berikutnya dipublikasikan).
+function handleQuizUnpublish(body) {
+  if (!requireTeacherControlCode(body)) {
+    return jsonResponse({ error: "Kode kontrol guru salah atau belum diisi." });
+  }
+  const quiz = readActiveQuiz();
+  if (quiz.id) {
+    quiz.active = false;
+    writeActiveQuiz(quiz);
+  }
+  return jsonResponse({ ok: true });
+}
+
+// mode "quiz_results": guru melihat kuis yang sedang/baru saja aktif beserta
+// seluruh jawaban siswa yang sudah masuk.
+function handleQuizResults(body) {
+  if (!requireTeacherControlCode(body)) {
+    return jsonResponse({ error: "Kode kontrol guru salah atau belum diisi." });
+  }
+  const quiz = readActiveQuiz();
+  if (!quiz.id) {
+    return jsonResponse({ quiz: quiz, answers: [] });
+  }
+  const props = PropertiesService.getScriptProperties();
+  const all = props.getProperties();
+  const prefix = quizAnswerKeyPrefix(quiz.id);
+  const answers = Object.keys(all)
+    .filter(function (k) { return k.indexOf(prefix) === 0; })
+    .map(function (k) { try { return JSON.parse(all[k]); } catch (e) { return null; } })
+    .filter(Boolean);
+  answers.sort(function (a, b) { return (a.submittedAt || 0) - (b.submittedAt || 0); });
+  return jsonResponse({ quiz: quiz, answers: answers });
+}
+
+// mode "quiz_submit": SISWA mengirim jawaban kuis yang sedang aktif. Butuh
+// kode sesi kelas (BUKAN kode kontrol guru) yang masih cocok dengan sesi
+// aktif sekarang, plus quizId supaya jawaban tidak "nyasar" ke kuis lain
+// kalau guru sudah keburu mengganti kuis sebelum siswa sempat submit.
+function handleQuizSubmit(body) {
+  const state = readSessionState();
+  const code = (body.code || "").toString().trim();
+  const studentId = (body.studentId || "").toString().trim().slice(0, 60);
+  const quizId = (body.quizId || "").toString().trim();
+  if (!studentId) return jsonResponse({ error: "Identitas siswa tidak ditemukan." });
+  if (!state.active || !code || code.toUpperCase() !== (state.code || "").toUpperCase()) {
+    return jsonResponse({ error: "Sesi kelas sudah tidak aktif, jawaban tidak bisa dikirim." });
+  }
+  const quiz = readActiveQuiz();
+  if (!quiz.active || !quiz.id || quiz.id !== quizId) {
+    return jsonResponse({ error: "Kuis ini sudah tidak aktif (mungkin sudah diakhiri/diganti guru)." });
+  }
+  const rawAnswers = (body.answers && typeof body.answers === "object") ? body.answers : {};
+  const cleanAnswers = {};
+  quiz.questions.forEach(function (q) {
+    if (!(q.id in rawAnswers)) return;
+    const val = rawAnswers[q.id];
+    if (q.type === "mcq") {
+      const idx = parseInt(val, 10);
+      cleanAnswers[q.id] = (isNaN(idx) || idx < 0 || idx > 3) ? null : idx;
+    } else {
+      const maxLen = (q.type === "essay") ? 1500 : 500;
+      cleanAnswers[q.id] = String(val || "").slice(0, maxLen);
+    }
+  });
+  const record = { studentId: studentId, answers: cleanAnswers, submittedAt: Date.now() };
+  const json = JSON.stringify(record);
+  if (json.length > MAX_QUIZ_JSON_LEN) {
+    return jsonResponse({ error: "Jawabanmu terlalu panjang untuk dikirim sekaligus. Coba persingkat jawaban esai/uraianmu." });
+  }
+  PropertiesService.getScriptProperties().setProperty(quizAnswerKey(quiz.id, studentId), json);
+  return jsonResponse({ ok: true, submittedAt: record.submittedAt });
+}
+
+// mode "quiz_generate": guru menekan "Generate Otomatis (AI)" - membuat
+// hingga MAX_QUIZ_GENERATE_COUNT soal bergaya ujian Cambridge 9702 lewat
+// Gemini, digrounding dengan judul topik + lembar rumus topik itu (dikirim
+// dari klien, karena data topik/rumus ada di js/content.js, bukan di sini).
+function handleQuizGenerate(body, apiKey, model) {
+  const lang = (body.lang === "en") ? "en" : "id";
+  const topicTitle = (body.topicTitle || "").toString().trim().slice(0, 200);
+  if (!topicTitle) {
+    return jsonResponse({ error: (lang === "en") ? "Topic is required." : "Topik wajib diisi." });
+  }
+  const formulaRef = (body.formulaRef || "").toString().trim().slice(0, 4000);
+  const existingQuestions = Array.isArray(body.existingQuestions)
+    ? body.existingQuestions.slice(0, 30).map(function (s) { return String(s).slice(0, 300); })
+    : [];
+  let count = parseInt(body.count, 10);
+  if (isNaN(count) || count < 1) count = 5;
+  if (count > MAX_QUIZ_GENERATE_COUNT) count = MAX_QUIZ_GENERATE_COUNT;
+  const qType = ["mcq", "short", "essay", "mixed"].indexOf(body.questionType) !== -1 ? body.questionType : "mcq";
+
+  const prompt = buildQuizGeneratePrompt(topicTitle, formulaRef, existingQuestions, qType, count, lang);
+  const payload = {
+    contents: [{ role: "user", parts: [{ text: prompt }] }],
+    generationConfig: {
+      maxOutputTokens: 8000,
+      temperature: 0.7,
+      responseMimeType: "application/json",
+      thinkingConfig: { thinkingLevel: "low" }
+    }
+  };
+  const url = "https://generativelanguage.googleapis.com/v1beta/models/" + model + ":generateContent?key=" + encodeURIComponent(apiKey);
+  const result = fetchGeminiWithRetry(url, payload, 3, 1200, 6000);
+  const status = result.status;
+  const data = result.data;
+  if (status !== 200) {
+    return jsonResponse({ error: ((lang === "en") ? "Failed to generate: " : "Gagal generate: ") + describeGeminiError(status, data) });
+  }
+  const candidate = data.candidates && data.candidates[0];
+  const finishReason = candidate && candidate.finishReason;
+  const text = (candidate && candidate.content && candidate.content.parts && candidate.content.parts[0] && candidate.content.parts[0].text) || "";
+  if (!text) {
+    return jsonResponse({ error: (lang === "en") ? "Empty AI response, try again." : "Respons AI kosong, coba lagi." });
+  }
+  let parsed;
+  try {
+    parsed = JSON.parse(text);
+  } catch (e) {
+    return jsonResponse({ error: (lang === "en") ? "The AI's response wasn't valid JSON, try again." : "Respons AI bukan format JSON yang valid, coba lagi." });
+  }
+  const arr = Array.isArray(parsed) ? parsed : (Array.isArray(parsed.questions) ? parsed.questions : []);
+  const questions = arr.map(validateQuestionShape).filter(Boolean).slice(0, count);
+  if (!questions.length) {
+    return jsonResponse({ error: (lang === "en") ? "The AI didn't return any usable questions, try again." : "AI tidak mengembalikan soal yang bisa dipakai, coba lagi." });
+  }
+  const resp = { questions: questions };
+  if (finishReason === "MAX_TOKENS") {
+    resp.warning = (lang === "en")
+      ? "Output may have been truncated by the token limit; some questions may be missing."
+      : "Output mungkin terpotong karena batas token; sebagian soal mungkin tidak muncul.";
+  }
+  return jsonResponse(resp);
+}
+
+function buildQuizGeneratePrompt(topicTitle, formulaRef, existingQuestions, qType, count, lang) {
+  const typeInstruction = {
+    mcq: (lang === "en") ? "multiple-choice (mcq) questions, each with exactly 4 options" : "soal pilihan ganda (mcq), masing-masing dengan TEPAT 4 opsi",
+    short: (lang === "en") ? "short-answer (short) questions" : "soal jawaban singkat (short)",
+    essay: (lang === "en") ? "essay/structured (essay) questions" : "soal esai/uraian terstruktur (essay)",
+    mixed: (lang === "en") ? "a mix of mcq, short, and essay questions" : "campuran soal mcq, short, dan essay"
+  }[qType];
+
+  const lines = (lang === "en") ? [
+    "You are an experienced Cambridge International AS & A Level Physics (9702) exam question writer.",
+    "Write " + count + " " + typeInstruction + " on the topic \"" + topicTitle + "\", in the authentic STYLE of real Cambridge 9702 exam papers: use standard command words (State, Define, Explain, Calculate, Determine, Show that, Describe, Discuss, Suggest), correct SI units, sensible significant figures, and realistic numeric values.",
+    "Respond with ONLY a JSON array (no markdown fences, no extra text), where every element has this exact shape:",
+    "{ \"type\": \"mcq\" | \"short\" | \"essay\", \"question\": \"...\", \"options\": [\"...\",\"...\",\"...\",\"...\"] (ONLY for type mcq, exactly 4 items), \"correct\": 0-3 (ONLY for type mcq, index of the correct option), \"modelAnswer\": \"a concise model answer / marking-point guide for the teacher (for mcq: a short explanation of why the correct option is right)\" }",
+    "Write math using $...$ LaTeX notation (e.g. $F = BIL\\sin\\theta$) so it renders correctly - never spell out symbol names as plain words (write $\\theta$, not \"theta\"; write $\\Delta U$, not \"delta U\").",
+    "Every question must be genuinely different from these already in the bank (do not repeat them or trivially reword them): " + (existingQuestions.length ? JSON.stringify(existingQuestions) : "(none yet)"),
+    "Return exactly " + count + " questions, written in English."
+  ] : [
+    "Kamu adalah penulis soal ujian Cambridge International AS & A Level Physics (9702) yang berpengalaman.",
+    "Tulis " + count + " " + typeInstruction + " tentang topik \"" + topicTitle + "\", dengan GAYA PENULISAN otentik seperti soal ujian Cambridge 9702 asli: gunakan kata kerja instruksi standar (Nyatakan/State, Jelaskan/Explain, Hitunglah/Calculate, Tentukan/Determine, Tunjukkan bahwa/Show that, Deskripsikan/Describe, Diskusikan/Discuss, Sarankan/Suggest), satuan SI yang benar, angka penting yang wajar, dan nilai numerik yang realistis.",
+    "Balas HANYA dengan array JSON (tanpa markdown code fence, tanpa teks tambahan), setiap elemen berbentuk PERSIS seperti ini:",
+    "{ \"type\": \"mcq\" | \"short\" | \"essay\", \"question\": \"...\", \"options\": [\"...\",\"...\",\"...\",\"...\"] (HANYA untuk type mcq, tepat 4 item), \"correct\": 0-3 (HANYA untuk type mcq, index opsi yang benar), \"modelAnswer\": \"jawaban model/poin penilaian singkat untuk guru (untuk mcq: penjelasan singkat kenapa opsi itu benar)\" }",
+    "Tulis rumus matematika memakai notasi LaTeX $...$ (mis. $F = BIL\\sin\\theta$) supaya terender dengan benar - JANGAN PERNAH menulis nama simbol sebagai kata biasa (tulis $\\theta$, bukan \"theta\"; tulis $\\Delta U$, bukan \"delta U\").",
+    "Setiap soal harus benar-benar berbeda dari soal-soal yang sudah ada di bank berikut (jangan mengulang atau menulis ulang dengan kata berbeda saja): " + (existingQuestions.length ? JSON.stringify(existingQuestions) : "(belum ada)"),
+    "Kembalikan TEPAT " + count + " soal, ditulis dalam Bahasa Indonesia."
+  ];
+  if (formulaRef) {
+    lines.push("");
+    lines.push((lang === "en")
+      ? "Reference formulas/concepts for this topic (use EXACTLY these, consistent with the syllabus convention - do not substitute other formulas from general knowledge):"
+      : "Referensi rumus/konsep topik ini (WAJIB memakai persis ini, konsisten dengan konvensi silabus - jangan mengganti dengan rumus lain dari pengetahuan umum):");
+    lines.push(formulaRef);
+  }
+  return lines.join("\n");
 }
 
 // Diperlukan agar mengunjungi URL Web App lewat browser tidak error
