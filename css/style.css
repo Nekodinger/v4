@@ -555,6 +555,15 @@ body.nav-pinned .topic-nav {
   display: none;
 }
 .solution.show { display: block; }
+.correct-answer-line {
+  margin: 0 0 8px;
+  padding: 6px 10px;
+  background: var(--good-soft);
+  color: var(--good);
+  border-radius: var(--radius-sm);
+  font-size: 0.92rem;
+}
+.correct-answer-line strong { margin-right: 4px; }
 
 .sim-embed {
   border: 1px solid var(--border);
@@ -930,4 +939,109 @@ code {
   .chatbot-panel { right: 12px; left: 12px; width: auto; bottom: 78px; }
   .chatbot-toggle-btn { right: 12px; bottom: 12px; padding: 11px 14px; }
   .chatbot-toggle-btn span { display: none; }
+}
+
+/* ---------------- Kuis Topik (Panel Guru + siswa) ---------------- */
+.quiz-toolbar { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; margin-bottom: 14px; }
+.quiz-toolbar > div { flex: 1; min-width: 160px; }
+.quiz-toolbar label { display: block; font-size: 0.82rem; color: var(--muted); margin-bottom: 5px; }
+.quiz-toolbar select, .quiz-toolbar input[type="number"], .quiz-toolbar input[type="password"], .quiz-toolbar input[type="text"] {
+  width: 100%; background: var(--panel-light); border: 1px solid var(--border); border-radius: var(--radius-sm);
+  color: var(--text); padding: 9px 12px; font-size: 0.88rem;
+}
+.quiz-status-line { font-size: 0.83rem; color: var(--muted); margin: 6px 0 14px; }
+.quiz-status-line.unsaved { color: var(--warn); }
+.quiz-question-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; }
+.quiz-question-item {
+  background: var(--panel-light); border: 1px solid var(--border); border-radius: var(--radius-md);
+  padding: 12px 14px; display: flex; gap: 12px; align-items: flex-start;
+}
+.quiz-question-item input[type="checkbox"] { margin-top: 4px; flex: none; width: 16px; height: 16px; }
+.quiz-question-body { flex: 1; min-width: 0; }
+.quiz-type-badge {
+  display: inline-block; font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em;
+  padding: 2px 8px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); margin-bottom: 6px;
+}
+.quiz-type-badge.type-short { background: var(--warn-soft); color: var(--warn); }
+.quiz-type-badge.type-essay { background: var(--good-soft); color: var(--good); }
+.quiz-question-text { font-size: 0.92rem; line-height: 1.5; margin-bottom: 4px; }
+.quiz-question-item .quiz-options-preview { font-size: 0.84rem; color: var(--muted); margin: 4px 0 0; padding-left: 0; list-style: none; }
+.quiz-question-item .quiz-options-preview li.is-correct { color: var(--good); font-weight: 600; }
+.quiz-question-actions { display: flex; gap: 6px; flex: none; }
+.quiz-editor-box {
+  background: var(--panel); border: 1px dashed var(--accent); border-radius: var(--radius-md);
+  padding: 14px 16px; margin-bottom: 14px;
+}
+.quiz-editor-box h4 { margin: 0 0 10px; font-size: 0.95rem; }
+.quiz-editor-box label { display: block; font-size: 0.82rem; color: var(--muted); margin: 10px 0 5px; }
+.quiz-editor-box select, .quiz-editor-box textarea, .quiz-editor-box input[type="text"] {
+  width: 100%; background: var(--panel-light); border: 1px solid var(--border); border-radius: var(--radius-sm);
+  color: var(--text); padding: 8px 11px; font-size: 0.88rem; font-family: inherit;
+}
+.quiz-editor-box textarea { resize: vertical; min-height: 64px; }
+.quiz-latex-toolbar { display: flex; flex-wrap: wrap; gap: 5px; margin: 6px 0; }
+.quiz-latex-btn {
+  background: var(--panel-light); border: 1px solid var(--border); border-radius: 6px; color: var(--text);
+  padding: 3px 9px; font-size: 0.82rem; cursor: pointer; font-family: 'Sora', monospace;
+}
+.quiz-latex-btn:hover { border-color: var(--accent); color: var(--accent); }
+.quiz-editor-preview {
+  background: var(--panel-light); border: 1px solid var(--border); border-radius: var(--radius-sm);
+  padding: 10px 12px; font-size: 0.9rem; min-height: 20px; margin-top: 4px;
+}
+.quiz-option-row { display: flex; align-items: center; gap: 8px; margin-top: 6px; }
+.quiz-option-row input[type="radio"] { flex: none; width: 16px; height: 16px; }
+.quiz-option-row input[type="text"] { flex: 1; }
+.quiz-editor-actions { display: flex; gap: 10px; margin-top: 14px; }
+.quiz-active-card {
+  background: var(--good-soft); border: 1px solid var(--good); border-radius: var(--radius-md);
+  padding: 12px 14px; margin-bottom: 14px; font-size: 0.88rem; color: var(--text);
+}
+.quiz-active-card.ended { background: var(--panel-light); border-color: var(--border); }
+.quiz-results-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin-top: 10px; }
+.quiz-results-table th, .quiz-results-table td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+.quiz-results-table th { color: var(--muted); font-weight: 600; font-size: 0.76rem; text-transform: uppercase; }
+.quiz-answer-correct { color: var(--good); font-weight: 600; }
+.quiz-answer-incorrect { color: var(--danger); font-weight: 600; }
+
+/* Tombol mengambang "Kuis" di situs siswa - mirip tombol Tutor Fisika,
+   ditumpuk di atasnya, hanya muncul kalau ada kuis aktif untuk sesi yang
+   sedang diikuti siswa. */
+.quiz-toggle-btn {
+  position: fixed;
+  right: 22px;
+  bottom: 88px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--warn);
+  color: #ffffff;
+  border: none;
+  padding: 12px 18px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.88rem;
+  cursor: pointer;
+  box-shadow: var(--shadow-lg);
+  z-index: 94;
+}
+.quiz-toggle-btn:hover { filter: brightness(0.92); }
+.quiz-toggle-btn svg { width: 18px; height: 18px; flex: none; }
+.quiz-toggle-btn[hidden] { display: none; }
+.quiz-toggle-btn.done { background: var(--good); }
+.quiz-modal-box { max-width: 640px; max-height: 82vh; overflow-y: auto; }
+.quiz-modal-question { background: var(--panel-light); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 14px 16px; margin-bottom: 12px; }
+.quiz-modal-question .q-title { font-weight: 600; margin-bottom: 8px; }
+.quiz-modal-question .options { list-style: none; padding: 0; margin: 6px 0 0; }
+.quiz-modal-question .options li { padding: 4px 0; display: flex; align-items: center; gap: 8px; }
+.quiz-modal-question .options input[type="radio"] { flex: none; }
+.quiz-modal-question textarea {
+  width: 100%; margin-top: 6px; min-height: 70px; resize: vertical; font-family: inherit;
+  background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius-sm);
+  color: var(--text); padding: 8px 11px; font-size: 0.9rem;
+}
+.quiz-submitted-note { font-size: 0.85rem; color: var(--good); margin-top: 10px; }
+@media (max-width: 480px) {
+  .quiz-toggle-btn { right: 12px; bottom: 78px; padding: 11px 14px; }
+  .quiz-toggle-btn span { display: none; }
 }
