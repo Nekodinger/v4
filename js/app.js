@@ -144,6 +144,7 @@ function leaveClassSession(message) {
   }
   refreshClassSessionUI();
   updateClassSessionBanner();
+  updateQuizUI(null);
   if (message) showToast(message);
   // Kalau perannya siswa, situs WAJIB kembali terkunci di gate (minta kode
   // baru) begitu sesi berakhir/tidak valid lagi - bukan cuma kembali ke mode
@@ -175,6 +176,7 @@ async function attemptJoinClassSession(code) {
     classSession = data;
     lastClassActivityKey = data.topicId + "|" + data.tabIndex;
     startClassSync();
+    updateQuizUI(data.activeQuiz);
     return { ok: true };
   } catch (err) {
     return { ok: false, error: t("classsession.connectfailed", { err: err.message }) };
@@ -216,6 +218,7 @@ async function syncClassSession() {
     lastClassActivityKey = activityKey;
     renderNav();
     updateClassSessionBanner();
+    updateQuizUI(data.activeQuiz);
     if (currentTopic) {
       const tabName = document.querySelector(".tab-btn.active")?.dataset.tab;
       if (tabName) updateTopicProgressUI(tabName);
@@ -287,6 +290,134 @@ document.getElementById("class-session-join-btn").addEventListener("click", asyn
 });
 document.getElementById("class-session-leave-btn").addEventListener("click", () => {
   leaveClassSession(null);
+});
+
+/* ============================================================
+   Kuis dari Guru (Kuis Topik, Panel Guru) - muncul sebagai tombol
+   mengambang begitu guru mempublikasikan kuis ke sesi kelas yang
+   sedang diikuti siswa. Lihat format data & alur lengkap di
+   apps-script/Code.gs (bagian "Kuis Topik") dan js/teacher.js.
+   ============================================================ */
+let activeQuizData = null; // versi publik (tanpa jawaban benar) dari server
+
+function updateQuizUI(quiz) {
+  const newId = (quiz && quiz.id) ? quiz.id : null;
+  const modal = document.getElementById("quiz-modal");
+  const modalWasShowingThis = !modal.hidden && activeQuizData && activeQuizData.id === newId;
+  const quizDisappearedOrChanged = !modal.hidden && activeQuizData && activeQuizData.id !== newId;
+  activeQuizData = newId ? quiz : null;
+
+  const btn = document.getElementById("quiz-toggle-btn");
+  if (!isInClassSession() || !activeQuizData) {
+    btn.hidden = true;
+  } else {
+    btn.hidden = false;
+    btn.classList.toggle("done", !!activeQuizData.submitted);
+    document.getElementById("quiz-toggle-label").textContent = activeQuizData.submitted ? t("quiz.banner.done") : t("quiz.toggle.label");
+  }
+  if (quizDisappearedOrChanged) {
+    closeQuizModal();
+    showToast(t("quiz.ended.notice"));
+  } else if (modalWasShowingThis) {
+    // Kuis yang sama masih aktif - render ulang cuma kalau status "sudah
+    // dijawab" berubah (mis. submit baru saja berhasil dari tab lain),
+    // supaya siswa yang sedang mengetik jawaban tidak terganggu.
+  }
+}
+
+function escapeHtmlQ(str) {
+  return String(str == null ? "" : str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+document.getElementById("quiz-toggle-btn").addEventListener("click", () => {
+  if (activeQuizData) openQuizModal();
+});
+function openQuizModal() {
+  if (!activeQuizData) return;
+  renderQuizModal();
+  document.getElementById("quiz-modal").hidden = false;
+  if (window.MathJax && window.MathJax.typesetPromise) {
+    window.MathJax.typesetPromise([document.getElementById("quiz-modal-body")]).catch(() => {});
+  }
+}
+function closeQuizModal() {
+  document.getElementById("quiz-modal").hidden = true;
+}
+document.getElementById("quiz-modal-close-btn").addEventListener("click", closeQuizModal);
+document.getElementById("quiz-modal-close-x").addEventListener("click", closeQuizModal);
+
+function renderQuizModal() {
+  const body = document.getElementById("quiz-modal-body");
+  const submitBtn = document.getElementById("quiz-modal-submit-btn");
+  const statusEl = document.getElementById("quiz-modal-status");
+  statusEl.textContent = "";
+  const questions = activeQuizData.questions || [];
+  body.innerHTML = questions.map((q, i) => {
+    let inputHtml = "";
+    if (q.type === "mcq") {
+      inputHtml = `<ul class="options">${(q.options || []).map((opt, oi) => `
+        <li><label><input type="radio" name="quiz-answer-${escapeHtmlQ(q.id)}" value="${oi}"> ${String.fromCharCode(65 + oi)}. ${escapeHtmlQ(opt)}</label></li>
+      `).join("")}</ul>`;
+    } else {
+      const placeholder = q.type === "essay" ? t("quiz.modal.essay.placeholder") : t("quiz.modal.short.placeholder");
+      inputHtml = `<textarea data-qid="${escapeHtmlQ(q.id)}" placeholder="${escapeHtmlQ(placeholder)}"></textarea>`;
+    }
+    return `
+      <div class="quiz-modal-question">
+        <div class="q-title">${t("quiz.modal.question.label", { n: i + 1 })}</div>
+        <div>${escapeHtmlQ(q.question)}</div>
+        ${inputHtml}
+      </div>`;
+  }).join("");
+  submitBtn.disabled = !!activeQuizData.submitted;
+  if (activeQuizData.submitted) statusEl.textContent = t("quiz.modal.submitted");
+}
+
+document.getElementById("quiz-modal-submit-btn").addEventListener("click", async () => {
+  if (!activeQuizData) return;
+  const statusEl = document.getElementById("quiz-modal-status");
+  const submitBtn = document.getElementById("quiz-modal-submit-btn");
+  const answers = {};
+  (activeQuizData.questions || []).forEach(q => {
+    if (q.type === "mcq") {
+      const checked = document.querySelector(`input[name="quiz-answer-${CSS.escape(q.id)}"]:checked`);
+      if (checked) answers[q.id] = parseInt(checked.value, 10);
+    } else {
+      const ta = document.querySelector(`textarea[data-qid="${CSS.escape(q.id)}"]`);
+      if (ta && ta.value.trim()) answers[q.id] = ta.value.trim();
+    }
+  });
+  const backendUrl = getBackendUrl();
+  if (!backendUrl) { statusEl.textContent = t("backend.notconfigured.short"); return; }
+  submitBtn.disabled = true;
+  statusEl.textContent = t("quiz.modal.submitting");
+  try {
+    const resp = await fetch(backendUrl, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain" },
+      body: JSON.stringify({
+        mode: "quiz_submit",
+        code: getJoinedSessionCode(),
+        studentId: getStudentId(),
+        quizId: activeQuizData.id,
+        answers: answers
+      })
+    });
+    const data = await resp.json();
+    if (data.error) {
+      statusEl.textContent = t("quiz.modal.error.generic", { err: data.error });
+      submitBtn.disabled = false;
+      return;
+    }
+    activeQuizData.submitted = true;
+    statusEl.textContent = t("quiz.modal.submitted");
+    const btn = document.getElementById("quiz-toggle-btn");
+    btn.classList.add("done");
+    document.getElementById("quiz-toggle-label").textContent = t("quiz.banner.done");
+  } catch (err) {
+    statusEl.textContent = t("quiz.modal.error.generic", { err: err.message });
+    submitBtn.disabled = false;
+  }
 });
 
 let toastTimer = null;
@@ -559,10 +690,14 @@ function renderLatihan() {
   if (currentTopic.status === "ready" && currentTopic.latihan && currentTopic.latihan.length) {
     panel.innerHTML = currentTopic.latihan.map((q, i) => {
       let optionsHTML = "";
+      let correctAnswerHTML = "";
       if (q.type === "mcq") {
         optionsHTML = `<ul class="options">${q.options.map((opt, oi) =>
-          `<li>${String.fromCharCode(65 + oi)}. ${trContent(opt)}${oi === q.correct ? ` <span class="muted">${t("answer.correct")}</span>` : ''}</li>`
+          `<li>${String.fromCharCode(65 + oi)}. ${trContent(opt)}</li>`
         ).join("")}</ul>`;
+        if (typeof q.correct === "number" && q.options[q.correct] !== undefined) {
+          correctAnswerHTML = `<p class="correct-answer-line"><strong>${t("answer.correct")}</strong> ${String.fromCharCode(65 + q.correct)}. ${trContent(q.options[q.correct])}</p>`;
+        }
       }
       return `
         <div class="question-card">
@@ -570,7 +705,7 @@ function renderLatihan() {
           <div>${trContent(q.question)}</div>
           ${optionsHTML}
           <button class="reveal-btn" onclick="this.nextElementSibling.classList.toggle('show')">${t("question.reveal")}</button>
-          <div class="solution"><strong>${t("question.solution")}</strong><br>${trContent(q.solution)}</div>
+          <div class="solution"><strong>${t("question.solution")}</strong><br>${correctAnswerHTML}${trContent(q.solution)}</div>
         </div>`;
     }).join("");
   } else {

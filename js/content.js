@@ -840,7 +840,7 @@ ${mediaRow(
     caption: "Diagram vektor: gaya $F$ pada penghantar berarus selalu tegak lurus terhadap arah arus $I$ dan medan magnet $B$. Untuk menentukan arahnya dengan tangan, gunakan Kaidah Tangan Kiri Fleming (telunjuk = medan, jari tengah = arus, ibu jari = gaya).",
     author: "Tokamac", license: "CC BY-SA 4.0" },
   { id: "ckllSgcdS7g", title: "Force on a current-carrying conductor in a magnetic field",
-    channel: "Khan Academy", desc: "Menjelaskan asal gaya pada penghantar berarus dalam medan magnet dan cara menghitungnya dengan F = BIL sin theta." }
+    channel: "Khan Academy", desc: "Menjelaskan asal gaya pada penghantar berarus dalam medan magnet dan cara menghitungnya dengan F = BIL sin θ." }
 )}
 
 <h3>4. Gaya Magnetik pada Muatan Bergerak</h3>
@@ -860,7 +860,7 @@ ${mediaRow(
     caption: "Gaya magnetik pada muatan yang bergerak dalam medan magnet selalu tegak lurus terhadap kecepatannya, menyebabkan lintasan melengkung (melingkar jika medan seragam dan tegak lurus kecepatan).",
     author: "Jaro.p", license: "CC BY-SA 3.0" },
   { id: "NnlAI4ZiUrQ", title: "Magnetic force on a charge",
-    channel: "Khan Academy", desc: "Menjelaskan gaya magnetik pada muatan bergerak (F = BQv sin theta) dan mengapa lintasannya bisa berbentuk lingkaran." }
+    channel: "Khan Academy", desc: "Menjelaskan gaya magnetik pada muatan bergerak (F = BQv sin θ) dan mengapa lintasannya bisa berbentuk lingkaran." }
 )}
 
 <h3>5. Fluks Magnetik dan Induksi Elektromagnetik</h3>
@@ -1165,7 +1165,7 @@ ${mediaRow(
     caption: "Vector diagram: the force $F$ on a current-carrying conductor is always perpendicular to both the direction of the current $I$ and the magnetic field $B$. To find its direction by hand, use Fleming's Left-Hand Rule (first finger = field, second finger = current, thumb = force).",
     author: "Tokamac", license: "CC BY-SA 4.0" },
   { id: "ckllSgcdS7g", title: "Force on a current-carrying conductor in a magnetic field",
-    channel: "Khan Academy", desc: "Explains the origin of the force on a current-carrying conductor in a magnetic field and how to calculate it using F = BIL sin theta." }
+    channel: "Khan Academy", desc: "Explains the origin of the force on a current-carrying conductor in a magnetic field and how to calculate it using F = BIL sin θ." }
 )}
 
 <h3>4. Magnetic Force on a Moving Charge</h3>
@@ -1186,7 +1186,7 @@ ${mediaRow(
     caption: "The magnetic force on a charge moving in a magnetic field is always perpendicular to its velocity, causing a curved path (circular if the field is uniform and perpendicular to the velocity).",
     author: "Jaro.p", license: "CC BY-SA 3.0" },
   { id: "NnlAI4ZiUrQ", title: "Magnetic force on a charge",
-    channel: "Khan Academy", desc: "Explains the magnetic force on a moving charge (F = BQv sin theta) and why its path can be circular." }
+    channel: "Khan Academy", desc: "Explains the magnetic force on a moving charge (F = BQv sin θ) and why its path can be circular." }
 )}
 
 <h3>5. Magnetic Flux and Electromagnetic Induction</h3>
@@ -3560,10 +3560,10 @@ const THERMODYNAMICS_FORMULA_SHEET = `
 /* Konsep spesifik untuk dropdown Generator Prompt di Lab Simulasi Virtual */
 const THERMODYNAMICS_LAB_CONCEPTS = [
   "Energi Dalam (Internal Energy) sebagai Jumlah EK dan EP Molekul",
-  "Kerja pada Gas: W = p delta V dan Luas di Bawah Grafik p-V",
-  "Hukum Pertama Termodinamika: delta U = q + w (Konvensi Tanda Cambridge)",
-  "Proses Volume Tetap (Isokhorik): w = 0, delta U = q",
-  "Proses Adiabatik: q = 0, delta U = w (Pendinginan/Pemanasan Adiabatik)",
+  "Kerja pada Gas: W = p ΔV dan Luas di Bawah Grafik p-V",
+  "Hukum Pertama Termodinamika: ΔU = q + w (Konvensi Tanda Cambridge)",
+  "Proses Volume Tetap (Isokhorik): w = 0, ΔU = q",
+  "Proses Adiabatik: q = 0, ΔU = w (Pendinginan/Pemanasan Adiabatik)",
   "Identifikasi Tanda q dan w dari Deskripsi Proses Termodinamika",
   "Lainnya (tulis sendiri di instruksi tambahan)"
 ];
@@ -3920,10 +3920,10 @@ const THERMODYNAMICS_FORMULA_SHEET_EN = `
 /* Specific concepts for the Prompt Generator dropdown in the Virtual Simulation Lab */
 const THERMODYNAMICS_LAB_CONCEPTS_EN = [
   "Internal Energy as the Sum of Molecular KE and PE",
-  "Work Done on a Gas: W = p delta V and the Area Under a p-V Graph",
-  "The First Law of Thermodynamics: delta U = q + w (Cambridge Sign Convention)",
-  "Constant-Volume (Isochoric) Process: w = 0, delta U = q",
-  "Adiabatic Process: q = 0, delta U = w (Adiabatic Cooling/Heating)",
+  "Work Done on a Gas: W = p ΔV and the Area Under a p-V Graph",
+  "The First Law of Thermodynamics: ΔU = q + w (Cambridge Sign Convention)",
+  "Constant-Volume (Isochoric) Process: w = 0, ΔU = q",
+  "Adiabatic Process: q = 0, ΔU = w (Adiabatic Cooling/Heating)",
   "Identifying the Signs of q and w from a Description of a Thermodynamic Process",
   "Other (write your own in the additional instructions)"
 ];
