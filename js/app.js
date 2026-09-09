@@ -27,7 +27,7 @@ const MAX_FOLLOWUP_EDITS = 5;
    menjelajah bebas tanpa urutan sama sekali.
    ============================================================ */
 const TAB_ORDER = ["materi", "eksperimen", "latihan", "lab"];
-const TAB_LABELS = { materi: "Materi Belajar", eksperimen: "Eksperimen", latihan: "Latihan Soal", lab: "Lab Simulasi Virtual" };
+const TAB_LABELS = { materi: t("tab.materi"), eksperimen: t("tab.eksperimen"), latihan: t("tab.latihan"), lab: t("tab.lab") };
 
 function isUnlockAll() {
   return localStorage.getItem(STORAGE_KEY_UNLOCK_ALL) === "true";
@@ -40,7 +40,7 @@ function saveProgress(p) {
   localStorage.setItem(STORAGE_KEY_PROGRESS, JSON.stringify(p));
 }
 function getReadyTopicsOrder() {
-  return TOPICS.filter(t => t.status === "ready").sort((a, b) => a.number - b.number).map(t => t.id);
+  return TOPICS.filter(tp => tp.status === "ready").sort((a, b) => a.number - b.number).map(tp => tp.id);
 }
 // Mengembalikan index tab tertinggi (di TAB_ORDER) yang boleh dibuka untuk
 // sebuah topik. Setiap topik "ready" SELALU boleh dimulai (index 0 = tab
@@ -51,7 +51,7 @@ function getUnlockedTabIndex(topicId) {
   return progress[topicId] !== undefined ? progress[topicId] : 0;
 }
 function isTabLocked(topicId, tabName) {
-  const topic = TOPICS.find(t => t.id === topicId);
+  const topic = TOPICS.find(tp => tp.id === topicId);
   if (!topic || topic.status !== "ready") return false;
   // Sesi kelas aktif (dari guru) mengalahkan semua gembok lain (termasuk
   // Kode Eksplorasi Bebas) - selama tergabung, HANYA tab yang sedang
@@ -156,9 +156,9 @@ function leaveClassSession(message) {
 // Pengaturan. Mengembalikan {ok:true} atau {ok:false, error}.
 async function attemptJoinClassSession(code) {
   const trimmed = (code || "").trim();
-  if (!trimmed) return { ok: false, error: "Masukkan kode dari guru dulu." };
+  if (!trimmed) return { ok: false, error: t("gate.student.code.needcode") };
   const backendUrl = getBackendUrl();
-  if (!backendUrl) return { ok: false, error: "Backend belum dikonfigurasi. Hubungi pengelola situs." };
+  if (!backendUrl) return { ok: false, error: t("backend.notconfigured.short") };
   try {
     const resp = await fetch(backendUrl, {
       method: "POST",
@@ -169,7 +169,7 @@ async function attemptJoinClassSession(code) {
     if (data.error) return { ok: false, error: data.error };
     if (!data.active || !data.code || data.code.toUpperCase() !== trimmed.toUpperCase()) {
       localStorage.removeItem(STORAGE_KEY_CLASS_CODE);
-      return { ok: false, error: "Kode salah, atau sesi belum/sudah tidak aktif. Tanyakan gurumu." };
+      return { ok: false, error: t("classsession.wrongcode") };
     }
     localStorage.setItem(STORAGE_KEY_CLASS_CODE, trimmed);
     classSession = data;
@@ -177,7 +177,7 @@ async function attemptJoinClassSession(code) {
     startClassSync();
     return { ok: true };
   } catch (err) {
-    return { ok: false, error: "Gagal terhubung ke server: " + err.message };
+    return { ok: false, error: t("classsession.connectfailed", { err: err.message }) };
   }
 }
 function stopClassSync() {
@@ -207,7 +207,7 @@ async function syncClassSession() {
     });
     const data = await resp.json();
     if (!data.active || !data.code || data.code.toUpperCase() !== code.toUpperCase()) {
-      leaveClassSession("Sesi kelas sudah berakhir - kamu kembali ke mode belajar mandiri.");
+      leaveClassSession(t("settings.classsession.left"));
       return;
     }
     classSession = data;
@@ -243,12 +243,12 @@ function updateClassSessionBanner() {
   const banner = document.getElementById("class-session-banner");
   const textEl = document.getElementById("class-session-text");
   if (!isInClassSession() || !classSession.topicId) { banner.hidden = true; return; }
-  const topic = TOPICS.find(t => t.id === classSession.topicId);
+  const topic = TOPICS.find(tp => tp.id === classSession.topicId);
   const tabLabel = TAB_LABELS[TAB_ORDER[classSession.tabIndex]] || "";
   const onTarget = currentTopic && currentTopic.id === classSession.topicId &&
     document.querySelector(".tab-btn.active")?.dataset.tab === TAB_ORDER[classSession.tabIndex];
   if (onTarget) { banner.hidden = true; return; }
-  textEl.textContent = `Sesi kelas aktif - guru meminta semua mengerjakan: ${topic ? topic.title : ""} - ${tabLabel} sekarang.`;
+  textEl.textContent = t("classsession.bannertext", { topic: topic ? trContent(topic.title) : "", tab: tabLabel });
   banner.hidden = false;
 }
 document.getElementById("class-session-go-btn").addEventListener("click", goToClassSessionActivity);
@@ -259,12 +259,12 @@ function refreshClassSessionUI() {
   const leaveBtn = document.getElementById("class-session-leave-btn");
   if (!statusText) return;
   if (isInClassSession()) {
-    statusText.textContent = "Tergabung dalam sesi kelas - navigasi mengikuti aktivitas yang ditentukan guru.";
+    statusText.textContent = t("settings.classsession.joined");
     statusText.classList.add("ok");
     joinRow.hidden = true;
     leaveBtn.hidden = false;
   } else {
-    statusText.textContent = "Belum gabung sesi kelas manapun.";
+    statusText.textContent = t("settings.classsession.notjoined");
     statusText.classList.remove("ok");
     joinRow.hidden = false;
     leaveBtn.hidden = true;
@@ -275,7 +275,7 @@ document.getElementById("class-session-join-btn").addEventListener("click", asyn
   const statusText = document.getElementById("class-session-status-text");
   const val = input.value.trim();
   if (!val) return;
-  statusText.textContent = "Menghubungkan...";
+  statusText.textContent = t("gate.student.code.connecting");
   statusText.classList.remove("ok");
   const result = await attemptJoinClassSession(val);
   if (result.ok) {
@@ -335,7 +335,7 @@ function refreshKeyStatusUI() {
   const settingsInput = document.getElementById("settings-key-input");
 
   if (dot) dot.classList.toggle("key-status-on", hasKey);
-  if (text) text.textContent = hasKey ? "API key tersambung" : "API key belum diatur";
+  if (text) text.textContent = hasKey ? t("header.keystatus.on") : t("header.keystatus.off");
   if (banner) banner.hidden = hasKey;
   if (settingsInput) settingsInput.value = getGeminiApiKey();
 }
@@ -347,10 +347,10 @@ function renderNav() {
   ["AS", "A2"].forEach(level => {
     const groupTitle = document.createElement("div");
     groupTitle.className = "nav-group-title";
-    groupTitle.textContent = level === "AS" ? "AS Level (Topik 1 - 11)" : "A Level Tambahan (Topik 12 - 25)";
+    groupTitle.textContent = level === "AS" ? t("nav.group.as") : t("nav.group.a2");
     nav.appendChild(groupTitle);
 
-    TOPICS.filter(t => t.level === level).forEach(topic => {
+    TOPICS.filter(tp => tp.level === level).forEach(topic => {
       const btn = document.createElement("button");
       const blocked = isInClassSession() && topic.id !== classSession.topicId;
       const isSessionFocus = isInClassSession() && topic.id === classSession.topicId;
@@ -359,8 +359,8 @@ function renderNav() {
       btn.innerHTML =
         `<span class="dot ${topic.status === 'ready' ? 'dot-ready' : 'dot-soon'}"></span>` +
         `<span class="num">${topic.number}.</span>` +
-        `<span class="label">${topic.title}</span>` +
-        (isSessionFocus ? `<span class="session-dot" title="Aktivitas kelas sekarang"></span>` : "");
+        `<span class="label">${trContent(topic.title)}</span>` +
+        (isSessionFocus ? `<span class="session-dot" title="${t("nav.sessiondot.title")}"></span>` : "");
       btn.addEventListener("click", () => {
         selectTopic(topic.id);
         btn.blur();
@@ -372,10 +372,10 @@ function renderNav() {
 
 function selectTopic(id) {
   if (isInClassSession() && id !== classSession.topicId) {
-    showToast("Ada sesi kelas aktif - ikuti aktivitas yang sedang ditentukan guru dulu.");
+    showToast(t("toast.classlocked"));
     return;
   }
-  currentTopic = TOPICS.find(t => t.id === id);
+  currentTopic = TOPICS.find(tp => tp.id === id);
   if (!currentTopic) return;
 
   document.querySelectorAll(".nav-item").forEach(el => {
@@ -390,9 +390,9 @@ function selectTopic(id) {
 
   document.getElementById("topic-badge").innerHTML =
     `<span class="badge ${currentTopic.level === 'AS' ? 'badge-as' : 'badge-a2'}">${currentTopic.level}</span> ` +
-    `<span class="badge ${currentTopic.status === 'ready' ? 'badge-ready' : 'badge-soon'}">${currentTopic.status === 'ready' ? 'Siap' : 'Segera'}</span>`;
-  document.getElementById("topic-title").textContent = `${currentTopic.number}. ${currentTopic.title}`;
-  document.getElementById("topic-desc").textContent = currentTopic.desc;
+    `<span class="badge ${currentTopic.status === 'ready' ? 'badge-ready' : 'badge-soon'}">${currentTopic.status === 'ready' ? t("badge.ready") : t("badge.soon")}</span>`;
+  document.getElementById("topic-title").textContent = `${currentTopic.number}. ${trContent(currentTopic.title)}`;
+  document.getElementById("topic-desc").textContent = trContent(currentTopic.desc);
 
   renderMateri();
   renderEksperimen();
@@ -454,7 +454,7 @@ function scheduleHideSidebarPeek() {
 /* ---------------- Tabs ---------------- */
 function switchTab(tabName) {
   if (currentTopic && isTabLocked(currentTopic.id, tabName)) {
-    showToast("Selesaikan tab sebelumnya dulu supaya sesuai urutan belajar, atau masukkan Kode Eksplorasi Bebas dari guru.");
+    showToast(t("toast.tablocked"));
     return;
   }
   document.querySelectorAll(".tab-btn").forEach(b => b.classList.toggle("active", b.dataset.tab === tabName));
@@ -468,7 +468,7 @@ function switchTab(tabName) {
 document.querySelectorAll(".tab-btn").forEach(btn => {
   btn.addEventListener("click", () => {
     if (currentTopic && isTabLocked(currentTopic.id, btn.dataset.tab)) {
-      showToast("Selesaikan tab sebelumnya dulu supaya sesuai urutan belajar, atau masukkan Kode Eksplorasi Bebas dari guru.");
+      showToast(t("toast.tablocked"));
       return;
     }
     switchTab(btn.dataset.tab);
@@ -529,9 +529,9 @@ document.getElementById("progress-finish-btn").addEventListener("click", () => {
 function renderMateri() {
   const panel = document.getElementById("panel-materi");
   if (currentTopic.status === "ready" && currentTopic.materiHTML) {
-    panel.innerHTML = currentTopic.materiHTML;
+    panel.innerHTML = trContent(currentTopic.materiHTML);
   } else {
-    panel.innerHTML = comingSoonHTML("materi belajar");
+    panel.innerHTML = comingSoonHTML("materi");
   }
   if (window.MathJax && window.MathJax.typesetPromise) {
     window.MathJax.typesetPromise([panel]);
@@ -543,7 +543,7 @@ function renderEksperimen() {
   const panel = document.getElementById("panel-eksperimen");
   if (currentTopic.status === "ready" && currentTopic.eksperimen) {
     const ex = currentTopic.eksperimen;
-    panel.innerHTML = `<h3>${ex.title}</h3>${ex.intro}` +
+    panel.innerHTML = `<h3>${trContent(ex.title)}</h3>${trContent(ex.intro)}` +
       (ex.simHTML ? `<div class="sim-embed"><iframe sandbox="allow-scripts" srcdoc="${escapeAttr(ex.simHTML)}"></iframe></div>` : "");
   } else {
     panel.innerHTML = comingSoonHTML("eksperimen");
@@ -561,20 +561,20 @@ function renderLatihan() {
       let optionsHTML = "";
       if (q.type === "mcq") {
         optionsHTML = `<ul class="options">${q.options.map((opt, oi) =>
-          `<li>${String.fromCharCode(65 + oi)}. ${opt}${oi === q.correct ? ' <span class="muted">(jawaban benar)</span>' : ''}</li>`
+          `<li>${String.fromCharCode(65 + oi)}. ${trContent(opt)}${oi === q.correct ? ` <span class="muted">${t("answer.correct")}</span>` : ''}</li>`
         ).join("")}</ul>`;
       }
       return `
         <div class="question-card">
-          <div class="q-title">Soal ${i + 1}</div>
-          <div>${q.question}</div>
+          <div class="q-title">${t("question.label", { n: i + 1 })}</div>
+          <div>${trContent(q.question)}</div>
           ${optionsHTML}
-          <button class="reveal-btn" onclick="this.nextElementSibling.classList.toggle('show')">Lihat Pembahasan</button>
-          <div class="solution"><strong>Pembahasan:</strong><br>${q.solution}</div>
+          <button class="reveal-btn" onclick="this.nextElementSibling.classList.toggle('show')">${t("question.reveal")}</button>
+          <div class="solution"><strong>${t("question.solution")}</strong><br>${trContent(q.solution)}</div>
         </div>`;
     }).join("");
   } else {
-    panel.innerHTML = comingSoonHTML("latihan soal");
+    panel.innerHTML = comingSoonHTML("latihan");
   }
   if (window.MathJax && window.MathJax.typesetPromise) {
     window.MathJax.typesetPromise([panel]);
@@ -582,9 +582,7 @@ function renderLatihan() {
 }
 
 function comingSoonHTML(section) {
-  return `<p class="muted">Konten ${section} untuk topik ini belum diisi. Strukturnya sudah siap di <code>js/content.js</code>,
-    tinggal ditambahkan mengikuti contoh topik <strong>Kinematics</strong>. Sementara itu, tab
-    <strong>Lab Simulasi Virtual</strong> tetap bisa dicoba untuk topik ini.</p>`;
+  return `<p class="muted">${t("content.comingsoon", { section: t("content.section." + section) })}</p>`;
 }
 
 function escapeAttr(str) {
@@ -596,7 +594,10 @@ function setupLabForTopic() {
   const select = document.getElementById("pf-concept");
   const concepts = (currentTopic.labConcepts && currentTopic.labConcepts.length)
     ? currentTopic.labConcepts : DEFAULT_LAB_CONCEPTS;
-  select.innerHTML = concepts.map(c => `<option value="${c}">${c}</option>`).join("");
+  select.innerHTML = concepts.map(c => {
+    const label = trContent(c);
+    return `<option value="${escapeAttr(label)}">${label}</option>`;
+  }).join("");
 
   // Reset SELURUH form generator prompt setiap ganti topik - termasuk
   // variabel/tujuan/instruksi tambahan yang diketik manual - supaya teks
@@ -612,7 +613,7 @@ function setupLabForTopic() {
   document.getElementById("preview-frame").hidden = false;
   document.getElementById("code-editor").value = "";
   document.getElementById("code-editor").hidden = true;
-  document.getElementById("toggle-code-label").textContent = "Lihat Kode";
+  document.getElementById("toggle-code-label").textContent = t("lab.togglecode.view");
   document.getElementById("generate-status").textContent = "";
   document.getElementById("mode-banner").hidden = true;
   ["rerun-btn", "toggle-code-btn", "download-btn"].forEach(id => document.getElementById(id).disabled = true);
@@ -633,9 +634,9 @@ function updateEditCounterUI() {
   const input = document.getElementById("edit-followup-input");
   const remaining = MAX_FOLLOWUP_EDITS - editCount;
   if (remaining > 0) {
-    counter.textContent = `Sisa edit lanjutan: ${remaining}/${MAX_FOLLOWUP_EDITS}`;
+    counter.textContent = t("lab.editfollowup.remaining", { n: remaining, max: MAX_FOLLOWUP_EDITS });
   } else {
-    counter.textContent = `Batas ${MAX_FOLLOWUP_EDITS}x edit lanjutan untuk simulasi ini sudah tercapai - tekan Generate untuk membuat versi baru.`;
+    counter.textContent = t("lab.editfollowup.limitreached", { max: MAX_FOLLOWUP_EDITS });
   }
   btn.disabled = remaining <= 0;
   input.disabled = remaining <= 0;
@@ -660,25 +661,27 @@ document.getElementById("pf-build-btn").addEventListener("click", () => {
   const level = document.getElementById("pf-level").value;
   const extra = document.getElementById("pf-extra").value.trim();
 
-  let prompt = `Buatlah SATU file HTML lengkap dan mandiri (HTML, CSS, dan JavaScript semuanya inline dalam satu file, TANPA dependensi/CDN eksternal) yang berisi simulasi fisika interaktif tentang topik "${currentTopic.title}", khususnya konsep: ${concept}.\n\n`;
-  prompt += `PENTING: konsep fisika di atas ("${concept}") adalah topik UTAMA dan SATU-SATUNYA untuk simulasi ini. Semua kontrol, animasi, grafik, dan penjelasan di dalam simulasi harus tentang konsep ini saja.\n\n`;
-  prompt += `Jenis visualisasi yang diinginkan: ${vistype}.\n\n`;
+  const topicTitle = trContent(currentTopic.title);
+  let prompt = t("promptgen.header", { topic: topicTitle, concept: concept });
+  prompt += t("promptgen.langdirective");
+  prompt += t("promptgen.mainfocus", { concept: concept });
+  prompt += t("promptgen.vistype", { vistype: vistype });
   if (variables) {
-    prompt += `Sediakan kontrol interaktif (slider/input angka) agar siswa bisa mengubah variabel berikut: ${variables}. Tampilkan juga nilai numerik dan/atau grafik yang relevan secara real-time saat variabel diubah.\n\n`;
+    prompt += t("promptgen.variables", { variables: variables });
   }
   if (goal) {
-    prompt += `Tujuan pembelajaran simulasi ini (catatan tambahan dari guru/siswa, TETAP harus konsisten dengan konsep utama "${concept}" di atas, jika ada bagian yang tampak membahas konsep fisika lain, abaikan bagian itu): ${goal}.\n\n`;
+    prompt += t("promptgen.goal", { concept: concept, goal: goal });
   }
-  prompt += `Tingkat kompleksitas tampilan: ${level}.\n\n`;
-  prompt += `Gunakan satuan SI dan rumus fisika yang akurat sesuai kurikulum Cambridge International AS & A Level Physics (9702). Tuliskan kode yang rapi dan diberi komentar singkat agar mudah dipahami siswa yang juga sedang belajar coding.\n`;
+  prompt += t("promptgen.level", { level: level });
+  prompt += t("promptgen.footer");
   if (extra) {
-    prompt += `\nInstruksi tambahan: ${extra}\n`;
+    prompt += t("promptgen.extra", { extra: extra });
   }
 
   // "Grounding": tempelkan rumus/konsep topik yang sudah divalidasi guru
   // supaya AI memakai nilai & rumus yang tepat, bukan menebak dari memori umum.
   if (currentTopic.formulaSheet) {
-    prompt += `\nReferensi rumus & konsep topik ini yang WAJIB dipakai (jangan memakai rumus lain yang bertentangan dengan ini):\n${currentTopic.formulaSheet}\n`;
+    prompt += t("promptgen.formularef", { sheet: trContent(currentTopic.formulaSheet) });
   }
 
   document.getElementById("final-prompt").value = prompt;
@@ -692,14 +695,14 @@ document.getElementById("generate-btn").addEventListener("click", async () => {
   const apiKey = getGeminiApiKey();
 
   if (!promptText) {
-    status.textContent = "Susun atau tulis prompt terlebih dahulu.";
+    status.textContent = t("lab.generate.needprompt");
     return;
   }
 
   if (!apiKey) {
     status.textContent = "";
     banner.hidden = false;
-    banner.innerHTML = `Kamu belum memasukkan API key Gemini pribadi. <button type="button" class="link-btn" id="mode-banner-key-btn">Atur API key sekarang</button>, atau tekan "Coba Mode Demo" untuk melihat contoh simulasi tanpa AI.`;
+    banner.innerHTML = t("lab.generate.needkey");
     document.getElementById("mode-banner-key-btn").addEventListener("click", openSettingsModal);
     return;
   }
@@ -707,11 +710,11 @@ document.getElementById("generate-btn").addEventListener("click", async () => {
   if (!backendUrl) {
     status.textContent = "";
     banner.hidden = false;
-    banner.textContent = "Backend belum dikonfigurasi (lihat README.md bagian setup). Hubungi pengelola situs.";
+    banner.textContent = t("lab.generate.needbackend");
     return;
   }
 
-  status.textContent = "Menghubungi AI, mohon tunggu (bisa 10-30 detik)...";
+  status.textContent = t("lab.generate.loading");
   banner.hidden = true;
   document.getElementById("generate-btn").disabled = true;
 
@@ -736,12 +739,12 @@ document.getElementById("generate-btn").addEventListener("click", async () => {
     setPreview(html);
     resetEditCount();
     if (problem) {
-      status.textContent = problem + " Coba klik Generate lagi (hasil AI bisa berbeda tiap percobaan), atau sederhanakan promptnya.";
+      status.textContent = problem + t("lab.generate.retryhint");
     } else {
-      status.textContent = data.warning ? data.warning : "Simulasi berhasil dibuat.";
+      status.textContent = data.warning ? data.warning : t("lab.generate.success");
     }
   } catch (err) {
-    status.textContent = "Gagal generate: " + err.message + " - coba lagi, atau cek README bagian troubleshooting.";
+    status.textContent = t("lab.generate.failed") + err.message + t("lab.generate.failedsuffix");
   } finally {
     document.getElementById("generate-btn").disabled = false;
   }
@@ -753,7 +756,7 @@ document.getElementById("demo-btn").addEventListener("click", () => {
   const banner = document.getElementById("mode-banner");
   status.textContent = "";
   banner.hidden = false;
-  banner.textContent = "Mode Demo aktif: menampilkan simulasi contoh yang sudah disiapkan (bukan hasil AI sesungguhnya), sekadar untuk melihat alur Lab Simulasi Virtual.";
+  banner.textContent = t("lab.demo.active");
   const html = getDemoSimHTML(promptText);
   setPreview(html);
   resetEditCount();
@@ -779,30 +782,34 @@ document.getElementById("edit-followup-btn").addEventListener("click", async () 
   const apiKey = getGeminiApiKey();
 
   if (editCount >= MAX_FOLLOWUP_EDITS) {
-    status.textContent = `Batas ${MAX_FOLLOWUP_EDITS}x edit lanjutan untuk simulasi ini sudah tercapai - tekan Generate untuk membuat versi baru.`;
+    status.textContent = t("lab.editfollowup.limitreached", { max: MAX_FOLLOWUP_EDITS });
     return;
   }
   if (!lastGeneratedHTML) {
-    status.textContent = "Belum ada simulasi untuk diedit - tekan Generate atau Coba Mode Demo dulu.";
+    status.textContent = t("lab.editfollowup.needsim");
     return;
   }
   if (!instruction) {
-    status.textContent = "Tulis dulu instruksi editnya, misalnya bagian apa yang ingin diubah/ditambah.";
+    status.textContent = t("lab.editfollowup.needinstruction");
     return;
   }
   if (!apiKey) {
-    status.innerHTML = `Edit lanjutan butuh AI sungguhan, jadi perlu API key Gemini pribadi. <button type="button" class="link-btn" id="edit-followup-key-btn">Atur API key sekarang</button>.`;
+    status.innerHTML = t("lab.editfollowup.needkey");
     document.getElementById("edit-followup-key-btn").addEventListener("click", openSettingsModal);
     return;
   }
   if (!backendUrl) {
-    status.textContent = "Backend belum dikonfigurasi (lihat README.md bagian setup). Hubungi pengelola situs.";
+    status.textContent = t("lab.editfollowup.needbackend");
     return;
   }
 
-  const editPrompt = `Berikut kode HTML simulasi fisika yang SUDAH ADA (satu file lengkap, mandiri):\n\n${lastGeneratedHTML}\n\n---\nTolong EDIT/REVISI kode di atas sesuai instruksi berikut. Pertahankan bagian yang tidak diminta berubah dan tetap tentang konsep fisika yang sama. Kembalikan HANYA satu file HTML LENGKAP hasil revisi (bukan potongan - sertakan seluruh <!DOCTYPE html> sampai </html>), tanpa penjelasan tambahan di luar kode, tanpa code fence markdown.\n\nInstruksi edit dari siswa: ${instruction}`;
+  const editPrompt = t("promptgen.editheader", {
+    html: lastGeneratedHTML,
+    langdirective: t("promptgen.editlangdirective"),
+    instruction: instruction
+  });
 
-  status.textContent = `Menerapkan edit ke-${editCount + 1} dari ${MAX_FOLLOWUP_EDITS}, mohon tunggu (biasanya 10-30 detik, kadang lebih lama kalau server Gemini sedang sibuk)...`;
+  status.textContent = t("lab.editfollowup.loading", { n: editCount + 1, max: MAX_FOLLOWUP_EDITS });
   document.getElementById("edit-followup-btn").disabled = true;
 
   try {
@@ -821,10 +828,10 @@ document.getElementById("edit-followup-btn").addEventListener("click", async () 
     updateEditCounterUI();
     document.getElementById("edit-followup-input").value = "";
     status.textContent = problem
-      ? problem + " Coba edit lagi dengan instruksi yang lebih sederhana."
-      : "Edit berhasil diterapkan pada simulasi.";
+      ? problem + t("lab.editfollowup.retryhint")
+      : t("lab.editfollowup.success");
   } catch (err) {
-    status.textContent = "Gagal menerapkan edit: " + err.message + " - coba lagi.";
+    status.textContent = t("lab.editfollowup.failed") + err.message + t("lab.editfollowup.failedsuffix");
   } finally {
     updateEditCounterUI();
   }
@@ -840,13 +847,13 @@ function stripCodeFence(html) {
 // Mengembalikan string pesan masalah, atau null kalau terlihat aman.
 function checkGeneratedHtml(html) {
   if (!html || html.length < 200) {
-    return "Hasil AI kosong atau terlalu pendek untuk jadi simulasi utuh.";
+    return t("check.htmltooshort");
   }
   if (!/<\/html>\s*$/i.test(html)) {
-    return "Kode HTML sepertinya terpotong (tidak diakhiri tag </html>).";
+    return t("check.htmltruncated");
   }
   if (!/<script[\s>]/i.test(html)) {
-    return "Kode tidak mengandung <script> sama sekali, jadi animasi/perhitungan tidak akan berjalan.";
+    return t("check.noscript");
   }
   // Cek kasar keseimbangan kurung kurawal di dalam <script>: kalau sangat
   // tidak seimbang, hampir pasti ada JavaScript yang terpotong/rusak.
@@ -854,7 +861,7 @@ function checkGeneratedHtml(html) {
   const openBraces = (scriptContents.match(/\{/g) || []).length;
   const closeBraces = (scriptContents.match(/\}/g) || []).length;
   if (Math.abs(openBraces - closeBraces) > 1) {
-    return "Kode JavaScript sepertinya tidak lengkap/rusak (kurung kurawal { } tidak seimbang), kemungkinan animasi atau perhitungan tidak akan berjalan.";
+    return t("check.unbalancedbraces");
   }
   return null;
 }
@@ -867,7 +874,7 @@ function setPreview(html) {
   // preview (bukan kode) supaya konsisten, dan reset label tombolnya.
   document.getElementById("preview-frame").hidden = false;
   document.getElementById("code-editor").hidden = true;
-  document.getElementById("toggle-code-label").textContent = "Lihat Kode";
+  document.getElementById("toggle-code-label").textContent = t("lab.togglecode.view");
   ["rerun-btn", "toggle-code-btn", "download-btn"].forEach(id => document.getElementById(id).disabled = false);
   document.getElementById("lab-edit-followup").hidden = false;
   // Bersihkan pesan status edit-lanjutan lama (kalau ada dari simulasi
@@ -891,7 +898,7 @@ document.getElementById("toggle-code-btn").addEventListener("click", () => {
   const showingCodeNext = editor.hidden; // true jika saat ini kode masih disembunyikan
   editor.hidden = !showingCodeNext;
   frame.hidden = showingCodeNext;
-  label.textContent = showingCodeNext ? "Lihat Preview" : "Lihat Kode";
+  label.textContent = showingCodeNext ? t("lab.togglecode.preview") : t("lab.togglecode.view");
 });
 
 document.getElementById("download-btn").addEventListener("click", () => {
@@ -912,8 +919,8 @@ function refreshUnlockStatusUI() {
   const text = document.getElementById("unlock-status-text");
   if (!text) return;
   text.textContent = isUnlockAll()
-    ? "Aktif - semua topik & tab sudah terbuka bebas di perangkat ini."
-    : "Belum aktif - topik & tab masih terbuka bertahap.";
+    ? t("settings.unlock.on")
+    : t("settings.unlock.off");
   text.classList.toggle("ok", isUnlockAll());
 }
 document.getElementById("unlock-code-btn").addEventListener("click", () => {
@@ -926,9 +933,9 @@ document.getElementById("unlock-code-btn").addEventListener("click", () => {
     refreshUnlockStatusUI();
     renderNav();
     if (currentTopic) updateTopicProgressUI(document.querySelector(".tab-btn.active").dataset.tab);
-    showToast("Semua topik dan tab sudah terbuka!");
+    showToast(t("settings.unlock.success"));
   } else {
-    showToast("Kode salah. Tanyakan kode Eksplorasi Bebas ke gurumu.");
+    showToast(t("settings.unlock.wrong"));
   }
 });
 function openSettingsModal() {
@@ -962,10 +969,10 @@ document.getElementById("settings-save-btn").addEventListener("click", () => {
 document.getElementById("settings-student-info-save-btn").addEventListener("click", () => {
   const name = document.getElementById("settings-student-name-input").value.trim();
   const cls = document.getElementById("settings-student-class-input").value.trim();
-  if (!name || !cls) { showToast("Isi nama dan kelas dulu."); return; }
+  if (!name || !cls) { showToast(t("gate.student.needinfo")); return; }
   localStorage.setItem(STORAGE_KEY_STUDENT_NAME, name);
   localStorage.setItem(STORAGE_KEY_STUDENT_CLASS, cls);
-  showToast("Data diri tersimpan.");
+  showToast(t("settings.studentinfo.saved"));
 });
 document.getElementById("settings-reset-onboarding-btn").addEventListener("click", () => {
   localStorage.removeItem(STORAGE_KEY_ROLE);
@@ -1048,7 +1055,7 @@ document.getElementById("gate-key-input").addEventListener("keydown", (e) => {
 document.getElementById("gate-key-save-btn").addEventListener("click", () => {
   const val = document.getElementById("gate-key-input").value.trim();
   const status = document.getElementById("gate-key-status");
-  if (!val) { status.textContent = "Tempel API key Gemini dulu."; status.classList.remove("ok"); return; }
+  if (!val) { status.textContent = t("gate.key.needkey"); status.classList.remove("ok"); return; }
   saveGeminiApiKey(val);
   status.textContent = "";
   applyGate();
@@ -1067,7 +1074,7 @@ document.getElementById("gate-student-info-btn").addEventListener("click", () =>
   const name = document.getElementById("gate-student-name-input").value.trim();
   const cls = document.getElementById("gate-student-class-input").value.trim();
   const status = document.getElementById("gate-student-info-status");
-  if (!name || !cls) { status.textContent = "Isi nama dan kelas dulu."; return; }
+  if (!name || !cls) { status.textContent = t("gate.student.needinfo"); return; }
   localStorage.setItem(STORAGE_KEY_STUDENT_NAME, name);
   localStorage.setItem(STORAGE_KEY_STUDENT_CLASS, cls);
   status.textContent = "";
@@ -1083,8 +1090,8 @@ document.getElementById("gate-student-code-btn").addEventListener("click", async
   const status = document.getElementById("gate-student-code-status");
   const btn = document.getElementById("gate-student-code-btn");
   const code = input.value.trim();
-  if (!code) { status.textContent = "Masukkan kode dari guru dulu."; status.classList.remove("ok"); return; }
-  status.textContent = "Menghubungkan...";
+  if (!code) { status.textContent = t("gate.student.code.needcode"); status.classList.remove("ok"); return; }
+  status.textContent = t("gate.student.code.connecting");
   status.classList.remove("ok");
   btn.disabled = true;
   const result = await attemptJoinClassSession(code);
@@ -1109,14 +1116,14 @@ document.getElementById("gate-guest-code-btn").addEventListener("click", () => {
   const input = document.getElementById("gate-guest-code-input");
   const status = document.getElementById("gate-guest-code-status");
   const code = input.value.trim();
-  if (!code) { status.textContent = "Masukkan kode eksplorasi dulu."; status.classList.remove("ok"); return; }
+  if (!code) { status.textContent = t("gate.guest.code.needcode"); status.classList.remove("ok"); return; }
   if (TEACHER_UNLOCK_CODE && code.toLowerCase() === TEACHER_UNLOCK_CODE.toLowerCase()) {
     localStorage.setItem(STORAGE_KEY_UNLOCK_ALL, "true");
     input.value = "";
     status.textContent = "";
     applyGate();
   } else {
-    status.textContent = "Kode salah. Tanyakan Kode Eksplorasi Bebas ke guru/pengelola situs.";
+    status.textContent = t("gate.guest.code.wrong");
     status.classList.remove("ok");
   }
 });
@@ -1137,9 +1144,16 @@ document.getElementById("chatbot-toggle-btn").addEventListener("click", () => {
 document.getElementById("chatbot-close-btn").addEventListener("click", () => { chatbotPanel.hidden = true; });
 
 /* ---------------- Init ---------------- */
+applyStaticI18n();
+initLangSwitch();
 renderNav();
 refreshKeyStatusUI();
 refreshUnlockStatusUI();
 syncHeaderHeight();
 if (window.Chatbot) Chatbot.init();
-initGate();
+// Kalau reload ini dipicu oleh ganti bahasa (lihat setLang() di i18n.js),
+// kembalikan siswa ke topik/tab yang sedang dibuka sebelumnya alih-alih
+// diam di Beranda - ditunggu (.then) sampai SETELAH initGate() selesai
+// memutuskan step gate mana yang tampil (initGate itu sendiri async karena
+// bisa menyambung ulang sesi kelas lebih dulu ke backend).
+initGate().then(restoreLangSwitchState);
