@@ -27,7 +27,7 @@
 const CHATBOT_KB = {
 
   kinematics: {
-    greeting: "Halo! Aku tutor fisikamu untuk topik Kinematics. Ceritakan dulu apa yang membingungkan, atau ketik istilah fisikanya (mis. \"perpindahan\" atau \"GLBB\").",
+    greeting: { id: "Halo! Aku tutor fisikamu untuk topik Kinematics. Ceritakan dulu apa yang membingungkan, atau ketik istilah fisikanya (mis. \"perpindahan\" atau \"GLBB\").", en: "Hi! I'm your physics tutor for the Kinematics topic. Tell me first what's confusing, or type a physics term (e.g. \"displacement\" or \"uniformly accelerated motion\")." },
     chips: [
       "Apa bedanya jarak dan perpindahan?",
       "Kenapa luas di bawah grafik v-t itu perpindahan?",
@@ -38,7 +38,7 @@ const CHATBOT_KB = {
       {
         id: "jarak-perpindahan",
         keywords: ["jarak", "perpindahan", "distance", "displacement", "skalar", "vektor"],
-        ask: "Sebelum aku jelaskan: kalau kamu lari mengelilingi lapangan berbentuk lingkaran penuh dan kembali persis ke titik start, menurutmu berapa PERPINDAHANmu? Coba jelaskan alasanmu dulu.",
+        ask: "Sebelum aku jelaskan: kalau kamu lari mengelingi lapangan berbentuk lingkaran penuh dan kembali persis ke titik start, menurutmu berapa PERPINDAHANmu? Coba jelaskan alasanmu dulu.",
         explain: "Jarak adalah besaran skalar: total panjang lintasan yang benar-benar ditempuh, selalu bernilai positif. Perpindahan adalah besaran vektor: perubahan posisi dari titik awal ke titik akhir saja, punya arah, dan BISA nol meskipun jarak yang ditempuh tidak nol (persis seperti contoh lari keliling lapangan tadi).",
         followUp: "Sekarang giliranmu: bisakah besar perpindahan lebih BESAR daripada jarak yang ditempuh? Kenapa atau kenapa tidak?"
       },
@@ -88,7 +88,7 @@ const CHATBOT_KB = {
   },
 
   "magnetic-fields": {
-    greeting: "Halo! Aku tutor fisikamu untuk topik Magnetic Fields. Coba ketik istilah fisikanya (mis. \"gaya lorentz\", \"fluks\", \"hukum lenz\") atau ceritakan dulu apa yang bikin bingung.",
+    greeting: { id: "Halo! Aku tutor fisikamu untuk topik Magnetic Fields. Coba ketik istilah fisikanya (mis. \"gaya lorentz\", \"fluks\", \"hukum lenz\") atau ceritakan dulu apa yang bikin bingung.", en: "Hi! I'm your physics tutor for the Magnetic Fields topic. Try typing a physics term (e.g. \"Lorentz force\", \"flux\", \"Lenz's law\") or tell me first what's confusing." },
     chips: [
       "Kenapa pakai kaidah tangan kanan vs tangan kiri, apa bedanya?",
       "Kenapa muatan bergerak dalam medan magnet lintasannya melingkar?",
@@ -149,7 +149,7 @@ const CHATBOT_KB = {
   },
 
   general: {
-    greeting: "Halo! Aku tutor fisikamu. Pilih topik dulu di sidebar supaya aku tahu konteksnya, atau langsung ketik istilah fisika yang ingin kamu diskusikan.",
+    greeting: { id: "Halo! Aku tutor fisikamu. Pilih topik dulu di sidebar supaya aku tahu konteksnya, atau langsung ketik istilah fisika yang ingin kamu diskusikan.", en: "Hi! I'm your physics tutor. Pick a topic in the sidebar first so I know the context, or type a physics term you'd like to discuss." },
     chips: ["Apa itu besaran vektor?", "Bagaimana cara belajar fisika yang efektif?"],
     concepts: [
       {
