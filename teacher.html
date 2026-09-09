@@ -23,7 +23,7 @@
   table.roster-table th { color: var(--muted); font-weight: 600; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.03em; }
   .status-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
   .status-dot.online { background: var(--good); }
-  .status-dot.away { background: #f4b740; }
+  .status-dot.away { background: var(--warn); }
   .status-dot.stale { background: var(--muted); }
   .teacher-note { font-size: 0.8rem; color: var(--muted); margin-top: 6px; }
   #teacher-login-card { max-width: 420px; margin: 60px auto; }
@@ -43,94 +43,100 @@
         <span class="brand-sub">Panel Guru - Sesi Kelas &amp; Monitoring</span>
       </span>
     </a>
+    <div class="header-actions">
+      <div class="lang-switch" id="lang-switch" role="group" data-i18n-title="header.lang.title" title="Ganti bahasa">
+        <button type="button" class="lang-switch-btn" data-lang="id">ID</button>
+        <button type="button" class="lang-switch-btn" data-lang="en">EN</button>
+      </div>
+    </div>
   </div>
 </header>
 
 <div class="teacher-wrap">
 
   <div class="teacher-card" id="teacher-login-card">
-    <h2>Masuk Panel Guru</h2>
-    <p class="muted small">Masukkan Kode Kontrol Guru (diatur di <code>apps-script/Code.gs</code>, <code>TEACHER_CONTROL_CODE</code>).</p>
+    <h2 data-i18n="teacher.login.title">Masuk Panel Guru</h2>
+    <p class="muted small" data-i18n-html="teacher.login.desc">Masukkan Kode Kontrol Guru (diatur di <code>apps-script/Code.gs</code>, <code>TEACHER_CONTROL_CODE</code>).</p>
     <div class="field-row">
       <div>
-        <label>URL Backend (Apps Script Web App)</label>
+        <label data-i18n="teacher.backendurl.label">URL Backend (Apps Script Web App)</label>
         <input type="text" id="teacher-backend-input" placeholder="https://script.google.com/macros/s/XXXX/exec">
       </div>
     </div>
     <div class="field-row">
       <div>
-        <label>Kode Kontrol Guru</label>
-        <input type="password" id="teacher-control-input" placeholder="Kode kontrol guru">
+        <label data-i18n="teacher.controlcode.label">Kode Kontrol Guru</label>
+        <input type="password" id="teacher-control-input" data-i18n-placeholder="teacher.controlcode.placeholder" placeholder="Kode kontrol guru">
       </div>
     </div>
     <div class="teacher-actions">
-      <button type="button" id="teacher-login-btn" class="btn btn-primary">Masuk</button>
+      <button type="button" id="teacher-login-btn" class="btn btn-primary" data-i18n="teacher.login.btn">Masuk</button>
     </div>
     <p class="teacher-note" id="teacher-login-status"></p>
   </div>
 
   <div id="teacher-panel" hidden>
     <div class="teacher-card">
-      <h2>Sesi Kelas</h2>
-      <p class="muted small">Tentukan satu aktivitas yang wajib dikerjakan bareng semua siswa yang gabung. Siswa gabung lewat tombol Pengaturan di situs utama, masukkan kode di bawah.</p>
+      <h2 data-i18n="teacher.session.title">Sesi Kelas</h2>
+      <p class="muted small" data-i18n="teacher.session.desc">Tentukan satu aktivitas yang wajib dikerjakan bareng semua siswa yang gabung. Siswa gabung lewat tombol Pengaturan di situs utama, masukkan kode di bawah.</p>
 
       <div id="teacher-no-session">
         <div class="field-row">
           <div>
-            <label>Topik</label>
+            <label data-i18n="teacher.topic.label">Topik</label>
             <select id="teacher-topic-select"></select>
           </div>
           <div>
-            <label>Tab</label>
+            <label data-i18n="teacher.tab.label">Tab</label>
             <select id="teacher-tab-select">
-              <option value="0">Materi Belajar</option>
-              <option value="1">Eksperimen</option>
-              <option value="2">Latihan Soal</option>
-              <option value="3">Lab Simulasi Virtual</option>
+              <option value="0" data-i18n="tab.materi">Materi Belajar</option>
+              <option value="1" data-i18n="tab.eksperimen">Eksperimen</option>
+              <option value="2" data-i18n="tab.latihan">Latihan Soal</option>
+              <option value="3" data-i18n="tab.lab">Lab Simulasi Virtual</option>
             </select>
           </div>
         </div>
         <div class="teacher-actions">
-          <button type="button" id="teacher-start-btn" class="btn btn-primary">Mulai Sesi Baru</button>
+          <button type="button" id="teacher-start-btn" class="btn btn-primary" data-i18n="teacher.startsession.btn">Mulai Sesi Baru</button>
         </div>
       </div>
 
       <div id="teacher-has-session" hidden>
-        <p class="muted small">Kode untuk dibagikan ke siswa (tulis di papan tulis / sebutkan):</p>
+        <p class="muted small" data-i18n="teacher.sharecode.desc">Kode untuk dibagikan ke siswa (tulis di papan tulis / sebutkan):</p>
         <div class="code-display" id="teacher-code-display">------</div>
         <div class="field-row">
           <div>
-            <label>Topik aktif sekarang</label>
+            <label data-i18n="teacher.activetopic.label">Topik aktif sekarang</label>
             <select id="teacher-topic-select-2"></select>
           </div>
           <div>
-            <label>Tab aktif sekarang</label>
+            <label data-i18n="teacher.activetab.label">Tab aktif sekarang</label>
             <select id="teacher-tab-select-2">
-              <option value="0">Materi Belajar</option>
-              <option value="1">Eksperimen</option>
-              <option value="2">Latihan Soal</option>
-              <option value="3">Lab Simulasi Virtual</option>
+              <option value="0" data-i18n="tab.materi">Materi Belajar</option>
+              <option value="1" data-i18n="tab.eksperimen">Eksperimen</option>
+              <option value="2" data-i18n="tab.latihan">Latihan Soal</option>
+              <option value="3" data-i18n="tab.lab">Lab Simulasi Virtual</option>
             </select>
           </div>
         </div>
         <div class="teacher-actions">
-          <button type="button" id="teacher-update-btn" class="btn btn-primary">Terapkan Perubahan</button>
-          <button type="button" id="teacher-end-btn" class="btn btn-secondary">Akhiri Sesi</button>
+          <button type="button" id="teacher-update-btn" class="btn btn-primary" data-i18n="teacher.applychanges.btn">Terapkan Perubahan</button>
+          <button type="button" id="teacher-end-btn" class="btn btn-secondary" data-i18n="teacher.endsession.btn">Akhiri Sesi</button>
         </div>
       </div>
       <p class="teacher-note" id="teacher-session-status"></p>
     </div>
 
     <div class="teacher-card">
-      <h2>Progres Siswa (real-time)</h2>
-      <p class="muted small">Diperbarui otomatis tiap ~8 detik. ID siswa bersifat anonim (tanpa nama), digenerate otomatis per perangkat.</p>
+      <h2 data-i18n="teacher.progress.title">Progres Siswa (real-time)</h2>
+      <p class="muted small" data-i18n="teacher.progress.desc">Diperbarui otomatis tiap ~8 detik. ID siswa bersifat anonim (tanpa nama), digenerate otomatis per perangkat.</p>
       <div style="overflow-x:auto;">
         <table class="roster-table">
           <thead>
-            <tr><th>ID Siswa</th><th>Aktivitas sekarang</th><th>Terakhir lapor</th></tr>
+            <tr><th data-i18n="teacher.th.studentid">ID Siswa</th><th data-i18n="teacher.th.activity">Aktivitas sekarang</th><th data-i18n="teacher.th.lastreport">Terakhir lapor</th></tr>
           </thead>
           <tbody id="roster-body">
-            <tr><td colspan="3" class="muted small">Belum ada siswa yang gabung.</td></tr>
+            <tr><td colspan="3" class="muted small" data-i18n="teacher.roster.empty">Belum ada siswa yang gabung.</td></tr>
           </tbody>
         </table>
       </div>
@@ -141,7 +147,9 @@
 </div>
 
 <script src="js/config.js"></script>
+<script src="js/i18n.js"></script>
 <script src="js/content.js"></script>
 <script src="js/teacher.js"></script>
+<script>applyStaticI18n(); initLangSwitch();</script>
 </body>
 </html>
