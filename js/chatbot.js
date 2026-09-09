@@ -30,8 +30,8 @@ window.Chatbot = (function () {
   }
 
   function currentTopicTitle() {
-    const topic = (typeof TOPICS !== "undefined" ? TOPICS : []).find(t => t.id === topicId);
-    return topic ? topic.title : "Fisika Umum";
+    const topic = (typeof TOPICS !== "undefined" ? TOPICS : []).find(tp => tp.id === topicId);
+    return topic ? trContent(topic.title) : t("chatbot.generaltopic");
   }
 
   function buildKbContext(kb) {
@@ -95,7 +95,7 @@ window.Chatbot = (function () {
     } else {
       if (!nudgedForKey) {
         nudgedForKey = true;
-        appendMessage("bot", "Supaya aku bisa menanggapi jawabanmu secara lebih natural dan spesifik, masukkan API key Gemini gratis milikmu lewat tombol Pengaturan di header. Untuk sekarang aku bantu pakai catatan topik ini dulu.");
+        appendMessage("bot", t("chatbot.nudgeforkey"));
       }
       handleLocalFallback(text);
     }
@@ -103,7 +103,7 @@ window.Chatbot = (function () {
 
   async function askTutor(message, backendUrl, apiKey) {
     setSending(true);
-    const typingEl = appendMessage("bot", "<em>mengetik…</em>");
+    const typingEl = appendMessage("bot", "<em>" + t("chatbot.typing") + "</em>");
     try {
       const resp = await fetch(backendUrl, {
         method: "POST",
@@ -111,6 +111,7 @@ window.Chatbot = (function () {
         body: JSON.stringify({
           mode: "chat",
           apiKey: apiKey,
+          lang: (typeof getLang === "function") ? getLang() : "id",
           topic: currentTopicTitle(),
           kbContext: buildKbContext(currentKB()),
           history: history,
@@ -125,7 +126,7 @@ window.Chatbot = (function () {
       }
       const reply = (data.reply || "").trim();
       if (!reply) {
-        appendMessage("bot", "Maaf, aku tidak bisa merespons barusan. Coba kirim lagi.");
+        appendMessage("bot", t("chatbot.emptyreply"));
         return;
       }
       appendMessage("bot", escapeHTML(reply).replace(/\n/g, "<br>"));
@@ -134,7 +135,7 @@ window.Chatbot = (function () {
       if (history.length > 24) history = history.slice(-24);
     } catch (err) {
       typingEl.remove();
-      appendMessage("bot", "Gagal terhubung ke tutor barusan (" + escapeHTML(err.message) + "). Coba kirim lagi.");
+      appendMessage("bot", t("chatbot.connectionerror", { err: escapeHTML(err.message) }));
     } finally {
       setSending(false);
     }
@@ -159,7 +160,7 @@ window.Chatbot = (function () {
     }
 
     // Tidak ada konsep yang cocok sama sekali.
-    appendMessage("bot", "Coba ceritakan lebih spesifik, atau sebutkan istilah fisikanya langsung supaya aku bisa bantu.");
+    appendMessage("bot", t("chatbot.fallback.nomatch"));
   }
 
   function escapeHTML(str) {
@@ -187,21 +188,21 @@ window.Chatbot = (function () {
       history = [];
       const label = document.getElementById("chatbot-topic-label");
       const kb = currentKB();
-      const topic = (typeof TOPICS !== "undefined" ? TOPICS : []).find(t => t.id === id);
+      const topic = (typeof TOPICS !== "undefined" ? TOPICS : []).find(tp => tp.id === id);
       label.textContent = (topic && CHATBOT_KB[id])
-        ? `Konteks: ${topic.title}`
-        : "Belum ada bahan khusus untuk topik ini - tutor menjawab secara umum.";
+        ? t("chatbot.topiclabel.context", { title: trContent(topic.title) })
+        : t("chatbot.topiclabel.nocontext");
       // Kalau panel sedang terbuka, mulai percakapan baru untuk topik ini.
       if (!document.getElementById("chatbot-panel").hidden) {
         document.getElementById("chatbot-messages").innerHTML = "";
-        appendMessage("bot", escapeHTML(kb.greeting));
+        appendMessage("bot", escapeHTML(trContent(kb.greeting)));
       }
     },
 
     onOpen() {
       const wrap = document.getElementById("chatbot-messages");
       if (wrap.children.length === 0) {
-        appendMessage("bot", escapeHTML(currentKB().greeting));
+        appendMessage("bot", escapeHTML(trContent(currentKB().greeting)));
       }
     }
   };
